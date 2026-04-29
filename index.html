@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ensaio ISO 5393 - Capabilidade WS</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --azul-sidebar: #0f6b86;
+      --azul-principal: #1ea4d7;
+      --azul-escuro: #0f5f7d;
+      --fundo: #dfe8ed;
+      --card: rgba(255, 255, 255, 0.80);
+      --texto: #244453;
+      --texto-suave: #5d7480;
+      --borda: #bfd4dd;
+      --borda-forte: #7fc8e6;
+      --sombra: 0 8px 22px rgba(0, 0, 0, 0.08);
+      --radius: 18px;
+      --resultado-bg: #eef8fc;
+      --resultado-borda: #b9dceb;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", Tahoma, sans-serif; background: var(--fundo); color: var(--texto); }
+    .app { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 270px;
+      min-width: 270px;
+      flex: 0 0 270px;
+      background: linear-gradient(180deg, #0f6b86 0%, #0b5f77 100%);
+      color: white;
+      padding: 16px 14px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
+    }
+    .logo-box { background: #f7f7f7; border-radius: 18px; padding: 14px 10px; text-align: center; margin-bottom: 10px; }
+    .logo-box img { width: 170px; max-width: 100%; object-fit: contain; }
+    .brand h2 { font-size: 18px; margin: 8px 0 2px; font-weight: 700; }
+    .brand p { margin: 0 0 18px; font-size: 12px; line-height: 1.4; color: #e8f7fc; }
+    .side-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 14px 12px; }
+    .side-card h3 { margin: 0 0 12px; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: #d7eef8; }
+    .menu-btn, .menu-select, .menu-input { width: 100%; height: 42px; border: none; border-radius: 12px; margin-bottom: 8px; font-size: 15px; }
+    .menu-btn { font-weight: 600; background: linear-gradient(180deg, #26a9dd 0%, #1497c8 100%); color: white; cursor: pointer; transition: .2s; }
+    .menu-btn.secondary { background: #f5f8fa; color: #125975; }
+    .menu-btn:hover, .action-btn:hover { transform: translateY(-1px); }
+    .menu-select, .menu-input { padding: 0 12px; background: #f5fbfd; color: #18495d; border: 1px solid rgba(255,255,255,.25); outline: none; font-weight: 600; }
+    .sidebar-footer { font-size: 12px; line-height: 1.5; color: #d9eef7; margin-top: 16px; }
+    .main { flex: 1 1 auto; min-width: 0; padding: 24px 18px; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .top-card, .content-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--sombra); border: 1px solid rgba(255,255,255,0.45); }
+    .top-card { padding: 18px 18px 14px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .top-card h1 { margin: 0; color: var(--azul-escuro); font-size: 24px; font-weight: 800; }
+    .top-card p { margin: 4px 0 0; color: var(--texto-suave); font-size: 14px; }
+    .destino-badge { background: linear-gradient(180deg, #24a5d8 0%, #168eba 100%); color: white; border: none; padding: 10px 18px; border-radius: 999px; font-weight: 700; font-size: 13px; white-space: nowrap; }
+    .content-card { overflow: hidden; }
+    .card-header { padding: 16px 18px 14px; border-bottom: 1px solid #d5e3ea; }
+    .card-header h2 { margin: 0; color: var(--azul-escuro); font-size: 18px; }
+    .card-header p { margin: 4px 0 0; color: var(--texto-suave); font-size: 13px; }
+    .card-body { padding: 16px 18px 18px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .field.full { grid-column: 1 / -1; }
+    .field.hidden { display: none; }
+    .field label { display: block; font-size: 13px; font-weight: 700; color: #5b7380; margin-bottom: 6px; }
+    .field input, .field select, .field textarea {
+      width: 100%; border-radius: 12px; border: 1px solid var(--borda); background: rgba(255,255,255,0.95);
+      padding: 0 12px; font-size: 14px; color: #314e5c; outline: none; font-family: inherit;
+    }
+    .field input, .field select { height: 40px; }
+    .field textarea { min-height: 92px; padding: 12px; resize: vertical; }
+    .field input:focus, .field select:focus, .field textarea:focus, td input:focus {
+      border-color: #2daedc; box-shadow: 0 0 0 3px rgba(45,174,220,.16);
+    }
+    .samples-box, .resultado-box, .grafico-box {
+      margin-top: 8px; border: 1px dashed var(--borda-forte); border-radius: 16px; padding: 14px; background: rgba(255,255,255,0.35);
+    }
+    .resultado-box { border-style: solid; background: var(--resultado-bg); border-color: var(--resultado-borda); margin-bottom: 16px; }
+    .samples-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+    .samples-header h3 { margin: 0; color: var(--azul-escuro); font-size: 18px; }
+    .tables-grid, .blocos-grid, .grafico-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .table-card { background: rgba(255,255,255,0.95); border: 1px solid #cfe0e7; border-radius: 16px; overflow: hidden; min-width: 0; }
+    .table-card h4 { margin: 0; padding: 12px 14px; background: linear-gradient(180deg, #1fa6d9 0%, #158fbe 100%); color: white; font-size: 15px; font-weight: 700; }
+    .table-actions { padding: 10px 12px; border-bottom: 1px solid #dce8ee; background: #f7fbfd; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .table-scroll { max-height: 320px; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 280px; }
+    th, td { border-bottom: 1px solid #e0eaef; padding: 8px; text-align: center; font-size: 13px; }
+    th { background: #eef7fb; color: #315767; position: sticky; top: 0; z-index: 1; }
+    td:first-child, th:first-child { width: 80px; font-weight: 700; }
+    td input { width: 100%; height: 32px; border: 1px solid #c8d9e1; border-radius: 8px; padding: 0 8px; text-align: center; background: white; outline: none; font-size: 13px; }
+    .resultado-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+    .resultado-item { background: white; border: 1px solid var(--resultado-borda); border-radius: 10px; padding: 10px; }
+    .resultado-item strong { display: block; font-size: 12px; color: #4f6976; margin-bottom: 4px; }
+    .resultado-item span { font-size: 15px; font-weight: 700; color: #0f5f7d; }
+    .status-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 180px; height: 42px; padding: 0 18px; border-radius: 12px; font-size: 15px; font-weight: 800; letter-spacing: 0.5px; }
+    .status-aprovado { background: #27ae60; color: #fff; }
+    .status-reprovado { background: #d93b3b; color: #fff; }
+    .status-neutro { background: #cfd8dc; color: #35505c; }
+    .action-btn { min-width: 140px; height: 38px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; background: linear-gradient(180deg, #25a8db 0%, #1592c0 100%); color: white; }
+    .action-btn.primary, .action-btn.secondary { background: linear-gradient(180deg, #25a8db 0%, #1592c0 100%); color: white; }
+    .action-btn.full { width: auto; min-width: 110px; height: 26px; margin-bottom: 0; font-size: 10px; border-radius: 6px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+    .resumo-dados { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin-bottom: 16px; padding: 14px; border-radius: 14px; background: rgba(255,255,255,0.65); border: 1px solid #d5e4ea; }
+    .resumo-dados div { font-size: 14px; }
+    .resumo-dados strong { color: #0f5f7d; }
+    .bloco-metrica { background: rgba(255,255,255,0.95); border: 1px solid #cfe0e7; border-radius: 16px; padding: 14px; }
+    .bloco-metrica h4 { margin: 0 0 12px; color: #0f5f7d; font-size: 16px; }
+    canvas { background: #fff; border-radius: 12px; padding: 8px; }
+    .small-note { font-size: 12px; color: #5d7480; margin-top: 4px; width: 100%; }
+    @media (max-width: 1200px) { .tables-grid, .blocos-grid, .grafico-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 900px) {
+      .app { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .form-grid, .resumo-dados, .resultado-grid { grid-template-columns: 1fr; }
+      .top-card { flex-direction: column; align-items: flex-start; }
+    }
+    @media print {
+      body { background: white; }
+      .sidebar, .top-card { display: none !important; }
+      .main { padding: 0; }
+      .content-card { box-shadow: none; border: none; background: white; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div>
+        <div class="logo-box">
+          <img src="logo-atlas-copco.png" alt="Atlas Copco">
+        </div>
+
+        <div class="brand">
+          <h2>Atlas Copco WS</h2>
+          <p>Sistema interno para ensaio ISO 5393, capabilidade e apoio ao processo técnico.</p>
+        </div>
+
+        <div class="side-card">
+          <h3>ISO 5393 / Capabilidade</h3>
+
+          <label style="display:block; font-size:12px; font-weight:700; margin-bottom:6px; color:#d7eef8;">Quantidade de amostras</label>
+          <div id="campo-amostras-manual" style="display:block; margin-top:6px;">
+            <input type="number" id="amostrasManual" class="menu-input" min="1" step="1" placeholder="Digite o total" value="25">
+            <div style="font-size:11px; color:#d7eef8; line-height:1.35; margin:2px 0 8px;">Informe manualmente a quantidade de amostras.</div>
+          </div>
+
+          <button class="menu-btn" type="button" onclick="mostrarPagina('pagina-dados')">Dados da ferramenta</button>
+          <button class="menu-btn" type="button" onclick="abrirTabelas()">Abrir tabelas</button>
+          <button class="menu-btn" type="button" onclick="mostrarPagina('pagina-dados')">Voltar aos dados</button>
+          <button class="menu-btn" type="button" onclick="limparTabelas()">Limpar tabelas</button>
+          <button class="menu-btn" type="button" onclick="calcularTudo()">Calcular resultados</button>
+          <button class="menu-btn" type="button" onclick="gerarRelatorio()">Gerar relatório</button>
+          <button class="menu-btn secondary" type="button" onclick="window.location.href='http://localhost:3003'">← Voltar ao Menu_WS</button>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        Destino padrão: Capabilidade_WS<br>
+        Interface corporativa Atlas Copco.<br>
+        Software criado por Marcos Tadeu Silva
+      </div>
+    </aside>
+
+    <main class="main">
+      <div id="pagina-dados" class="page active">
+        <section class="top-card">
+          <div>
+            <h1>Ensaio de ferramentas - ISO 5393</h1>
+            <p>Preencha os dados do ensaio e da ferramenta. As tabelas ficam em outra folha.</p>
+          </div>
+          <button class="destino-badge">Destino: Capabilidade_WS</button>
+        </section>
+
+        <section class="content-card">
+          <div class="card-header">
+            <h2>Dados do ensaio</h2>
+            <p>Cadastro da ferramenta, condição de ensaio e parâmetros antes de abrir as tabelas.</p>
+          </div>
+
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="field">
+                <label for="normaReferencia">Norma de referência</label>
+                <input type="text" id="normaReferencia" value="ISO 5393:2017" readonly>
+              </div>
+              <div class="field">
+                <label for="numeroRelatorio">Número do relatório</label>
+                <input type="text" id="numeroRelatorio" placeholder="EX.: ISO5393-2026-001">
+              </div>
+              <div class="field">
+                <label for="dataEnsaio">Data do ensaio</label>
+                <input type="date" id="dataEnsaio">
+              </div>
+              <div class="field">
+                <label for="localEnsaio">Local do ensaio</label>
+                <input type="text" id="localEnsaio" placeholder="EX.: LABORATÓRIO WS / LINHA A">
+              </div>
+              <div class="field full">
+                <label for="clienteProjeto">Cliente / projeto / linha</label>
+                <input type="text" id="clienteProjeto" placeholder="EX.: PROJETO STA / LINHA MONTAGEM FINAL">
+              </div>
+              <div class="field">
+                <label for="tipoAplicacao">Aplicação</label>
+                <select id="tipoAplicacao">
+                  <option value="Apertadeira">Apertadeira</option>
+                  <option value="Apertadeira + Crowfoot">Apertadeira + Crowfoot</option>
+                </select>
+              </div>
+              <div class="field hidden" id="crowfootField">
+                <label for="crowfoot">Identificação do Crowfoot</label>
+                <input type="text" id="crowfoot" placeholder="EX.: CROWFOOT 32MM / CF-01">
+              </div>
+              <div class="field">
+                <label for="tipoAlimentacao">Tipo de alimentação</label>
+                <select id="tipoAlimentacao">
+                  <option value="Elétrica">Elétrica</option>
+                  <option value="Bateria">Bateria</option>
+                  <option value="Pneumática">Pneumática</option>
+                  <option value="Hidráulica">Hidráulica</option>
+                </select>
+              </div>
+              <div class="field"><label for="apertadeiraModelo">Apertadeira modelo</label><input type="text" id="apertadeiraModelo" placeholder="EX.: ETP STB33 12 I06 B"></div>
+              <div class="field"><label for="serialApertadeira">Serial apertadeira</label><input type="text" id="serialApertadeira" placeholder="EX.: A200045"></div>
+              <div class="field"><label for="controladorModelo">Controlador modelo</label><input type="text" id="controladorModelo" placeholder="EX.: PF6000 / MTF6000"></div>
+              <div class="field"><label for="serialControlador">Serial controlador</label><input type="text" id="serialControlador" placeholder="EX.: CTRL123456"></div>
+              <div class="field"><label for="transdutor">Transdutor</label><input type="text" id="transdutor" placeholder="EX.: STA 6000 / RTT"></div>
+              <div class="field"><label for="serialTransdutor">Serial do transdutor</label><input type="text" id="serialTransdutor" placeholder="EX.: TRD-123456"></div>
+              <div class="field"><label for="faixaTransdutor">Faixa do transdutor</label><input type="text" id="faixaTransdutor" placeholder="EX.: 2 A 200 NM"></div>
+              <div class="field"><label for="dataCalibracao">Data da calibração</label><input type="date" id="dataCalibracao"></div>
+              <div class="field"><label for="validadeCalibracao">Validade da calibração</label><input type="date" id="validadeCalibracao"></div>
+              <div class="field"><label for="painel">Painel STA 6000</label><input type="text" id="painel" placeholder="EX.: PAINEL 01"></div>
+              <div class="field"><label for="tecnicoResponsavel">Técnico responsável</label><input type="text" id="tecnicoResponsavel" placeholder="EX.: MARCOS TADEU SILVA"></div>
+              <div class="field"><label for="temperaturaAmbiente">Temperatura ambiente (°C)</label><input type="text" id="temperaturaAmbiente" placeholder="EX.: 22"></div>
+              <div class="field"><label for="umidadeRelativa">Umidade relativa (%)</label><input type="text" id="umidadeRelativa" placeholder="EX.: 55"></div>
+              <div class="field"><label for="pressaoEntrada">Pressão / alimentação de entrada</label><input type="text" id="pressaoEntrada" placeholder="EX.: 6,3 BAR / 230 V / 48 VDC"></div>
+              <div class="field"><label for="sentidoAperto">Sentido de aperto</label><select id="sentidoAperto"><option value="Horário">Horário</option><option value="Anti-horário">Anti-horário</option></select></div>
+              <div class="field"><label for="porcentagem">Tolerância interna WS (%)</label><input type="text" id="porcentagem" placeholder="EX.: 15"></div>
+              <div class="field"><label for="torqueMaiorBase">Torque de teste superior</label><input type="text" id="torqueMaiorBase" placeholder="EX.: 100"></div>
+              <div class="field"><label for="torqueMenorBase">Torque de teste inferior</label><input type="text" id="torqueMenorBase" placeholder="EX.: 20"></div>
+              <div class="field"><label for="identificacaoJuntaRigida">Junta rígida (alta taxa)</label><input type="text" id="identificacaoJuntaRigida" placeholder="EX.: DISPOSITIVO H / JUNTA RÍGIDA"></div>
+              <div class="field"><label for="identificacaoJuntaFlexivel">Junta flexível (baixa taxa)</label><input type="text" id="identificacaoJuntaFlexivel" placeholder="EX.: DISPOSITIVO L / JUNTA FLEXÍVEL"></div>
+              <div class="field full"><label for="observacoesEnsaio">Observações do ensaio</label><textarea id="observacoesEnsaio" rows="3" placeholder="EX.: FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO, ALINHAMENTO VERIFICADO, SEM DESVIOS DO MÉTODO."></textarea></div>
+            </div>
+
+            <input type="hidden" id="maxExpMaior">
+            <input type="hidden" id="minExpMaior">
+            <input type="hidden" id="maxExpMenor">
+            <input type="hidden" id="minExpMenor">
+          </div>
+        </section>
+      </div>
+
+      <div id="pagina-tabelas" class="page">
+        <section class="top-card">
+          <div>
+            <h1>Tabelas de amostras do ensaio</h1>
+            <p>Coleta dos valores e cálculo final por torque superior e inferior.</p>
+          </div>
+          <button class="destino-badge">Folha de amostras</button>
+        </section>
+
+        <section class="content-card">
+          <div class="card-header">
+            <h2>Resumo do ensaio</h2>
+            <p>Dados principais da ferramenta, da junta e das condições do ensaio.</p>
+          </div>
+
+          <div class="card-body">
+            <div class="resumo-dados" id="resumoDados"></div>
+
+            <div class="blocos-grid">
+              <div class="bloco-metrica">
+                <h4>Resultado Torque Superior</h4>
+                <div class="resultado-grid">
+                  <div class="resultado-item"><strong>Média rígida</strong><span id="media-max-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Média flexível</strong><span id="media-max-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>DP rígida</strong><span id="dp-max-rigida">-</span></div>
+                  <div class="resultado-item"><strong>DP flexível</strong><span id="dp-max-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Mínimo rígida</strong><span id="min-max-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Mínimo flexível</strong><span id="min-max-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Máximo rígida</strong><span id="max-max-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Máximo flexível</strong><span id="max-max-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Amplitude rígida</strong><span id="amp-max-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Amplitude flexível</strong><span id="amp-max-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Scatter rígida (%)</strong><span id="scatter-max-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Scatter flexível (%)</strong><span id="scatter-max-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Cm rígida</strong><span id="cm-max-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Cmk rígida</strong><span id="cmk-max-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Cm flexível</strong><span id="cm-max-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Cmk flexível</strong><span id="cmk-max-flexivel">-</span></div>
+                  <div class="resultado-item" style="grid-column: 1 / -1;"><strong>% calculada torque superior</strong><span id="pct-max">-</span></div>
+                </div>
+              </div>
+
+              <div class="bloco-metrica">
+                <h4>Resultado Torque Inferior</h4>
+                <div class="resultado-grid">
+                  <div class="resultado-item"><strong>Média rígida</strong><span id="media-min-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Média flexível</strong><span id="media-min-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>DP rígida</strong><span id="dp-min-rigida">-</span></div>
+                  <div class="resultado-item"><strong>DP flexível</strong><span id="dp-min-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Mínimo rígida</strong><span id="min-min-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Mínimo flexível</strong><span id="min-min-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Máximo rígida</strong><span id="max-min-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Máximo flexível</strong><span id="max-min-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Amplitude rígida</strong><span id="amp-min-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Amplitude flexível</strong><span id="amp-min-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Scatter rígida (%)</strong><span id="scatter-min-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Scatter flexível (%)</strong><span id="scatter-min-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Cm rígida</strong><span id="cm-min-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Cmk rígida</strong><span id="cmk-min-rigida">-</span></div>
+                  <div class="resultado-item"><strong>Cm flexível</strong><span id="cm-min-flexivel">-</span></div>
+                  <div class="resultado-item"><strong>Cmk flexível</strong><span id="cmk-min-flexivel">-</span></div>
+                  <div class="resultado-item" style="grid-column: 1 / -1;"><strong>% calculada torque inferior</strong><span id="pct-min">-</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="resultado-box">
+              <div class="samples-header"><h3>Resultado final</h3></div>
+              <div class="resultado-grid">
+                <div class="resultado-item"><strong>Norma</strong><span id="norma-view">ISO 5393:2017</span></div>
+                <div class="resultado-item"><strong>Tolerância interna WS</strong><span id="pct-inicial-view">-</span></div>
+                <div class="resultado-item"><strong>% final encontrada</strong><span id="pct-final">-</span></div>
+                <div class="resultado-item"><strong>Avaliação ISO 5393</strong><span id="status-iso" class="status-badge status-neutro">ENSAIO REGISTRADO</span></div>
+                <div class="resultado-item" style="grid-column: 1 / -1;"><strong>Status interno WS</strong><span id="status-geral" class="status-badge status-neutro">AGUARDANDO</span></div>
+              </div>
+            </div>
+
+            <div class="resultado-box">
+              <div class="samples-header"><h3>Leitura ISO 5393</h3></div>
+              <div class="resultado-grid">
+                <div class="resultado-item" style="grid-column: 1 / -1;">
+                  <strong>Observação</strong>
+                  <span style="font-size:13px; font-weight:600; line-height:1.45;">
+                    A ISO 5393 foca no método de ensaio, rastreabilidade, condições de teste e repetibilidade/scatter.
+                    Os índices Cm e Cmk abaixo permanecem como critério interno WS.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="samples-box">
+              <div class="samples-header"><h3>Tabelas de amostras do ensaio</h3></div>
+              <div class="tables-grid">
+                <div class="table-card">
+                  <h4>Torque inferior — Junta rígida (alta taxa)</h4>
+                  <div class="table-actions">
+                    <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-min-rigida')">Copiar valores</button>
+                    <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-min-rigida')">Colar valores do Excel</button>
+                    <div class="small-note">Copia ou cola em coluna para uso no Excel.</div>
+                  </div>
+                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-min-rigida"></tbody></table></div>
+                </div>
+                <div class="table-card">
+                  <h4>Torque inferior — Junta flexível (baixa taxa)</h4>
+                  <div class="table-actions">
+                    <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-min-flexivel')">Copiar valores</button>
+                    <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-min-flexivel')">Colar valores do Excel</button>
+                    <div class="small-note">Copia ou cola em coluna para uso no Excel.</div>
+                  </div>
+                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-min-flexivel"></tbody></table></div>
+                </div>
+                <div class="table-card">
+                  <h4>Torque superior — Junta rígida (alta taxa)</h4>
+                  <div class="table-actions">
+                    <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-max-rigida')">Copiar valores</button>
+                    <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-max-rigida')">Colar valores do Excel</button>
+                    <div class="small-note">Copia ou cola em coluna para uso no Excel.</div>
+                  </div>
+                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-max-rigida"></tbody></table></div>
+                </div>
+                <div class="table-card">
+                  <h4>Torque superior — Junta flexível (baixa taxa)</h4>
+                  <div class="table-actions">
+                    <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-max-flexivel')">Copiar valores</button>
+                    <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-max-flexivel')">Colar valores do Excel</button>
+                    <div class="small-note">Copia ou cola em coluna para uso no Excel.</div>
+                  </div>
+                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-max-flexivel"></tbody></table></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grafico-box">
+              <div class="samples-header"><h3>Gráficos</h3></div>
+              <div class="grafico-grid">
+                <canvas id="graficoMaior" height="120"></canvas>
+                <canvas id="graficoMenor" height="120"></canvas>
+                <canvas id="graficoGeral" height="120" style="grid-column: 1 / -1;"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+        const campoAmostrasManual = document.getElementById("campo-amostras-manual");
+    const inputAmostrasManual = document.getElementById("amostrasManual");
+    const tipoAplicacao = document.getElementById("tipoAplicacao");
+    const crowfootField = document.getElementById("crowfootField");
+    const crowfootInput = document.getElementById("crowfoot");
+    const resumoDados = document.getElementById("resumoDados");
+    const statusGeralEl = document.getElementById("status-geral");
+    const statusIsoEl = document.getElementById("status-iso");
+
+    const tabelas = {
+      minRigida: document.getElementById("tbody-min-rigida"),
+      minFlexivel: document.getElementById("tbody-min-flexivel"),
+      maxRigida: document.getElementById("tbody-max-rigida"),
+      maxFlexivel: document.getElementById("tbody-max-flexivel")
+    };
+
+    const ids = {
+      mediaMaxRigida: document.getElementById("media-max-rigida"),
+      mediaMaxFlexivel: document.getElementById("media-max-flexivel"),
+      dpMaxRigida: document.getElementById("dp-max-rigida"),
+      dpMaxFlexivel: document.getElementById("dp-max-flexivel"),
+      minMaxRigida: document.getElementById("min-max-rigida"),
+      minMaxFlexivel: document.getElementById("min-max-flexivel"),
+      maxMaxRigida: document.getElementById("max-max-rigida"),
+      maxMaxFlexivel: document.getElementById("max-max-flexivel"),
+      ampMaxRigida: document.getElementById("amp-max-rigida"),
+      ampMaxFlexivel: document.getElementById("amp-max-flexivel"),
+      scatterMaxRigida: document.getElementById("scatter-max-rigida"),
+      scatterMaxFlexivel: document.getElementById("scatter-max-flexivel"),
+      cmMaxRigida: document.getElementById("cm-max-rigida"),
+      cmkMaxRigida: document.getElementById("cmk-max-rigida"),
+      cmMaxFlexivel: document.getElementById("cm-max-flexivel"),
+      cmkMaxFlexivel: document.getElementById("cmk-max-flexivel"),
+      pctMax: document.getElementById("pct-max"),
+      mediaMinRigida: document.getElementById("media-min-rigida"),
+      mediaMinFlexivel: document.getElementById("media-min-flexivel"),
+      dpMinRigida: document.getElementById("dp-min-rigida"),
+      dpMinFlexivel: document.getElementById("dp-min-flexivel"),
+      minMinRigida: document.getElementById("min-min-rigida"),
+      minMinFlexivel: document.getElementById("min-min-flexivel"),
+      maxMinRigida: document.getElementById("max-min-rigida"),
+      maxMinFlexivel: document.getElementById("max-min-flexivel"),
+      ampMinRigida: document.getElementById("amp-min-rigida"),
+      ampMinFlexivel: document.getElementById("amp-min-flexivel"),
+      scatterMinRigida: document.getElementById("scatter-min-rigida"),
+      scatterMinFlexivel: document.getElementById("scatter-min-flexivel"),
+      cmMinRigida: document.getElementById("cm-min-rigida"),
+      cmkMinRigida: document.getElementById("cmk-min-rigida"),
+      cmMinFlexivel: document.getElementById("cm-min-flexivel"),
+      cmkMinFlexivel: document.getElementById("cmk-min-flexivel"),
+      pctMin: document.getElementById("pct-min")
+    };
+
+    let graficoMaior = null;
+    let graficoMenor = null;
+    let graficoGeral = null;
+
+    function mostrarPagina(id) {
+      document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+    }
+
+    function obterTotalAmostras() {
+      const totalManual = parseInt(inputAmostrasManual.value, 10);
+      return Number.isInteger(totalManual) && totalManual > 0 ? totalManual : 0;
+    }
+
+    function atualizarCampoAmostrasManual() {
+      campoAmostrasManual.style.display = "block";
+    }
+
+    function atualizarCampoCrowfoot() {
+      const usarCrowfoot = tipoAplicacao.value === "Apertadeira + Crowfoot";
+      crowfootField.classList.toggle("hidden", !usarCrowfoot);
+      if (!usarCrowfoot) crowfootInput.value = "";
+    }
+
+    function criarLinhas(total) {
+      Object.values(tabelas).forEach(tbody => {
+        tbody.innerHTML = "";
+        for (let i = 1; i <= total; i++) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${i}</td><td><input type="text" inputmode="decimal"></td>`;
+          tbody.appendChild(tr);
+        }
+      });
+      limparResultados();
+    }
+
+    function parseNumero(valor) {
+      if (typeof valor !== "string") return Number(valor) || 0;
+      return Number(valor.replace(/\./g, "").replace(/,/g, ".").trim()) || 0;
+    }
+
+    function formatarNumero(valor, casas = 2) {
+      if (!Number.isFinite(valor)) return "-";
+      return valor.toFixed(casas).replace(".", ",");
+    }
+
+    function lerValoresTabela(tbodyId) {
+      return [...document.querySelectorAll(`#${tbodyId} input`)]
+        .map(input => parseNumero(input.value))
+        .filter(v => Number.isFinite(v) && v > 0);
+    }
+
+    function media(lista) {
+      if (!lista.length) return 0;
+      return lista.reduce((a, b) => a + b, 0) / lista.length;
+    }
+
+    function desvioPadrao(lista) {
+      if (lista.length < 2) return 0;
+      const m = media(lista);
+      const variancia = lista.reduce((acc, v) => acc + Math.pow(v - m, 2), 0) / (lista.length - 1);
+      return Math.sqrt(variancia);
+    }
+
+    function estatisticas(lista, lsl, usl) {
+      if (!lista.length) {
+        return { media: 0, dp: 0, min: 0, max: 0, amplitude: 0, scatter: 0, cm: 0, cmk: 0 };
+      }
+      const m = media(lista);
+      const dp = desvioPadrao(lista);
+      const min = Math.min(...lista);
+      const max = Math.max(...lista);
+      const amplitude = max - min;
+      const scatter = m ? (amplitude / m) * 100 : 0;
+      const tolerancia = usl - lsl;
+      const cm = dp > 0 ? tolerancia / (6 * dp) : 0;
+      const cpu = dp > 0 ? (usl - m) / (3 * dp) : 0;
+      const cpl = dp > 0 ? (m - lsl) / (3 * dp) : 0;
+      const cmk = Math.min(cpu, cpl);
+      return { media: m, dp, min, max, amplitude, scatter, cm, cmk };
+    }
+
+    function definirTexto(el, valor, casas = 2, sufixo = "") {
+      el.textContent = Number.isFinite(valor) ? `${formatarNumero(valor, casas)}${sufixo}` : "-";
+    }
+
+    function valorOuTraco(id) {
+      const el = document.getElementById(id);
+      return el && el.value ? el.value : "-";
+    }
+
+    function obterDadosFerramenta() {
+      return {
+        normaReferencia: valorOuTraco("normaReferencia"),
+        numeroRelatorio: valorOuTraco("numeroRelatorio"),
+        dataEnsaio: valorOuTraco("dataEnsaio"),
+        localEnsaio: valorOuTraco("localEnsaio"),
+        clienteProjeto: valorOuTraco("clienteProjeto"),
+        tipoAplicacao: valorOuTraco("tipoAplicacao"),
+        crowfoot: valorOuTraco("crowfoot"),
+        tipoAlimentacao: valorOuTraco("tipoAlimentacao"),
+        apertadeiraModelo: valorOuTraco("apertadeiraModelo"),
+        serialApertadeira: valorOuTraco("serialApertadeira"),
+        controladorModelo: valorOuTraco("controladorModelo"),
+        serialControlador: valorOuTraco("serialControlador"),
+        transdutor: valorOuTraco("transdutor"),
+        serialTransdutor: valorOuTraco("serialTransdutor"),
+        faixaTransdutor: valorOuTraco("faixaTransdutor"),
+        dataCalibracao: valorOuTraco("dataCalibracao"),
+        validadeCalibracao: valorOuTraco("validadeCalibracao"),
+        painel: valorOuTraco("painel"),
+        tecnicoResponsavel: valorOuTraco("tecnicoResponsavel"),
+        temperaturaAmbiente: valorOuTraco("temperaturaAmbiente"),
+        umidadeRelativa: valorOuTraco("umidadeRelativa"),
+        pressaoEntrada: valorOuTraco("pressaoEntrada"),
+        sentidoAperto: valorOuTraco("sentidoAperto"),
+        porcentagem: valorOuTraco("porcentagem"),
+        torqueMaiorBase: valorOuTraco("torqueMaiorBase"),
+        torqueMenorBase: valorOuTraco("torqueMenorBase"),
+        identificacaoJuntaRigida: valorOuTraco("identificacaoJuntaRigida"),
+        identificacaoJuntaFlexivel: valorOuTraco("identificacaoJuntaFlexivel"),
+        observacoesEnsaio: valorOuTraco("observacoesEnsaio"),
+        amostras: obterTotalAmostras() || "-",
+        maxExpMaior: document.getElementById("maxExpMaior").value || "-",
+        minExpMaior: document.getElementById("minExpMaior").value || "-",
+        maxExpMenor: document.getElementById("maxExpMenor").value || "-",
+        minExpMenor: document.getElementById("minExpMenor").value || "-"
+      };
+    }
+
+    function atualizarResumoDados() {
+      const d = obterDadosFerramenta();
+      resumoDados.innerHTML = `
+        <div><strong>Relatório:</strong> ${d.numeroRelatorio}</div>
+        <div><strong>Data do ensaio:</strong> ${d.dataEnsaio}</div>
+        <div><strong>Cliente / projeto:</strong> ${d.clienteProjeto}</div>
+        <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
+        <div><strong>Apertadeira:</strong> ${d.apertadeiraModelo}</div>
+        <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
+        <div><strong>Controlador:</strong> ${d.controladorModelo}</div>
+        <div><strong>Transdutor:</strong> ${d.transdutor}</div>
+        <div><strong>Junta rígida:</strong> ${d.identificacaoJuntaRigida}</div>
+        <div><strong>Junta flexível:</strong> ${d.identificacaoJuntaFlexivel}</div>
+        <div><strong>Torque superior:</strong> ${d.torqueMaiorBase}</div>
+        <div><strong>Torque inferior:</strong> ${d.torqueMenorBase}</div>
+        <div><strong>Tolerância WS:</strong> ${d.porcentagem}%</div>
+        <div><strong>Total de amostras:</strong> ${d.amostras}</div>
+      `;
+      document.getElementById("pct-inicial-view").textContent = d.porcentagem !== "-" ? `${d.porcentagem}%` : "-";
+    }
+
+    function calcularLimitesAutomaticos() {
+      const percentual = parseNumero(document.getElementById("porcentagem").value);
+      const torqueMaior = parseNumero(document.getElementById("torqueMaiorBase").value);
+      const torqueMenor = parseNumero(document.getElementById("torqueMenorBase").value);
+      const fator = percentual / 100;
+
+      const maxExpMaior = torqueMaior ? torqueMaior * (1 + fator) : 0;
+      const minExpMaior = torqueMaior ? torqueMaior * (1 - fator) : 0;
+      const maxExpMenor = torqueMenor ? torqueMenor * (1 + fator) : 0;
+      const minExpMenor = torqueMenor ? torqueMenor * (1 - fator) : 0;
+
+      document.getElementById("maxExpMaior").value = maxExpMaior ? formatarNumero(maxExpMaior) : "";
+      document.getElementById("minExpMaior").value = minExpMaior ? formatarNumero(minExpMaior) : "";
+      document.getElementById("maxExpMenor").value = maxExpMenor ? formatarNumero(maxExpMenor) : "";
+      document.getElementById("minExpMenor").value = minExpMenor ? formatarNumero(minExpMenor) : "";
+      atualizarResumoDados();
+    }
+
+    function limparResultados() {
+      Object.values(ids).forEach(el => el.textContent = "-");
+      document.getElementById("pct-final").textContent = "-";
+      statusGeralEl.textContent = "AGUARDANDO";
+      statusGeralEl.className = "status-badge status-neutro";
+      statusIsoEl.textContent = "ENSAIO REGISTRADO";
+      statusIsoEl.className = "status-badge status-neutro";
+      destruirGraficos();
+    }
+
+    function destruirGraficos() {
+      if (graficoMaior) graficoMaior.destroy();
+      if (graficoMenor) graficoMenor.destroy();
+      if (graficoGeral) graficoGeral.destroy();
+      graficoMaior = graficoMenor = graficoGeral = null;
+    }
+
+    function serieConstante(valor, tamanho) {
+      return Array.from({ length: tamanho }, () => valor);
+    }
+
+    function montarDatasetsGraficoGeral(total, dados) {
+      return [
+        { label: "Sup rígida", data: dados.maxRigida, borderWidth: 2, yAxisID: "y" },
+        { label: "Sup flexível", data: dados.maxFlexivel, borderWidth: 2, yAxisID: "y" },
+        { label: "Inf rígida", data: dados.minRigida, borderWidth: 2, yAxisID: "y" },
+        { label: "Inf flexível", data: dados.minFlexivel, borderWidth: 2, yAxisID: "y" },
+        { label: "LSL Sup", data: serieConstante(dados.limites.minExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+        { label: "USL Sup", data: serieConstante(dados.limites.maxExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+        { label: "LSL Inf", data: serieConstante(dados.limites.minExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+        { label: "USL Inf", data: serieConstante(dados.limites.maxExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+        { label: "Cm Sup rígida", data: serieConstante(dados.estMaxRig.cm, total), borderWidth: 1, yAxisID: "y1" },
+        { label: "Cmk Sup rígida", data: serieConstante(dados.estMaxRig.cmk, total), borderWidth: 1, yAxisID: "y1" },
+        { label: "Cm Inf rígida", data: serieConstante(dados.estMinRig.cm, total), borderWidth: 1, yAxisID: "y1" },
+        { label: "Cmk Inf rígida", data: serieConstante(dados.estMinRig.cmk, total), borderWidth: 1, yAxisID: "y1" }
+      ];
+    }
+
+    function atualizarGraficos(dados) {
+      destruirGraficos();
+      const total = obterTotalAmostras();
+      const labels = Array.from({ length: total }, (_, i) => i + 1);
+
+      graficoMaior = new Chart(document.getElementById("graficoMaior"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            { label: "Superior rígida", data: dados.maxRigida, borderWidth: 2, yAxisID: "y" },
+            { label: "Superior flexível", data: dados.maxFlexivel, borderWidth: 2, yAxisID: "y" },
+            { label: "LSL", data: serieConstante(dados.limites.minExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+            { label: "USL", data: serieConstante(dados.limites.maxExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+            { label: "Cm rígida", data: serieConstante(dados.estMaxRig.cm, total), borderWidth: 1, yAxisID: "y1" },
+            { label: "Cmk rígida", data: serieConstante(dados.estMaxRig.cmk, total), borderWidth: 1, yAxisID: "y1" },
+            { label: "Cm flexível", data: serieConstante(dados.estMaxFlex.cm, total), borderWidth: 1, yAxisID: "y1" },
+            { label: "Cmk flexível", data: serieConstante(dados.estMaxFlex.cmk, total), borderWidth: 1, yAxisID: "y1" }
+          ]
+        },
+        options: { responsive: true, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque superior" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
+      });
+
+      graficoMenor = new Chart(document.getElementById("graficoMenor"), {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            { label: "Inferior rígida", data: dados.minRigida, borderWidth: 2, yAxisID: "y" },
+            { label: "Inferior flexível", data: dados.minFlexivel, borderWidth: 2, yAxisID: "y" },
+            { label: "LSL", data: serieConstante(dados.limites.minExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+            { label: "USL", data: serieConstante(dados.limites.maxExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+            { label: "Cm rígida", data: serieConstante(dados.estMinRig.cm, total), borderWidth: 1, yAxisID: "y1" },
+            { label: "Cmk rígida", data: serieConstante(dados.estMinRig.cmk, total), borderWidth: 1, yAxisID: "y1" },
+            { label: "Cm flexível", data: serieConstante(dados.estMinFlex.cm, total), borderWidth: 1, yAxisID: "y1" },
+            { label: "Cmk flexível", data: serieConstante(dados.estMinFlex.cmk, total), borderWidth: 1, yAxisID: "y1" }
+          ]
+        },
+        options: { responsive: true, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque inferior" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
+      });
+
+      graficoGeral = new Chart(document.getElementById("graficoGeral"), {
+        type: "line",
+        data: { labels, datasets: montarDatasetsGraficoGeral(labels.length, dados) },
+        options: {
+          responsive: true,
+          interaction: { mode: "nearest", intersect: false },
+          plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 9 } } } },
+          scales: {
+            x: { title: { display: true, text: "Amostra" } },
+            y: { title: { display: true, text: "Torque" } },
+            y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } }
+          }
+        }
+      });
+    }
+
+    function calcularTudo() {
+      const maxRigida = lerValoresTabela("tbody-max-rigida");
+      const maxFlexivel = lerValoresTabela("tbody-max-flexivel");
+      const minRigida = lerValoresTabela("tbody-min-rigida");
+      const minFlexivel = lerValoresTabela("tbody-min-flexivel");
+
+      const limites = {
+        maxExpMaior: parseNumero(document.getElementById("maxExpMaior").value),
+        minExpMaior: parseNumero(document.getElementById("minExpMaior").value),
+        maxExpMenor: parseNumero(document.getElementById("maxExpMenor").value),
+        minExpMenor: parseNumero(document.getElementById("minExpMenor").value)
+      };
+
+      const estMaxRig = estatisticas(maxRigida, limites.minExpMaior, limites.maxExpMaior);
+      const estMaxFlex = estatisticas(maxFlexivel, limites.minExpMaior, limites.maxExpMaior);
+      const estMinRig = estatisticas(minRigida, limites.minExpMenor, limites.maxExpMenor);
+      const estMinFlex = estatisticas(minFlexivel, limites.minExpMenor, limites.maxExpMenor);
+
+      definirTexto(ids.mediaMaxRigida, estMaxRig.media);
+      definirTexto(ids.mediaMaxFlexivel, estMaxFlex.media);
+      definirTexto(ids.dpMaxRigida, estMaxRig.dp);
+      definirTexto(ids.dpMaxFlexivel, estMaxFlex.dp);
+      definirTexto(ids.minMaxRigida, estMaxRig.min);
+      definirTexto(ids.minMaxFlexivel, estMaxFlex.min);
+      definirTexto(ids.maxMaxRigida, estMaxRig.max);
+      definirTexto(ids.maxMaxFlexivel, estMaxFlex.max);
+      definirTexto(ids.ampMaxRigida, estMaxRig.amplitude);
+      definirTexto(ids.ampMaxFlexivel, estMaxFlex.amplitude);
+      definirTexto(ids.scatterMaxRigida, estMaxRig.scatter, 2, "%");
+      definirTexto(ids.scatterMaxFlexivel, estMaxFlex.scatter, 2, "%");
+      definirTexto(ids.cmMaxRigida, estMaxRig.cm);
+      definirTexto(ids.cmkMaxRigida, estMaxRig.cmk);
+      definirTexto(ids.cmMaxFlexivel, estMaxFlex.cm);
+      definirTexto(ids.cmkMaxFlexivel, estMaxFlex.cmk);
+
+      definirTexto(ids.mediaMinRigida, estMinRig.media);
+      definirTexto(ids.mediaMinFlexivel, estMinFlex.media);
+      definirTexto(ids.dpMinRigida, estMinRig.dp);
+      definirTexto(ids.dpMinFlexivel, estMinFlex.dp);
+      definirTexto(ids.minMinRigida, estMinRig.min);
+      definirTexto(ids.minMinFlexivel, estMinFlex.min);
+      definirTexto(ids.maxMinRigida, estMinRig.max);
+      definirTexto(ids.maxMinFlexivel, estMinFlex.max);
+      definirTexto(ids.ampMinRigida, estMinRig.amplitude);
+      definirTexto(ids.ampMinFlexivel, estMinFlex.amplitude);
+      definirTexto(ids.scatterMinRigida, estMinRig.scatter, 2, "%");
+      definirTexto(ids.scatterMinFlexivel, estMinFlex.scatter, 2, "%");
+      definirTexto(ids.cmMinRigida, estMinRig.cm);
+      definirTexto(ids.cmkMinRigida, estMinRig.cmk);
+      definirTexto(ids.cmMinFlexivel, estMinFlex.cm);
+      definirTexto(ids.cmkMinFlexivel, estMinFlex.cmk);
+
+      const pctMax = Math.max(estMaxRig.scatter, estMaxFlex.scatter);
+      const pctMin = Math.max(estMinRig.scatter, estMinFlex.scatter);
+      const pctFinal = Math.max(pctMax, pctMin);
+      ids.pctMax.textContent = `${formatarNumero(pctMax)}%`;
+      ids.pctMin.textContent = `${formatarNumero(pctMin)}%`;
+      document.getElementById("pct-final").textContent = `${formatarNumero(pctFinal)}%`;
+
+      const cmMinimo = Math.min(estMaxRig.cm, estMaxFlex.cm, estMinRig.cm, estMinFlex.cm);
+      const cmkMinimo = Math.min(estMaxRig.cmk, estMaxFlex.cmk, estMinRig.cmk, estMinFlex.cmk);
+      const tolerancia = parseNumero(document.getElementById("porcentagem").value);
+
+      statusIsoEl.textContent = "ENSAIO REGISTRADO";
+      statusIsoEl.className = "status-badge status-neutro";
+
+      const aprovado = pctFinal <= tolerancia && cmMinimo >= 1.67 && cmkMinimo >= 1.67;
+      statusGeralEl.textContent = aprovado ? "APROVADO" : "REPROVADO";
+      statusGeralEl.className = `status-badge ${aprovado ? "status-aprovado" : "status-reprovado"}`;
+
+      const dadosGraficos = {
+        maxRigida, maxFlexivel, minRigida, minFlexivel,
+        estMaxRig, estMaxFlex, estMinRig, estMinFlex,
+        limites
+      };
+
+      const paginaTabelasAtiva = document.getElementById("pagina-tabelas").classList.contains("active");
+      if (paginaTabelasAtiva) {
+        requestAnimationFrame(() => {
+          atualizarGraficos(dadosGraficos);
+        });
+      }
+    }
+
+    function abrirTabelas() {
+      mostrarPagina("pagina-tabelas");
+      atualizarResumoDados();
+      requestAnimationFrame(() => {
+        if (graficoMaior) graficoMaior.resize();
+        if (graficoMenor) graficoMenor.resize();
+        if (graficoGeral) graficoGeral.resize();
+      });
+    }
+
+    function limparTabelas() {
+      Object.values(tabelas).forEach(tbody => {
+        tbody.querySelectorAll("input").forEach(input => input.value = "");
+      });
+      limparResultados();
+    }
+
+    async function copiarTabela(tbodyId) {
+      const valores = [...document.querySelectorAll(`#${tbodyId} input`)].map(input => input.value || "");
+      try {
+        await navigator.clipboard.writeText(valores.join("\n"));
+      } catch {
+        alert("Não foi possível copiar automaticamente.");
+      }
+    }
+
+    async function colarTabela(tbodyId) {
+      try {
+        const texto = await navigator.clipboard.readText();
+        const linhas = texto.split(/\r?\n/).map(v => v.trim()).filter(Boolean);
+        const inputs = [...document.querySelectorAll(`#${tbodyId} input`)];
+        linhas.forEach((linha, i) => {
+          if (inputs[i]) inputs[i].value = linha;
+        });
+      } catch {
+        alert("Não foi possível ler a área de transferência.");
+      }
+    }
+
+    function tabelaHtmlRelatorio(rotulo, valores) {
+      const linhas = valores.map((valor, i) => `<tr><td>${i + 1}</td><td>${formatarNumero(valor)}</td></tr>`).join("");
+      return `
+        <div class="bloco">
+          <h3>${rotulo}</h3>
+          <table class="tabela-medicoes">
+            <thead><tr><th>Amostra</th><th>Valor</th></tr></thead>
+            <tbody>${linhas || '<tr><td colspan="2">Sem dados</td></tr>'}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function calcularBins(valores, quantidadeBins = 10) {
+      const numeros = (valores || []).filter(v => Number.isFinite(v));
+      if (!numeros.length) return { labels: [], frequencias: [] };
+      const minimo = Math.min(...numeros);
+      const maximo = Math.max(...numeros);
+      if (minimo === maximo) {
+        return { labels: [minimo.toFixed(2).replace(".", ",")], frequencias: [numeros.length] };
+      }
+      const bins = Math.max(5, quantidadeBins);
+      const largura = (maximo - minimo) / bins;
+      const frequencias = new Array(bins).fill(0);
+      const labels = [];
+      for (let i = 0; i < bins; i++) {
+        const inicio = minimo + (largura * i);
+        const fim = i === bins - 1 ? maximo : inicio + largura;
+        labels.push(`${inicio.toFixed(2).replace(".", ",")} a ${fim.toFixed(2).replace(".", ",")}`);
+      }
+      numeros.forEach(valor => {
+        let indice = Math.floor((valor - minimo) / largura);
+        if (indice >= bins) indice = bins - 1;
+        if (indice < 0) indice = 0;
+        frequencias[indice]++;
+      });
+      return { labels, frequencias };
+    }
+
+    function juntarLabelsHistograma(listas) {
+      const mapa = new Map();
+      listas.forEach(item => item.labels.forEach(label => { if (!mapa.has(label)) mapa.set(label, true); }));
+      return Array.from(mapa.keys());
+    }
+
+    function alinharFrequencias(labelsBase, hist) {
+      return labelsBase.map(label => {
+        const idx = hist.labels.indexOf(label);
+        return idx >= 0 ? hist.frequencias[idx] : 0;
+      });
+    }
+
+    function gerarRelatorio() {
+      const maxRigida = lerValoresTabela("tbody-max-rigida");
+      const maxFlexivel = lerValoresTabela("tbody-max-flexivel");
+      const minRigida = lerValoresTabela("tbody-min-rigida");
+      const minFlexivel = lerValoresTabela("tbody-min-flexivel");
+      const total = obterTotalAmostras();
+      const labels = Array.from({ length: total }, (_, i) => i + 1);
+      const d = obterDadosFerramenta();
+
+      const relatorio = window.open("", "_blank");
+      relatorio.document.write(`
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <title>Relatório ISO 5393</title>
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 24px; color: #1f3f4d; }
+            h1, h2, h3 { color: #0f5f7d; margin-bottom: 8px; }
+            .cabecalho, .bloco { border: 1px solid #c8dce5; border-radius: 12px; padding: 16px; margin-bottom: 20px; background: #fff; }
+            .cabecalho { background: #f5fbfe; }
+            .grid, .resumo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
+            .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; }
+            .topo-esq { display: flex; align-items: center; gap: 16px; }
+            .topo-esq img { height: 52px; object-fit: contain; }
+            .print-btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
+            .status-relatorio { display: inline-block; padding: 8px 14px; border-radius: 9px; font-weight: 800; color: white; font-size: 12px; }
+            .aprovado { background: #27ae60; }
+            .reprovado { background: #d93b3b; }
+            .aguardando { background: #90a4ae; }
+            .nota { padding: 10px 12px; border-radius: 10px; background: #eef8fc; border: 1px solid #b9dceb; font-size: 12px; line-height: 1.45; }
+            .assinatura { margin-top: 18px; padding-top: 4px; }
+            .cargo { font-size: 12px; color: #5d7480; }
+            .tabela-medicoes { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
+            .tabela-medicoes th, .tabela-medicoes td { border: 1px solid #d4e3ea; padding: 4px 5px; font-size: 10.5px; line-height: 1.2; text-align: center; word-break: break-word; }
+            .tabela-medicoes th { background: #eef7fb; }
+            canvas { background: #fff; border-radius: 10px; }
+            @media print { .print-btn { display: none; } body { margin: 10mm; } }
+          </style>
+        </head>
+        <body>
+          <div class="topo">
+            <div class="topo-esq">
+              <img src="logo-atlas-copco.png" alt="Atlas Copco">
+              <div>
+                <h1>Relatório ISO 5393 / Capabilidade</h1>
+                <div>Número do relatório: ${d.numeroRelatorio}</div>
+              </div>
+            </div>
+            <button class="print-btn" onclick="window.print()">Imprimir relatório</button>
+          </div>
+
+          <div class="cabecalho">
+            <div class="grid">
+              <div><strong>Norma de referência:</strong> ${d.normaReferencia}</div>
+              <div><strong>Data do ensaio:</strong> ${d.dataEnsaio}</div>
+              <div><strong>Local do ensaio:</strong> ${d.localEnsaio}</div>
+              <div><strong>Cliente / projeto / linha:</strong> ${d.clienteProjeto}</div>
+              <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
+              <div><strong>Crowfoot:</strong> ${d.crowfoot}</div>
+              <div><strong>Tipo de alimentação:</strong> ${d.tipoAlimentacao}</div>
+              <div><strong>Total de amostras:</strong> ${d.amostras}</div>
+              <div><strong>Apertadeira modelo:</strong> ${d.apertadeiraModelo}</div>
+              <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
+              <div><strong>Controlador modelo:</strong> ${d.controladorModelo}</div>
+              <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
+              <div><strong>Transdutor:</strong> ${d.transdutor}</div>
+              <div><strong>Serial do transdutor:</strong> ${d.serialTransdutor}</div>
+              <div><strong>Faixa do transdutor:</strong> ${d.faixaTransdutor}</div>
+              <div><strong>Data de calibração:</strong> ${d.dataCalibracao}</div>
+              <div><strong>Validade da calibração:</strong> ${d.validadeCalibracao}</div>
+              <div><strong>Painel STA 6000:</strong> ${d.painel}</div>
+              <div><strong>Junta rígida (alta taxa):</strong> ${d.identificacaoJuntaRigida}</div>
+              <div><strong>Junta flexível (baixa taxa):</strong> ${d.identificacaoJuntaFlexivel}</div>
+              <div><strong>Torque de teste superior:</strong> ${d.torqueMaiorBase}</div>
+              <div><strong>Torque de teste inferior:</strong> ${d.torqueMenorBase}</div>
+              <div><strong>Tolerância interna WS:</strong> ${d.porcentagem}%</div>
+              <div><strong>Máx. esperado torque superior:</strong> ${d.maxExpMaior}</div>
+              <div><strong>Mín. esperado torque superior:</strong> ${d.minExpMaior}</div>
+              <div><strong>Máx. esperado torque inferior:</strong> ${d.maxExpMenor}</div>
+              <div><strong>Mín. esperado torque inferior:</strong> ${d.minExpMenor}</div>
+              <div style="grid-column:1 / -1;"><strong>Observações do ensaio:</strong> ${d.observacoesEnsaio}</div>
+            </div>
+          </div>
+
+          <div class="bloco">
+            <h2>Leitura ISO 5393</h2>
+            <div class="nota">
+              Este relatório registra as condições do ensaio, a identificação da ferramenta, a junta utilizada e a repetibilidade/scatter dos resultados.
+              Os índices Cm e Cmk permanecem como critério complementar interno WS.
+            </div>
+          </div>
+
+          <div class="bloco">
+            <h2>Resultado Torque Superior</h2>
+            <div class="resumo">
+              <div><strong>Média rígida:</strong> ${ids.mediaMaxRigida.textContent}</div>
+              <div><strong>Média flexível:</strong> ${ids.mediaMaxFlexivel.textContent}</div>
+              <div><strong>DP rígida:</strong> ${ids.dpMaxRigida.textContent}</div>
+              <div><strong>DP flexível:</strong> ${ids.dpMaxFlexivel.textContent}</div>
+              <div><strong>Mínimo rígida:</strong> ${ids.minMaxRigida.textContent}</div>
+              <div><strong>Mínimo flexível:</strong> ${ids.minMaxFlexivel.textContent}</div>
+              <div><strong>Máximo rígida:</strong> ${ids.maxMaxRigida.textContent}</div>
+              <div><strong>Máximo flexível:</strong> ${ids.maxMaxFlexivel.textContent}</div>
+              <div><strong>Amplitude rígida:</strong> ${ids.ampMaxRigida.textContent}</div>
+              <div><strong>Amplitude flexível:</strong> ${ids.ampMaxFlexivel.textContent}</div>
+              <div><strong>Scatter rígida:</strong> ${ids.scatterMaxRigida.textContent}</div>
+              <div><strong>Scatter flexível:</strong> ${ids.scatterMaxFlexivel.textContent}</div>
+              <div><strong>Cm rígida:</strong> ${ids.cmMaxRigida.textContent}</div>
+              <div><strong>Cmk rígida:</strong> ${ids.cmkMaxRigida.textContent}</div>
+              <div><strong>Cm flexível:</strong> ${ids.cmMaxFlexivel.textContent}</div>
+              <div><strong>Cmk flexível:</strong> ${ids.cmkMaxFlexivel.textContent}</div>
+              <div style="grid-column:1 / -1;"><strong>% calculada torque superior:</strong> ${ids.pctMax.textContent}</div>
+            </div>
+          </div>
+
+          <div class="bloco">
+            <h2>Resultado Torque Inferior</h2>
+            <div class="resumo">
+              <div><strong>Média rígida:</strong> ${ids.mediaMinRigida.textContent}</div>
+              <div><strong>Média flexível:</strong> ${ids.mediaMinFlexivel.textContent}</div>
+              <div><strong>DP rígida:</strong> ${ids.dpMinRigida.textContent}</div>
+              <div><strong>DP flexível:</strong> ${ids.dpMinFlexivel.textContent}</div>
+              <div><strong>Mínimo rígida:</strong> ${ids.minMinRigida.textContent}</div>
+              <div><strong>Mínimo flexível:</strong> ${ids.minMinFlexivel.textContent}</div>
+              <div><strong>Máximo rígida:</strong> ${ids.maxMinRigida.textContent}</div>
+              <div><strong>Máximo flexível:</strong> ${ids.maxMinFlexivel.textContent}</div>
+              <div><strong>Amplitude rígida:</strong> ${ids.ampMinRigida.textContent}</div>
+              <div><strong>Amplitude flexível:</strong> ${ids.ampMinFlexivel.textContent}</div>
+              <div><strong>Scatter rígida:</strong> ${ids.scatterMinRigida.textContent}</div>
+              <div><strong>Scatter flexível:</strong> ${ids.scatterMinFlexivel.textContent}</div>
+              <div><strong>Cm rígida:</strong> ${ids.cmMinRigida.textContent}</div>
+              <div><strong>Cmk rígida:</strong> ${ids.cmkMinRigida.textContent}</div>
+              <div><strong>Cm flexível:</strong> ${ids.cmMinFlexivel.textContent}</div>
+              <div><strong>Cmk flexível:</strong> ${ids.cmkMinFlexivel.textContent}</div>
+              <div style="grid-column:1 / -1;"><strong>% calculada torque inferior:</strong> ${ids.pctMin.textContent}</div>
+            </div>
+          </div>
+
+          <div class="bloco">
+            <h2>Resultado final</h2>
+            <div class="resumo">
+              <div><strong>% final encontrada:</strong> ${document.getElementById("pct-final").textContent}</div>
+              <div><strong>Status interno WS:</strong> <span class="status-relatorio ${statusGeralEl.textContent === "APROVADO" ? "aprovado" : statusGeralEl.textContent === "REPROVADO" ? "reprovado" : "aguardando"}">${statusGeralEl.textContent}</span></div>
+            </div>
+          </div>
+
+          <div class="bloco"><h2>Gráfico torque superior</h2><canvas id="graficoMaiorRel" height="110"></canvas></div>
+          <div class="bloco"><h2>Gráfico torque inferior</h2><canvas id="graficoMenorRel" height="110"></canvas></div>
+          <div class="bloco"><h2>Gráfico geral</h2><canvas id="graficoGeralRel" height="110"></canvas></div>
+          <div class="bloco"><h2>Histograma torque superior</h2><canvas id="histogramaMaiorRel" height="110"></canvas></div>
+          <div class="bloco"><h2>Histograma torque inferior</h2><canvas id="histogramaMenorRel" height="110"></canvas></div>
+
+          ${tabelaHtmlRelatorio("Torque inferior — Junta rígida", minRigida)}
+          ${tabelaHtmlRelatorio("Torque inferior — Junta flexível", minFlexivel)}
+          ${tabelaHtmlRelatorio("Torque superior — Junta rígida", maxRigida)}
+          ${tabelaHtmlRelatorio("Torque superior — Junta flexível", maxFlexivel)}
+
+          <div class="bloco assinatura">
+            <strong>${d.tecnicoResponsavel}</strong>
+            <div class="cargo">Técnico responsável</div>
+          </div>
+
+          <script>
+            const labels = ${JSON.stringify(labels)};
+            const maxRigida = ${JSON.stringify(maxRigida)};
+            const maxFlexivel = ${JSON.stringify(maxFlexivel)};
+            const minRigida = ${JSON.stringify(minRigida)};
+            const minFlexivel = ${JSON.stringify(minFlexivel)};
+            const maxExpMaior = ${parseNumero(document.getElementById("maxExpMaior").value)};
+            const minExpMaior = ${parseNumero(document.getElementById("minExpMaior").value)};
+            const maxExpMenor = ${parseNumero(document.getElementById("maxExpMenor").value)};
+            const minExpMenor = ${parseNumero(document.getElementById("minExpMenor").value)};
+            const cmMaxRigida = ${parseNumero(ids.cmMaxRigida.textContent)};
+            const cmkMaxRigida = ${parseNumero(ids.cmkMaxRigida.textContent)};
+            const cmMaxFlexivel = ${parseNumero(ids.cmMaxFlexivel.textContent)};
+            const cmkMaxFlexivel = ${parseNumero(ids.cmkMaxFlexivel.textContent)};
+            const cmMinRigida = ${parseNumero(ids.cmMinRigida.textContent)};
+            const cmkMinRigida = ${parseNumero(ids.cmkMinRigida.textContent)};
+            const cmMinFlexivel = ${parseNumero(ids.cmMinFlexivel.textContent)};
+            const cmkMinFlexivel = ${parseNumero(ids.cmkMinFlexivel.textContent)};
+            function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
+            function montarDatasetsGraficoGeral(total) {
+              return [
+                { label: "Sup rígida", data: maxRigida, borderWidth: 2, yAxisID: "y" },
+                { label: "Sup flexível", data: maxFlexivel, borderWidth: 2, yAxisID: "y" },
+                { label: "Inf rígida", data: minRigida, borderWidth: 2, yAxisID: "y" },
+                { label: "Inf flexível", data: minFlexivel, borderWidth: 2, yAxisID: "y" },
+                { label: "LSL Sup", data: serieConstante(minExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+                { label: "USL Sup", data: serieConstante(maxExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+                { label: "LSL Inf", data: serieConstante(minExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+                { label: "USL Inf", data: serieConstante(maxExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+                { label: "Cm Sup rígida", data: serieConstante(cmMaxRigida, total), borderWidth: 1, yAxisID: "y1" },
+                { label: "Cmk Sup rígida", data: serieConstante(cmkMaxRigida, total), borderWidth: 1, yAxisID: "y1" },
+                { label: "Cm Inf rígida", data: serieConstante(cmMinRigida, total), borderWidth: 1, yAxisID: "y1" },
+                { label: "Cmk Inf rígida", data: serieConstante(cmkMinRigida, total), borderWidth: 1, yAxisID: "y1" }
+              ];
+            }
+            function calcularBins(valores, quantidadeBins = 10) {
+              const numeros = (valores || []).filter(v => Number.isFinite(v));
+              if (!numeros.length) return { labels: [], frequencias: [] };
+              const minimo = Math.min(...numeros);
+              const maximo = Math.max(...numeros);
+              if (minimo === maximo) return { labels: [minimo.toFixed(2).replace(".", ",")], frequencias: [numeros.length] };
+              const bins = Math.max(5, quantidadeBins);
+              const largura = (maximo - minimo) / bins;
+              const frequencias = new Array(bins).fill(0);
+              const labels = [];
+              for (let i = 0; i < bins; i++) {
+                const inicio = minimo + (largura * i);
+                const fim = i === bins - 1 ? maximo : inicio + largura;
+                labels.push(inicio.toFixed(2).replace(".", ",") + " a " + fim.toFixed(2).replace(".", ","));
+              }
+              numeros.forEach(valor => {
+                let indice = Math.floor((valor - minimo) / largura);
+                if (indice >= bins) indice = bins - 1;
+                if (indice < 0) indice = 0;
+                frequencias[indice]++;
+              });
+              return { labels, frequencias };
+            }
+            function juntarLabelsHistograma(listas) {
+              const mapa = new Map();
+              listas.forEach(item => item.labels.forEach(label => { if (!mapa.has(label)) mapa.set(label, true); }));
+              return Array.from(mapa.keys());
+            }
+            function alinharFrequencias(labelsBase, hist) {
+              return labelsBase.map(label => {
+                const idx = hist.labels.indexOf(label);
+                return idx >= 0 ? hist.frequencias[idx] : 0;
+              });
+            }
+            new Chart(document.getElementById("graficoMaiorRel"), {
+              type: "line",
+              data: { labels, datasets: [
+                { label: "Superior rígida", data: maxRigida, borderWidth: 2, yAxisID: "y" },
+                { label: "Superior flexível", data: maxFlexivel, borderWidth: 2, yAxisID: "y" },
+                { label: "LSL", data: serieConstante(minExpMaior, labels.length), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
+                { label: "USL", data: serieConstante(maxExpMaior, labels.length), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
+                { label: "Cm rígida", data: serieConstante(cmMaxRigida, labels.length), borderWidth: 1, yAxisID: "y1" },
+                { label: "Cmk rígida", data: serieConstante(cmkMaxRigida, labels.length), borderWidth: 1, yAxisID: "y1" },
+                { label: "Cm flexível", data: serieConstante(cmMaxFlexivel, labels.length), borderWidth: 1, yAxisID: "y1" },
+                { label: "Cmk flexível", data: serieConstante(cmkMaxFlexivel, labels.length), borderWidth: 1, yAxisID: "y1" }
+              ] },
+              options: { responsive: true, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque superior" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
+            });
+            new Chart(document.getElementById("graficoMenorRel"), {
+              type: "line",
+              data: { labels, datasets: [
+                { label: "Inferior rígida", data: minRigida, borderWidth: 2, yAxisID: "y" },
+                { label: "Inferior flexível", data: minFlexivel, borderWidth: 2, yAxisID: "y" },
+                { label: "LSL", data: serieConstante(minExpMenor, labels.length), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
+                { label: "USL", data: serieConstante(maxExpMenor, labels.length), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
+                { label: "Cm rígida", data: serieConstante(cmMinRigida, labels.length), borderWidth: 1, yAxisID: "y1" },
+                { label: "Cmk rígida", data: serieConstante(cmkMinRigida, labels.length), borderWidth: 1, yAxisID: "y1" },
+                { label: "Cm flexível", data: serieConstante(cmMinFlexivel, labels.length), borderWidth: 1, yAxisID: "y1" },
+                { label: "Cmk flexível", data: serieConstante(cmkMinFlexivel, labels.length), borderWidth: 1, yAxisID: "y1" }
+              ] },
+              options: { responsive: true, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque inferior" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
+            });
+            new Chart(document.getElementById("graficoGeralRel"), {
+              type: "line",
+              data: { labels, datasets: montarDatasetsGraficoGeral(labels.length) },
+              options: { responsive: true, interaction: { mode: "nearest", intersect: false }, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
+            });
+            const histSupRigida = calcularBins(maxRigida);
+            const histSupFlexivel = calcularBins(maxFlexivel);
+            const histInfRigida = calcularBins(minRigida);
+            const histInfFlexivel = calcularBins(minFlexivel);
+
+            const labelsHistMaior = juntarLabelsHistograma([histSupRigida, histSupFlexivel]);
+            new Chart(document.getElementById("histogramaMaiorRel"), {
+              type: "bar",
+              data: { labels: labelsHistMaior, datasets: [
+                { label: "Superior rígida", data: alinharFrequencias(labelsHistMaior, histSupRigida), borderWidth: 1 },
+                { label: "Superior flexível", data: alinharFrequencias(labelsHistMaior, histSupFlexivel), borderWidth: 1 }
+              ] },
+              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Faixas de torque superior" } }, y: { beginAtZero: true, title: { display: true, text: "Frequência" } } } }
+            });
+
+            const labelsHistMenor = juntarLabelsHistograma([histInfRigida, histInfFlexivel]);
+            new Chart(document.getElementById("histogramaMenorRel"), {
+              type: "bar",
+              data: { labels: labelsHistMenor, datasets: [
+                { label: "Inferior rígida", data: alinharFrequencias(labelsHistMenor, histInfRigida), borderWidth: 1 },
+                { label: "Inferior flexível", data: alinharFrequencias(labelsHistMenor, histInfFlexivel), borderWidth: 1 }
+              ] },
+              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Faixas de torque inferior" } }, y: { beginAtZero: true, title: { display: true, text: "Frequência" } } } }
+            });
+          <\/script>
+        </body>
+        </html>
+      `);
+      relatorio.document.close();
+    }
+
+    inputAmostrasManual.addEventListener("input", () => {
+      const total = obterTotalAmostras();
+      if (total > 0) criarLinhas(total);
+      else {
+        Object.values(tabelas).forEach(tbody => tbody.innerHTML = "");
+        limparResultados();
+      }
+      atualizarResumoDados();
+      calcularLimitesAutomaticos();
+    });
+
+    tipoAplicacao.addEventListener("change", () => {
+      atualizarCampoCrowfoot();
+      atualizarResumoDados();
+    });
+
+    [
+      "numeroRelatorio", "dataEnsaio", "localEnsaio", "clienteProjeto", "crowfoot", "tipoAlimentacao",
+      "apertadeiraModelo", "serialApertadeira", "controladorModelo", "serialControlador", "transdutor",
+      "serialTransdutor", "faixaTransdutor", "dataCalibracao", "validadeCalibracao", "painel",
+      "tecnicoResponsavel", "temperaturaAmbiente", "umidadeRelativa", "pressaoEntrada", "sentidoAperto",
+      "identificacaoJuntaRigida", "identificacaoJuntaFlexivel", "observacoesEnsaio", "porcentagem",
+      "torqueMaiorBase", "torqueMenorBase"
+    ].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener("input", atualizarResumoDados);
+      if (el && el.tagName === "SELECT") el.addEventListener("change", atualizarResumoDados);
+    });
+
+    document.getElementById("porcentagem").addEventListener("input", calcularLimitesAutomaticos);
+    document.getElementById("torqueMaiorBase").addEventListener("input", calcularLimitesAutomaticos);
+    document.getElementById("torqueMenorBase").addEventListener("input", calcularLimitesAutomaticos);
+
+    document.getElementById("dataEnsaio").value = new Date().toISOString().split("T")[0];
+    atualizarCampoCrowfoot();
+    atualizarCampoAmostrasManual();
+    criarLinhas(obterTotalAmostras() || 25);
+    atualizarResumoDados();
+    limparResultados();
+    calcularLimitesAutomaticos();
+  </script>
+</body>
+</html>
