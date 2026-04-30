@@ -148,6 +148,7 @@
 
           <button class="menu-btn" type="button" onclick="mostrarPagina('pagina-dados')">Dados da ferramenta</button>
           <button class="menu-btn" type="button" onclick="abrirTabelas()">Abrir tabelas</button>
+          <button class="menu-btn" type="button" onclick="abrirTorqueUnico()">Capabilidade Torque Único</button>
           <button class="menu-btn" type="button" onclick="mostrarPagina('pagina-dados')">Voltar aos dados</button>
           <button class="menu-btn" type="button" onclick="limparTabelas()">Limpar tabelas</button>
           <button class="menu-btn" type="button" onclick="calcularTudo()">Calcular resultados</button>
@@ -395,6 +396,93 @@
           </div>
         </section>
       </div>
+      <div id="pagina-torque-unico" class="page">
+        <section class="top-card">
+          <div>
+            <h1>Capabilidade de torque único</h1>
+            <p>Cálculo separado para apenas um valor de torque, usando uma única tabela de amostras.</p>
+          </div>
+          <button class="destino-badge">Torque único</button>
+        </section>
+
+        <section class="content-card">
+          <div class="card-header">
+            <h2>Parâmetros do torque único</h2>
+            <p>Informe o torque nominal, a tolerância e a quantidade de amostras. O critério de aprovação é o mesmo do ensaio principal.</p>
+          </div>
+
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="field">
+                <label for="tuDescricao">Descrição / ponto de torque</label>
+                <input type="text" id="tuDescricao" placeholder="EX.: Torque 35 Nm / Ponto A">
+              </div>
+              <div class="field">
+                <label for="tuTorqueNominal">Torque nominal</label>
+                <input type="text" id="tuTorqueNominal" placeholder="EX.: 35">
+              </div>
+              <div class="field">
+                <label for="tuTolerancia">Tolerância interna WS (%)</label>
+                <input type="text" id="tuTolerancia" placeholder="EX.: 15">
+              </div>
+              <div class="field">
+                <label for="tuAmostras">Quantidade de amostras</label>
+                <input type="number" id="tuAmostras" min="1" step="1" value="25">
+              </div>
+              <div class="field">
+                <label for="tuLimiteMin">Limite mínimo automático</label>
+                <input type="text" id="tuLimiteMin" readonly>
+              </div>
+              <div class="field">
+                <label for="tuLimiteMax">Limite máximo automático</label>
+                <input type="text" id="tuLimiteMax" readonly>
+              </div>
+            </div>
+
+            <div class="resultado-box">
+              <div class="samples-header"><h3>Resultado do torque único</h3></div>
+              <div class="resultado-grid">
+                <div class="resultado-item"><strong>Média</strong><span id="tuMedia">-</span></div>
+                <div class="resultado-item"><strong>Desvio padrão</strong><span id="tuDp">-</span></div>
+                <div class="resultado-item"><strong>Mínimo</strong><span id="tuMin">-</span></div>
+                <div class="resultado-item"><strong>Máximo</strong><span id="tuMax">-</span></div>
+                <div class="resultado-item"><strong>Amplitude</strong><span id="tuAmplitude">-</span></div>
+                <div class="resultado-item"><strong>Scatter (%)</strong><span id="tuScatter">-</span></div>
+                <div class="resultado-item"><strong>Cm</strong><span id="tuCm">-</span></div>
+                <div class="resultado-item"><strong>Cmk</strong><span id="tuCmk">-</span></div>
+                <div class="resultado-item" style="grid-column: 1 / -1;"><strong>Status interno WS</strong><span id="tuStatus" class="status-badge status-neutro">AGUARDANDO</span></div>
+              </div>
+            </div>
+
+            <div class="samples-box">
+              <div class="samples-header">
+                <h3>Tabela única de amostras</h3>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button class="action-btn primary" type="button" onclick="calcularTorqueUnico()">Calcular torque único</button>
+                  <button class="action-btn secondary" type="button" onclick="limparTorqueUnico()">Limpar tabela</button>
+                  <button class="action-btn primary" type="button" onclick="gerarRelatorioTorqueUnico()">Gerar relatório</button>
+                </div>
+              </div>
+
+              <div class="table-card">
+                <h4>Amostras do torque único</h4>
+                <div class="table-actions">
+                  <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-torque-unico')">Copiar valores</button>
+                  <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-torque-unico')">Colar valores do Excel</button>
+                  <div class="small-note">Use uma coluna com os valores medidos do torque.</div>
+                </div>
+                <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-torque-unico"></tbody></table></div>
+              </div>
+            </div>
+
+            <div class="grafico-box">
+              <div class="samples-header"><h3>Gráfico do torque único</h3></div>
+              <canvas id="graficoTorqueUnico" height="120"></canvas>
+            </div>
+          </div>
+        </section>
+      </div>
+
     </main>
   </div>
 
@@ -455,6 +543,7 @@
     let graficoMaior = null;
     let graficoMenor = null;
     let graficoGeral = null;
+    let graficoTorqueUnico = null;
 
     function mostrarPagina(id) {
       document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
@@ -1188,6 +1277,208 @@
       relatorio.document.close();
     }
 
+    function abrirTorqueUnico() {
+      mostrarPagina("pagina-torque-unico");
+      calcularLimitesTorqueUnico();
+      requestAnimationFrame(() => {
+        if (graficoTorqueUnico) graficoTorqueUnico.resize();
+      });
+    }
+
+    function obterTotalAmostrasTorqueUnico() {
+      const total = parseInt(document.getElementById("tuAmostras").value, 10);
+      return Number.isInteger(total) && total > 0 ? total : 0;
+    }
+
+    function criarLinhasTorqueUnico(total) {
+      const tbody = document.getElementById("tbody-torque-unico");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+      for (let i = 1; i <= total; i++) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${i}</td><td><input type="text" inputmode="decimal"></td>`;
+        tbody.appendChild(tr);
+      }
+      limparResultadosTorqueUnico();
+    }
+
+    function calcularLimitesTorqueUnico() {
+      const torque = parseNumero(document.getElementById("tuTorqueNominal").value);
+      const tolerancia = parseNumero(document.getElementById("tuTolerancia").value);
+      const fator = tolerancia / 100;
+      const limiteMin = torque ? torque * (1 - fator) : 0;
+      const limiteMax = torque ? torque * (1 + fator) : 0;
+      document.getElementById("tuLimiteMin").value = limiteMin ? formatarNumero(limiteMin) : "";
+      document.getElementById("tuLimiteMax").value = limiteMax ? formatarNumero(limiteMax) : "";
+    }
+
+    function limparResultadosTorqueUnico() {
+      ["tuMedia", "tuDp", "tuMin", "tuMax", "tuAmplitude", "tuScatter", "tuCm", "tuCmk"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = "-";
+      });
+      const status = document.getElementById("tuStatus");
+      if (status) {
+        status.textContent = "AGUARDANDO";
+        status.className = "status-badge status-neutro";
+      }
+      if (graficoTorqueUnico) {
+        graficoTorqueUnico.destroy();
+        graficoTorqueUnico = null;
+      }
+    }
+
+    function limparTorqueUnico() {
+      document.querySelectorAll("#tbody-torque-unico input").forEach(input => input.value = "");
+      limparResultadosTorqueUnico();
+    }
+
+    function calcularTorqueUnico() {
+      calcularLimitesTorqueUnico();
+      const valores = lerValoresTabela("tbody-torque-unico");
+      const limiteMin = parseNumero(document.getElementById("tuLimiteMin").value);
+      const limiteMax = parseNumero(document.getElementById("tuLimiteMax").value);
+      const tolerancia = parseNumero(document.getElementById("tuTolerancia").value);
+      const est = estatisticas(valores, limiteMin, limiteMax);
+
+      document.getElementById("tuMedia").textContent = formatarNumero(est.media);
+      document.getElementById("tuDp").textContent = formatarNumero(est.dp);
+      document.getElementById("tuMin").textContent = formatarNumero(est.min);
+      document.getElementById("tuMax").textContent = formatarNumero(est.max);
+      document.getElementById("tuAmplitude").textContent = formatarNumero(est.amplitude);
+      document.getElementById("tuScatter").textContent = `${formatarNumero(est.scatter)}%`;
+      document.getElementById("tuCm").textContent = formatarNumero(est.cm);
+      document.getElementById("tuCmk").textContent = formatarNumero(est.cmk);
+
+      const aprovado = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67;
+      const status = document.getElementById("tuStatus");
+      status.textContent = aprovado ? "APROVADO" : "REPROVADO";
+      status.className = `status-badge ${aprovado ? "status-aprovado" : "status-reprovado"}`;
+
+      atualizarGraficoTorqueUnico(valores, limiteMin, limiteMax, est);
+    }
+
+    function atualizarGraficoTorqueUnico(valores, limiteMin, limiteMax, est) {
+      if (graficoTorqueUnico) graficoTorqueUnico.destroy();
+      const total = Math.max(obterTotalAmostrasTorqueUnico(), valores.length);
+      const labels = Array.from({ length: total }, (_, i) => i + 1);
+      const ctx = document.getElementById("graficoTorqueUnico");
+      graficoTorqueUnico = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            { label: "Valores medidos", data: valores, borderWidth: 2, yAxisID: "y" },
+            { label: "LSL", data: serieConstante(limiteMin, labels.length), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+            { label: "USL", data: serieConstante(limiteMax, labels.length), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
+            { label: "Cm", data: serieConstante(est.cm, labels.length), borderWidth: 1, yAxisID: "y1" },
+            { label: "Cmk", data: serieConstante(est.cmk, labels.length), borderWidth: 1, yAxisID: "y1" }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: true } },
+          scales: {
+            x: { title: { display: true, text: "Amostra" } },
+            y: { title: { display: true, text: "Torque" } },
+            y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } }
+          }
+        }
+      });
+    }
+
+    function gerarRelatorioTorqueUnico() {
+      calcularTorqueUnico();
+      const valores = lerValoresTabela("tbody-torque-unico");
+      const limiteMin = parseNumero(document.getElementById("tuLimiteMin").value);
+      const limiteMax = parseNumero(document.getElementById("tuLimiteMax").value);
+      const tolerancia = parseNumero(document.getElementById("tuTolerancia").value);
+      const est = estatisticas(valores, limiteMin, limiteMax);
+      const descricao = document.getElementById("tuDescricao").value || "Torque único";
+      const torque = document.getElementById("tuTorqueNominal").value || "-";
+      const status = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 ? "APROVADO" : "REPROVADO";
+      const labels = Array.from({ length: Math.max(valores.length, 1) }, (_, i) => i + 1);
+      const linhas = valores.map((valor, i) => `<tr><td>${i + 1}</td><td>${formatarNumero(valor)}</td></tr>`).join("");
+
+      const relatorio = window.open("", "_blank");
+      relatorio.document.write(`
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <title>Relatório Torque Único</title>
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 24px; color: #1f3f4d; }
+            h1, h2 { color: #0f5f7d; }
+            .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; }
+            .topo-esq { display: flex; align-items: center; gap: 16px; }
+            .topo-esq img { height: 52px; object-fit: contain; }
+            .print-btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
+            .bloco { border: 1px solid #c8dce5; border-radius: 12px; padding: 16px; margin-bottom: 20px; background: #fff; }
+            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
+            .status { display: inline-block; padding: 8px 14px; border-radius: 9px; font-weight: 800; color: white; background: ${status === "APROVADO" ? "#27ae60" : "#d93b3b"}; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+            th, td { border: 1px solid #d4e3ea; padding: 5px; font-size: 11px; text-align: center; }
+            th { background: #eef7fb; }
+            canvas { background: #fff; border-radius: 10px; }
+            @media print { .print-btn { display: none; } body { margin: 10mm; } }
+          </style>
+        </head>
+        <body>
+          <div class="topo">
+            <div class="topo-esq">
+              <img src="logo-atlas-copco.png" alt="Atlas Copco">
+              <div><h1>Relatório de Capabilidade - Torque Único</h1><div>${descricao}</div></div>
+            </div>
+            <button class="print-btn" onclick="window.print()">Imprimir relatório</button>
+          </div>
+          <div class="bloco">
+            <h2>Parâmetros e resultado</h2>
+            <div class="grid">
+              <div><strong>Torque nominal:</strong> ${torque}</div>
+              <div><strong>Tolerância WS:</strong> ${formatarNumero(tolerancia)}%</div>
+              <div><strong>Limite mínimo:</strong> ${formatarNumero(limiteMin)}</div>
+              <div><strong>Limite máximo:</strong> ${formatarNumero(limiteMax)}</div>
+              <div><strong>Média:</strong> ${formatarNumero(est.media)}</div>
+              <div><strong>Desvio padrão:</strong> ${formatarNumero(est.dp)}</div>
+              <div><strong>Mínimo:</strong> ${formatarNumero(est.min)}</div>
+              <div><strong>Máximo:</strong> ${formatarNumero(est.max)}</div>
+              <div><strong>Amplitude:</strong> ${formatarNumero(est.amplitude)}</div>
+              <div><strong>Scatter:</strong> ${formatarNumero(est.scatter)}%</div>
+              <div><strong>Cm:</strong> ${formatarNumero(est.cm)}</div>
+              <div><strong>Cmk:</strong> ${formatarNumero(est.cmk)}</div>
+              <div style="grid-column:1/-1;"><strong>Status:</strong> <span class="status">${status}</span></div>
+            </div>
+          </div>
+          <div class="bloco">
+            <h2>Gráfico</h2>
+            <canvas id="graficoTorqueUnicoRel" height="110"></canvas>
+          </div>
+          <div class="bloco">
+            <h2>Tabela de amostras</h2>
+            <table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody>${linhas || '<tr><td colspan="2">Sem dados</td></tr>'}</tbody></table>
+          </div>
+          <script>
+            function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
+            new Chart(document.getElementById("graficoTorqueUnicoRel"), {
+              type: "line",
+              data: { labels: ${JSON.stringify(labels)}, datasets: [
+                { label: "Valores medidos", data: ${JSON.stringify(valores)}, borderWidth: 2, yAxisID: "y" },
+                { label: "LSL", data: serieConstante(${limiteMin}, ${labels.length}), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
+                { label: "USL", data: serieConstante(${limiteMax}, ${labels.length}), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
+                { label: "Cm", data: serieConstante(${est.cm}, ${labels.length}), borderWidth: 1, yAxisID: "y1" },
+                { label: "Cmk", data: serieConstante(${est.cmk}, ${labels.length}), borderWidth: 1, yAxisID: "y1" }
+              ] },
+              options: { responsive: true, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
+            });
+          <\/script>
+        </body>
+        </html>
+      `);
+      relatorio.document.close();
+    }
+
     inputAmostrasManual.addEventListener("input", () => {
       const total = obterTotalAmostras();
       if (total > 0) criarLinhas(total);
@@ -1221,6 +1512,20 @@
     document.getElementById("torqueMaiorBase").addEventListener("input", calcularLimitesAutomaticos);
     document.getElementById("torqueMenorBase").addEventListener("input", calcularLimitesAutomaticos);
 
+    ["tuTorqueNominal", "tuTolerancia"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener("input", calcularLimitesTorqueUnico);
+    });
+
+    const tuAmostrasEl = document.getElementById("tuAmostras");
+    if (tuAmostrasEl) {
+      tuAmostrasEl.addEventListener("input", () => {
+        const total = obterTotalAmostrasTorqueUnico();
+        if (total > 0) criarLinhasTorqueUnico(total);
+        else document.getElementById("tbody-torque-unico").innerHTML = "";
+      });
+    }
+
     document.getElementById("dataEnsaio").value = new Date().toISOString().split("T")[0];
     atualizarCampoCrowfoot();
     atualizarCampoAmostrasManual();
@@ -1228,6 +1533,8 @@
     atualizarResumoDados();
     limparResultados();
     calcularLimitesAutomaticos();
+    criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25);
+    calcularLimitesTorqueUnico();
   </script>
 </body>
 </html>
