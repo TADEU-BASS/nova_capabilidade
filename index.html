@@ -101,7 +101,10 @@
     .status-neutro { background: #cfd8dc; color: #35505c; }
     .action-btn { min-width: 140px; height: 38px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; background: linear-gradient(180deg, #25a8db 0%, #1592c0 100%); color: white; }
     .action-btn.primary, .action-btn.secondary { background: linear-gradient(180deg, #25a8db 0%, #1592c0 100%); color: white; }
+    .action-btn.danger { background: linear-gradient(180deg, #ef5350 0%, #d93b3b 100%); color: white; }
     .action-btn.full { width: auto; min-width: 110px; height: 26px; margin-bottom: 0; font-size: 10px; border-radius: 6px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+    .page-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: flex-end; margin: 0 0 16px; padding: 12px; border: 1px solid #cfe0e7; border-radius: 14px; background: rgba(255,255,255,0.70); }
+    .page-actions .action-btn { min-width: 170px; }
     .resumo-dados { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin-bottom: 16px; padding: 14px; border-radius: 14px; background: rgba(255,255,255,0.65); border: 1px solid #d5e4ea; }
     .resumo-dados div { font-size: 14px; }
     .resumo-dados strong { color: #0f5f7d; }
@@ -149,11 +152,6 @@
           <button class="menu-btn" type="button" onclick="mostrarPagina('pagina-dados')">Dados da ferramenta</button>
           <button class="menu-btn" type="button" onclick="abrirTabelas()">Abrir tabelas</button>
           <button class="menu-btn" type="button" onclick="abrirTorqueUnico()">Capabilidade Torque Único</button>
-          <button class="menu-btn" type="button" onclick="mostrarPagina('pagina-dados')">Voltar aos dados</button>
-          <button class="menu-btn" type="button" onclick="limparTabelas()">Limpar tabelas</button>
-          <button class="menu-btn" type="button" onclick="calcularTudo()">Calcular resultados</button>
-          <button class="menu-btn" type="button" onclick="gerarRelatorio()">Gerar relatório</button>
-          <button class="menu-btn secondary" type="button" onclick="window.location.href='http://localhost:3003'">← Voltar ao Menu_WS</button>
         </div>
       </div>
 
@@ -270,6 +268,12 @@
 
           <div class="card-body">
             <div class="resumo-dados" id="resumoDados"></div>
+
+            <div class="page-actions">
+              <button class="action-btn danger" type="button" onclick="limparTabelas()">Limpar tabelas</button>
+              <button class="action-btn primary" type="button" onclick="calcularTudo()">Calcular resultados</button>
+              <button class="action-btn primary" type="button" onclick="gerarRelatorio()">Gerar relatório</button>
+            </div>
 
             <div class="blocos-grid">
               <div class="bloco-metrica">
@@ -936,13 +940,25 @@
     }
 
     function tabelaHtmlRelatorio(rotulo, valores) {
-      const linhas = valores.map((valor, i) => `<tr><td>${i + 1}</td><td>${formatarNumero(valor)}</td></tr>`).join("");
+      const porLinha = 8;
+      const grupos = [];
+      for (let i = 0; i < valores.length; i += porLinha) grupos.push(valores.slice(i, i + porLinha));
+      const cabecalho = Array.from({ length: porLinha }, () => "<th>Amostra</th><th>Valor</th>").join("");
+      const linhas = grupos.map((grupo, bloco) => {
+        let tds = "";
+        for (let j = 0; j < porLinha; j++) {
+          const indice = bloco * porLinha + j;
+          const valor = grupo[j];
+          tds += Number.isFinite(valor) ? `<td>${indice + 1}</td><td>${formatarNumero(valor)}</td>` : "<td></td><td></td>";
+        }
+        return `<tr>${tds}</tr>`;
+      }).join("");
       return `
-        <div class="bloco">
+        <div class="bloco tabela-bloco">
           <h3>${rotulo}</h3>
-          <table class="tabela-medicoes">
-            <thead><tr><th>Amostra</th><th>Valor</th></tr></thead>
-            <tbody>${linhas || '<tr><td colspan="2">Sem dados</td></tr>'}</tbody>
+          <table class="tabela-medicoes compacta">
+            <thead><tr>${cabecalho}</tr></thead>
+            <tbody>${linhas || '<tr><td colspan="16">Sem dados</td></tr>'}</tbody>
           </table>
         </div>
       `;
@@ -1005,27 +1021,33 @@
           <title>Relatório ISO 5393</title>
           <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
           <style>
-            body { font-family: Arial, sans-serif; margin: 24px; color: #1f3f4d; }
-            h1, h2, h3 { color: #0f5f7d; margin-bottom: 8px; }
-            .cabecalho, .bloco { border: 1px solid #c8dce5; border-radius: 12px; padding: 16px; margin-bottom: 20px; background: #fff; }
+            @page { size: A4 portrait; margin: 6mm; }
+            body { font-family: Arial, sans-serif; margin: 8px; color: #1f3f4d; font-size: 8px; line-height: 1.12; }
+            h1, h2, h3 { color: #0f5f7d; margin: 0 0 3px; line-height: 1.05; }
+            h1 { font-size: 15px; } h2 { font-size: 10.5px; } h3 { font-size: 9px; }
+            .cabecalho, .bloco { border: 1px solid #c8dce5; border-radius: 6px; padding: 5px; margin-bottom: 4px; background: #fff; break-inside: avoid; }
             .cabecalho { background: #f5fbfe; }
-            .grid, .resumo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
-            .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; }
-            .topo-esq { display: flex; align-items: center; gap: 16px; }
-            .topo-esq img { height: 52px; object-fit: contain; }
-            .print-btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
-            .status-relatorio { display: inline-block; padding: 8px 14px; border-radius: 9px; font-weight: 800; color: white; font-size: 12px; }
+            .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px 8px; }
+            .resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px 8px; }
+            .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; gap: 8px; }
+            .topo-esq { display: flex; align-items: center; gap: 8px; }
+            .topo-esq img { height: 30px; object-fit: contain; }
+            .print-btn { padding: 7px 10px; border: none; border-radius: 7px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
+            .status-relatorio { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: 800; color: white; font-size: 8.5px; }
             .aprovado { background: #27ae60; }
             .reprovado { background: #d93b3b; }
             .aguardando { background: #90a4ae; }
-            .nota { padding: 10px 12px; border-radius: 10px; background: #eef8fc; border: 1px solid #b9dceb; font-size: 12px; line-height: 1.45; }
-            .assinatura { margin-top: 18px; padding-top: 4px; }
-            .cargo { font-size: 12px; color: #5d7480; }
-            .tabela-medicoes { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: fixed; }
-            .tabela-medicoes th, .tabela-medicoes td { border: 1px solid #d4e3ea; padding: 4px 5px; font-size: 10.5px; line-height: 1.2; text-align: center; word-break: break-word; }
-            .tabela-medicoes th { background: #eef7fb; }
-            canvas { background: #fff; border-radius: 10px; }
-            @media print { .print-btn { display: none; } body { margin: 10mm; } }
+            .nota { padding: 5px 6px; border-radius: 6px; background: #eef8fc; border: 1px solid #b9dceb; font-size: 8px; line-height: 1.2; }
+            .assinatura { margin-top: 4px; padding-top: 3px; }
+            .cargo { font-size: 8px; color: #5d7480; }
+            .tabela-medicoes { width: 100%; border-collapse: collapse; margin-top: 3px; table-layout: fixed; }
+            .tabela-medicoes th, .tabela-medicoes td { border: 1px solid #d4e3ea; padding: 1px 2px; font-size: 6.6px; line-height: 1.05; text-align: center; word-break: break-word; }
+            .tabela-medicoes th { background: #eef7fb; font-weight: 700; }
+            .tabela-bloco { margin-bottom: 3px; }
+            canvas { background: #fff; border-radius: 6px; max-height: 115px !important; }
+            .graficos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; }
+            .graficos-grid .bloco { margin-bottom: 0; }
+            @media print { .print-btn { display: none; } body { margin: 0; } }
           </style>
         </head>
         <body>
@@ -1135,11 +1157,13 @@
             </div>
           </div>
 
-          <div class="bloco"><h2>Gráfico torque superior</h2><canvas id="graficoMaiorRel" height="110"></canvas></div>
-          <div class="bloco"><h2>Gráfico torque inferior</h2><canvas id="graficoMenorRel" height="110"></canvas></div>
-          <div class="bloco"><h2>Gráfico geral</h2><canvas id="graficoGeralRel" height="110"></canvas></div>
-          <div class="bloco"><h2>Histograma torque superior</h2><canvas id="histogramaMaiorRel" height="110"></canvas></div>
-          <div class="bloco"><h2>Histograma torque inferior</h2><canvas id="histogramaMenorRel" height="110"></canvas></div>
+          <div class="graficos-grid">
+            <div class="bloco"><h2>Gráfico torque superior</h2><canvas id="graficoMaiorRel" height="105"></canvas></div>
+            <div class="bloco"><h2>Gráfico torque inferior</h2><canvas id="graficoMenorRel" height="105"></canvas></div>
+            <div class="bloco"><h2>Gráfico geral</h2><canvas id="graficoGeralRel" height="105"></canvas></div>
+            <div class="bloco"><h2>Histograma torque superior</h2><canvas id="histogramaMaiorRel" height="105"></canvas></div>
+            <div class="bloco"><h2>Histograma torque inferior</h2><canvas id="histogramaMenorRel" height="105"></canvas></div>
+          </div>
 
           ${tabelaHtmlRelatorio("Torque inferior — Junta rígida", minRigida)}
           ${tabelaHtmlRelatorio("Torque inferior — Junta flexível", minFlexivel)}
@@ -1404,10 +1428,25 @@
       const descricao = document.getElementById("tuDescricao").value || "Torque único";
       const tipoJunta = document.getElementById("tuTipoJunta") ? document.getElementById("tuTipoJunta").value : "-";
       const torque = document.getElementById("tuTorqueNominal").value || "-";
+      const d = obterDadosFerramenta();
       const tecnicoResponsavel = valorOuTraco("tecnicoResponsavel");
       const status = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 ? "APROVADO" : "REPROVADO";
       const labels = Array.from({ length: Math.max(valores.length, 1) }, (_, i) => i + 1);
-      const linhas = valores.map((valor, i) => `<tr><td>${i + 1}</td><td>${formatarNumero(valor)}</td></tr>`).join("");
+      const porLinhaTU = 8;
+      const cabecalhoTU = Array.from({ length: porLinhaTU }, () => "<th>Amostra</th><th>Valor</th>").join("");
+      const linhas = (() => {
+        const grupos = [];
+        for (let i = 0; i < valores.length; i += porLinhaTU) grupos.push(valores.slice(i, i + porLinhaTU));
+        return grupos.map((grupo, bloco) => {
+          let tds = "";
+          for (let j = 0; j < porLinhaTU; j++) {
+            const indice = bloco * porLinhaTU + j;
+            const valor = grupo[j];
+            tds += Number.isFinite(valor) ? `<td>${indice + 1}</td><td>${formatarNumero(valor)}</td>` : "<td></td><td></td>";
+          }
+          return `<tr>${tds}</tr>`;
+        }).join("");
+      })();
 
       const relatorio = window.open("", "_blank");
       relatorio.document.write(`
@@ -1418,20 +1457,23 @@
           <title>Relatório Torque Único</title>
           <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
           <style>
-            body { font-family: Arial, sans-serif; margin: 24px; color: #1f3f4d; }
-            h1, h2 { color: #0f5f7d; }
-            .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; }
-            .topo-esq { display: flex; align-items: center; gap: 16px; }
-            .topo-esq img { height: 52px; object-fit: contain; }
-            .print-btn { padding: 10px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
-            .bloco { border: 1px solid #c8dce5; border-radius: 12px; padding: 16px; margin-bottom: 20px; background: #fff; }
-            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
-            .status { display: inline-block; padding: 8px 14px; border-radius: 9px; font-weight: 800; color: white; background: ${status === "APROVADO" ? "#27ae60" : "#d93b3b"}; }
-            table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-            th, td { border: 1px solid #d4e3ea; padding: 5px; font-size: 11px; text-align: center; }
+            @page { size: A4 portrait; margin: 6mm; }
+            body { font-family: Arial, sans-serif; margin: 8px; color: #1f3f4d; font-size: 8.2px; line-height: 1.12; }
+            h1, h2 { color: #0f5f7d; margin: 0 0 4px; }
+            h1 { font-size: 15px; } h2 { font-size: 10.5px; }
+            .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; gap: 10px; }
+            .topo-esq { display: flex; align-items: center; gap: 10px; }
+            .topo-esq img { height: 30px; object-fit: contain; }
+            .print-btn { padding: 7px 10px; border: none; border-radius: 7px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
+            .bloco { border: 1px solid #c8dce5; border-radius: 7px; padding: 6px; margin-bottom: 5px; background: #fff; break-inside: avoid; }
+            .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px 8px; }
+            .status { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: 800; color: white; background: ${status === "APROVADO" ? "#27ae60" : "#d93b3b"}; }
+            .nota { padding: 5px 6px; border-radius: 6px; background: #eef8fc; border: 1px solid #b9dceb; font-size: 8px; line-height: 1.2; }
+            table { width: 100%; border-collapse: collapse; margin-top: 3px; table-layout: fixed; }
+            th, td { border: 1px solid #d4e3ea; padding: 1px 2px; font-size: 6.8px; line-height: 1.05; text-align: center; }
             th { background: #eef7fb; }
-            canvas { background: #fff; border-radius: 10px; }
-            @media print { .print-btn { display: none; } body { margin: 10mm; } }
+            canvas { background: #fff; border-radius: 8px; max-height: 130px !important; }
+            @media print { .print-btn { display: none; } body { margin: 0; } }
           </style>
         </head>
         <body>
@@ -1441,6 +1483,37 @@
               <div><h1>Relatório de Capabilidade - Torque Único</h1><div>${descricao}</div></div>
             </div>
             <button class="print-btn" onclick="window.print()">Imprimir relatório</button>
+          </div>
+          <div class="bloco">
+            <h2>Identificação do ensaio e rastreabilidade</h2>
+            <div class="grid">
+              <div><strong>Número do relatório:</strong> ${d.numeroRelatorio}</div>
+              <div><strong>Norma de referência:</strong> ${d.normaReferencia}</div>
+              <div><strong>Data do ensaio:</strong> ${d.dataEnsaio}</div>
+              <div><strong>Local do ensaio:</strong> ${d.localEnsaio}</div>
+              <div><strong>Cliente / projeto / linha:</strong> ${d.clienteProjeto}</div>
+              <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
+              <div><strong>Apertadeira modelo:</strong> ${d.apertadeiraModelo}</div>
+              <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
+              <div><strong>Controlador modelo:</strong> ${d.controladorModelo}</div>
+              <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
+              <div><strong>Transdutor:</strong> ${d.transdutor}</div>
+              <div><strong>Serial do transdutor:</strong> ${d.serialTransdutor}</div>
+              <div><strong>Faixa do transdutor:</strong> ${d.faixaTransdutor}</div>
+              <div><strong>Data de calibração:</strong> ${d.dataCalibracao}</div>
+              <div><strong>Validade da calibração:</strong> ${d.validadeCalibracao}</div>
+              <div><strong>Painel STA 6000:</strong> ${d.painel}</div>
+              <div><strong>Temperatura ambiente:</strong> ${d.temperaturaAmbiente} °C</div>
+              <div><strong>Umidade relativa:</strong> ${d.umidadeRelativa}%</div>
+              <div><strong>Alimentação / pressão:</strong> ${d.pressaoEntrada}</div>
+              <div><strong>Sentido de aperto:</strong> ${d.sentidoAperto}</div>
+            </div>
+          </div>
+          <div class="bloco">
+            <h2>Critérios do método ISO 5393</h2>
+            <div class="nota">
+              Registro de rastreabilidade do equipamento, transdutor, calibração, condição de ensaio, tipo de junta, número de amostras, limites aplicados, scatter/repetibilidade e critério interno WS por Cm/Cmk.
+            </div>
           </div>
           <div class="bloco">
             <h2>Parâmetros e resultado</h2>
@@ -1464,11 +1537,11 @@
           </div>
           <div class="bloco">
             <h2>Gráfico</h2>
-            <canvas id="graficoTorqueUnicoRel" height="110"></canvas>
+            <canvas id="graficoTorqueUnicoRel" height="125"></canvas>
           </div>
           <div class="bloco">
             <h2>Tabela de amostras</h2>
-            <table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody>${linhas || '<tr><td colspan="2">Sem dados</td></tr>'}</tbody></table>
+            <table><thead><tr>${cabecalhoTU}</tr></thead><tbody>${linhas || '<tr><td colspan="16">Sem dados</td></tr>'}</tbody></table>
           </div>
           <script>
             function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
