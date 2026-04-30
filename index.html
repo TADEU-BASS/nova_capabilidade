@@ -418,6 +418,13 @@
                 <input type="text" id="tuDescricao" placeholder="EX.: Torque 35 Nm / Ponto A">
               </div>
               <div class="field">
+                <label for="tuTipoJunta">Tipo de junta</label>
+                <select id="tuTipoJunta">
+                  <option value="Rígida">Rígida</option>
+                  <option value="Flexível">Flexível</option>
+                </select>
+              </div>
+              <div class="field">
                 <label for="tuTorqueNominal">Torque nominal</label>
                 <input type="text" id="tuTorqueNominal" placeholder="EX.: 35">
               </div>
@@ -1395,6 +1402,7 @@
       const tolerancia = parseNumero(document.getElementById("tuTolerancia").value);
       const est = estatisticas(valores, limiteMin, limiteMax);
       const descricao = document.getElementById("tuDescricao").value || "Torque único";
+      const tipoJunta = document.getElementById("tuTipoJunta") ? document.getElementById("tuTipoJunta").value : "-";
       const torque = document.getElementById("tuTorqueNominal").value || "-";
       const tecnicoResponsavel = valorOuTraco("tecnicoResponsavel");
       const status = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 ? "APROVADO" : "REPROVADO";
@@ -1438,6 +1446,7 @@
             <h2>Parâmetros e resultado</h2>
             <div class="grid">
               <div><strong>Técnico responsável:</strong> ${tecnicoResponsavel}</div>
+              <div><strong>Tipo de junta:</strong> ${tipoJunta}</div>
               <div><strong>Torque nominal:</strong> ${torque}</div>
               <div><strong>Tolerância WS:</strong> ${formatarNumero(tolerancia)}%</div>
               <div><strong>Limite mínimo:</strong> ${formatarNumero(limiteMin)}</div>
