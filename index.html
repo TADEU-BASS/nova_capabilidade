@@ -63,6 +63,9 @@
     .card-header p { margin: 4px 0 0; color: var(--texto-suave); font-size: 13px; }
     .card-body { padding: 16px 18px 18px; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .form-section { grid-column: 1 / -1; border: 1px solid #cfe0e7; border-radius: 16px; background: rgba(255,255,255,0.45); padding: 14px; }
+    .section-title { margin: 0 0 12px; color: var(--azul-escuro); font-size: 16px; font-weight: 800; border-bottom: 1px solid #d5e3ea; padding-bottom: 8px; }
+    .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .field.full { grid-column: 1 / -1; }
     .field.hidden { display: none; }
     .field label { display: block; font-size: 13px; font-weight: 700; color: #5b7380; margin-bottom: 6px; }
@@ -116,7 +119,7 @@
     @media (max-width: 900px) {
       .app { flex-direction: column; }
       .sidebar { width: 100%; }
-      .form-grid, .resumo-dados, .resultado-grid { grid-template-columns: 1fr; }
+      .form-grid, .section-grid, .resumo-dados, .resultado-grid { grid-template-columns: 1fr; }
       .top-card { flex-direction: column; align-items: flex-start; }
     }
     @media print {
@@ -183,67 +186,86 @@
 
           <div class="card-body">
             <div class="form-grid">
-              <div class="field">
-                <label for="normaReferencia">Norma de referência</label>
-                <input type="text" id="normaReferencia" value="ISO 5393:2017" readonly>
+              <div class="form-section">
+                <h3 class="section-title">Identificação do ensaio</h3>
+                <div class="section-grid">
+                  <div class="field">
+                    <label for="normaReferencia">Norma de referência</label>
+                    <input type="text" id="normaReferencia" value="ISO 5393:2017" readonly>
+                  </div>
+                  <div class="field">
+                    <label for="tecnicoResponsavel">Técnico responsável</label>
+                    <input type="text" id="tecnicoResponsavel" placeholder="EX.: MARCOS TADEU SILVA">
+                  </div>
+                  <div class="field">
+                    <label for="numeroRelatorio">Número do relatório</label>
+                    <input type="text" id="numeroRelatorio" placeholder="EX.: ISO5393-2026-001">
+                  </div>
+                  <div class="field">
+                    <label for="dataEnsaio">Data do ensaio</label>
+                    <input type="date" id="dataEnsaio">
+                  </div>
+                  <div class="field">
+                    <label for="localEnsaio">Local do ensaio</label>
+                    <input type="text" id="localEnsaio" placeholder="EX.: LABORATÓRIO WS / LINHA A">
+                  </div>
+                  <div class="field">
+                    <label for="clienteProjeto">Cliente / projeto / linha</label>
+                    <input type="text" id="clienteProjeto" placeholder="EX.: PROJETO STA / LINHA MONTAGEM FINAL">
+                  </div>
+                </div>
               </div>
-              <div class="field">
-                <label for="numeroRelatorio">Número do relatório</label>
-                <input type="text" id="numeroRelatorio" placeholder="EX.: ISO5393-2026-001">
+
+              <div class="form-section">
+                <h3 class="section-title">Equipamento</h3>
+                <div class="section-grid">
+                  <div class="field">
+                    <label for="tipoAplicacao">Aplicação</label>
+                    <select id="tipoAplicacao">
+                      <option value="Apertadeira">Apertadeira</option>
+                      <option value="Apertadeira + Crowfoot">Apertadeira + Crowfoot</option>
+                    </select>
+                  </div>
+                  <div class="field hidden" id="crowfootField">
+                    <label for="crowfoot">Identificação do Crowfoot</label>
+                    <input type="text" id="crowfoot" placeholder="EX.: CROWFOOT 32MM / CF-01">
+                  </div>
+                  <div class="field"><label for="apertadeiraModelo">Apertadeira modelo</label><input type="text" id="apertadeiraModelo" placeholder="EX.: ETP STB33 12 I06 B"></div>
+                  <div class="field"><label for="serialApertadeira">Serial apertadeira</label><input type="text" id="serialApertadeira" placeholder="EX.: A200045"></div>
+                  <div class="field"><label for="controladorModelo">Controlador modelo</label><input type="text" id="controladorModelo" placeholder="EX.: PF6000 / MTF6000"></div>
+                  <div class="field"><label for="serialControlador">Serial controlador</label><input type="text" id="serialControlador" placeholder="EX.: CTRL123456"></div>
+                </div>
               </div>
-              <div class="field">
-                <label for="dataEnsaio">Data do ensaio</label>
-                <input type="date" id="dataEnsaio">
+
+              <div class="form-section">
+                <h3 class="section-title">Medição e rastreabilidade</h3>
+                <div class="section-grid">
+                  <div class="field"><label for="transdutor">Transdutor</label><input type="text" id="transdutor" placeholder="EX.: STA 6000 / RTT"></div>
+                  <div class="field"><label for="painel">STA 6000</label><input type="text" id="painel" placeholder="EX.: PAINEL 01"></div>
+                  <div class="field"><label for="certificadoCalibracao">Certificado de calibração</label><input type="text" id="certificadoCalibracao" placeholder="EX.: CERT-2026-001 / RBC-12345"></div>
+                  <div class="field"><label for="sentidoAperto">Sentido de aperto</label><select id="sentidoAperto"><option value="Horário">Horário</option><option value="Anti-horário">Anti-horário</option></select></div>
+                  <div class="field"><label for="temperaturaAmbiente">Temperatura ambiente (°C)</label><input type="text" id="temperaturaAmbiente" placeholder="EX.: 22"></div>
+                  <div class="field"><label for="umidadeRelativa">Umidade relativa (%)</label><input type="text" id="umidadeRelativa" placeholder="EX.: 55"></div>
+                </div>
               </div>
-              <div class="field">
-                <label for="localEnsaio">Local do ensaio</label>
-                <input type="text" id="localEnsaio" placeholder="EX.: LABORATÓRIO WS / LINHA A">
+
+              <div class="form-section">
+                <h3 class="section-title">Parâmetros do ensaio</h3>
+                <div class="section-grid">
+                  <div class="field"><label for="porcentagem">Tolerância (%)</label><input type="text" id="porcentagem" placeholder="EX.: 15"></div>
+                  <div class="field"><label for="torqueMaiorBase">Torque de teste superior</label><input type="text" id="torqueMaiorBase" placeholder="EX.: 100"></div>
+                  <div class="field"><label for="torqueMenorBase">Torque de teste inferior</label><input type="text" id="torqueMenorBase" placeholder="EX.: 20"></div>
+                  <div class="field"><label>Junta rígida</label><input type="text" value="30 Graus" readonly></div>
+                  <div class="field"><label>Junta flexível</label><input type="text" value="720 Graus" readonly></div>
+                </div>
               </div>
-              <div class="field full">
-                <label for="clienteProjeto">Cliente / projeto / linha</label>
-                <input type="text" id="clienteProjeto" placeholder="EX.: PROJETO STA / LINHA MONTAGEM FINAL">
+
+              <div class="form-section">
+                <h3 class="section-title">Observações</h3>
+                <div class="section-grid">
+                  <div class="field full"><label for="observacoesEnsaio">Observações do ensaio</label><textarea id="observacoesEnsaio" rows="3" placeholder="EX.: FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO, ALINHAMENTO VERIFICADO, SEM DESVIOS DO MÉTODO."></textarea></div>
+                </div>
               </div>
-              <div class="field">
-                <label for="tipoAplicacao">Aplicação</label>
-                <select id="tipoAplicacao">
-                  <option value="Apertadeira">Apertadeira</option>
-                  <option value="Apertadeira + Crowfoot">Apertadeira + Crowfoot</option>
-                </select>
-              </div>
-              <div class="field hidden" id="crowfootField">
-                <label for="crowfoot">Identificação do Crowfoot</label>
-                <input type="text" id="crowfoot" placeholder="EX.: CROWFOOT 32MM / CF-01">
-              </div>
-              <div class="field">
-                <label for="tipoAlimentacao">Tipo de alimentação</label>
-                <select id="tipoAlimentacao">
-                  <option value="Elétrica">Elétrica</option>
-                  <option value="Bateria">Bateria</option>
-                  <option value="Pneumática">Pneumática</option>
-                  <option value="Hidráulica">Hidráulica</option>
-                </select>
-              </div>
-              <div class="field"><label for="apertadeiraModelo">Apertadeira modelo</label><input type="text" id="apertadeiraModelo" placeholder="EX.: ETP STB33 12 I06 B"></div>
-              <div class="field"><label for="serialApertadeira">Serial apertadeira</label><input type="text" id="serialApertadeira" placeholder="EX.: A200045"></div>
-              <div class="field"><label for="controladorModelo">Controlador modelo</label><input type="text" id="controladorModelo" placeholder="EX.: PF6000 / MTF6000"></div>
-              <div class="field"><label for="serialControlador">Serial controlador</label><input type="text" id="serialControlador" placeholder="EX.: CTRL123456"></div>
-              <div class="field"><label for="transdutor">Transdutor</label><input type="text" id="transdutor" placeholder="EX.: STA 6000 / RTT"></div>
-              <div class="field"><label for="certificadoCalibracao">Certificado de calibração</label><input type="text" id="certificadoCalibracao" placeholder="EX.: CERT-2026-001 / RBC-12345"></div>
-              <div class="field"><label for="faixaTransdutor">Faixa do transdutor</label><input type="text" id="faixaTransdutor" placeholder="EX.: 2 A 200 NM"></div>
-              <div class="field"><label for="dataCalibracao">Data da calibração</label><input type="date" id="dataCalibracao"></div>
-              <div class="field"><label for="validadeCalibracao">Validade da calibração</label><input type="date" id="validadeCalibracao"></div>
-              <div class="field"><label for="painel">Painel STA 6000</label><input type="text" id="painel" placeholder="EX.: PAINEL 01"></div>
-              <div class="field"><label for="tecnicoResponsavel">Técnico responsável</label><input type="text" id="tecnicoResponsavel" placeholder="EX.: MARCOS TADEU SILVA"></div>
-              <div class="field"><label for="temperaturaAmbiente">Temperatura ambiente (°C)</label><input type="text" id="temperaturaAmbiente" placeholder="EX.: 22"></div>
-              <div class="field"><label for="umidadeRelativa">Umidade relativa (%)</label><input type="text" id="umidadeRelativa" placeholder="EX.: 55"></div>
-              <div class="field"><label for="pressaoEntrada">Pressão / alimentação de entrada</label><input type="text" id="pressaoEntrada" placeholder="EX.: 6,3 BAR / 230 V / 48 VDC"></div>
-              <div class="field"><label for="sentidoAperto">Sentido de aperto</label><select id="sentidoAperto"><option value="Horário">Horário</option><option value="Anti-horário">Anti-horário</option></select></div>
-              <div class="field"><label for="porcentagem">Tolerância interna WS (%)</label><input type="text" id="porcentagem" placeholder="EX.: 15"></div>
-              <div class="field"><label for="torqueMaiorBase">Torque de teste superior</label><input type="text" id="torqueMaiorBase" placeholder="EX.: 100"></div>
-              <div class="field"><label for="torqueMenorBase">Torque de teste inferior</label><input type="text" id="torqueMenorBase" placeholder="EX.: 20"></div>
-              <div class="field"><label for="identificacaoJuntaRigida">Junta rígida (alta taxa)</label><input type="text" id="identificacaoJuntaRigida" placeholder="EX.: DISPOSITIVO H / JUNTA RÍGIDA"></div>
-              <div class="field"><label for="identificacaoJuntaFlexivel">Junta flexível (baixa taxa)</label><input type="text" id="identificacaoJuntaFlexivel" placeholder="EX.: DISPOSITIVO L / JUNTA FLEXÍVEL"></div>
-              <div class="field full"><label for="observacoesEnsaio">Observações do ensaio</label><textarea id="observacoesEnsaio" rows="3" placeholder="EX.: FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO, ALINHAMENTO VERIFICADO, SEM DESVIOS DO MÉTODO."></textarea></div>
             </div>
 
             <input type="hidden" id="maxExpMaior">
@@ -330,7 +352,7 @@
               <div class="samples-header"><h3>Resultado final</h3></div>
               <div class="resultado-grid">
                 <div class="resultado-item"><strong>Norma</strong><span id="norma-view">ISO 5393:2017</span></div>
-                <div class="resultado-item"><strong>Tolerância interna WS</strong><span id="pct-inicial-view">-</span></div>
+                <div class="resultado-item"><strong>Tolerância</strong><span id="pct-inicial-view">-</span></div>
                 <div class="resultado-item"><strong>% final encontrada</strong><span id="pct-final">-</span></div>
                 <div class="resultado-item"><strong>Avaliação ISO 5393</strong><span id="status-iso" class="status-badge status-neutro">ENSAIO REGISTRADO</span></div>
                 <div class="resultado-item" style="grid-column: 1 / -1;"><strong>Status interno WS</strong><span id="status-geral" class="status-badge status-neutro">AGUARDANDO</span></div>
@@ -354,7 +376,7 @@
               <div class="samples-header"><h3>Tabelas de amostras do ensaio</h3></div>
               <div class="tables-grid">
                 <div class="table-card">
-                  <h4>Torque inferior — Junta rígida (alta taxa)</h4>
+                  <h4>Torque inferior — Junta rígida - 30 Graus</h4>
                   <div class="table-actions">
                     <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-min-rigida')">Copiar valores</button>
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-min-rigida')">Colar valores do Excel</button>
@@ -363,7 +385,7 @@
                   <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-min-rigida"></tbody></table></div>
                 </div>
                 <div class="table-card">
-                  <h4>Torque inferior — Junta flexível (baixa taxa)</h4>
+                  <h4>Torque inferior — Junta flexível - 720 Graus</h4>
                   <div class="table-actions">
                     <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-min-flexivel')">Copiar valores</button>
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-min-flexivel')">Colar valores do Excel</button>
@@ -372,7 +394,7 @@
                   <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-min-flexivel"></tbody></table></div>
                 </div>
                 <div class="table-card">
-                  <h4>Torque superior — Junta rígida (alta taxa)</h4>
+                  <h4>Torque superior — Junta rígida - 30 Graus</h4>
                   <div class="table-actions">
                     <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-max-rigida')">Copiar valores</button>
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-max-rigida')">Colar valores do Excel</button>
@@ -381,7 +403,7 @@
                   <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-max-rigida"></tbody></table></div>
                 </div>
                 <div class="table-card">
-                  <h4>Torque superior — Junta flexível (baixa taxa)</h4>
+                  <h4>Torque superior — Junta flexível - 720 Graus</h4>
                   <div class="table-actions">
                     <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-max-flexivel')">Copiar valores</button>
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-max-flexivel')">Colar valores do Excel</button>
@@ -405,7 +427,7 @@
       <div id="pagina-torque-unico" class="page">
         <section class="top-card">
           <div>
-            <h1>Capabilidade de torque único</h1>
+            <h1>Torque único</h1>
             <p>Cálculo separado para apenas um valor de torque, usando uma única tabela de amostras.</p>
           </div>
           <button class="destino-badge">Torque único</button>
@@ -426,8 +448,8 @@
               <div class="field">
                 <label for="tuTipoJunta">Tipo de junta</label>
                 <select id="tuTipoJunta">
-                  <option value="Rígida">Rígida</option>
-                  <option value="Flexível">Flexível</option>
+                  <option value="Junta rígida - 30 Graus">Junta rígida - 30 Graus</option>
+                  <option value="Junta flexível - 720 Graus">Junta flexível - 720 Graus</option>
                 </select>
               </div>
               <div class="field">
@@ -435,7 +457,7 @@
                 <input type="text" id="tuTorqueNominal" placeholder="EX.: 35">
               </div>
               <div class="field">
-                <label for="tuTolerancia">Tolerância interna WS (%)</label>
+                <label for="tuTolerancia">Tolerância (%)</label>
                 <input type="text" id="tuTolerancia" placeholder="EX.: 15">
               </div>
               <div class="field">
@@ -653,27 +675,27 @@
         clienteProjeto: valorOuTraco("clienteProjeto"),
         tipoAplicacao: valorOuTraco("tipoAplicacao"),
         crowfoot: valorOuTraco("crowfoot"),
-        tipoAlimentacao: valorOuTraco("tipoAlimentacao"),
+        tipoAlimentacao: "-",
         apertadeiraModelo: valorOuTraco("apertadeiraModelo"),
         serialApertadeira: valorOuTraco("serialApertadeira"),
         controladorModelo: valorOuTraco("controladorModelo"),
         serialControlador: valorOuTraco("serialControlador"),
         transdutor: valorOuTraco("transdutor"),
         certificadoCalibracao: valorOuTraco("certificadoCalibracao"),
-        faixaTransdutor: valorOuTraco("faixaTransdutor"),
-        dataCalibracao: valorOuTraco("dataCalibracao"),
-        validadeCalibracao: valorOuTraco("validadeCalibracao"),
+        faixaTransdutor: "-",
+        dataCalibracao: "-",
+        validadeCalibracao: "-",
         painel: valorOuTraco("painel"),
         tecnicoResponsavel: valorOuTraco("tecnicoResponsavel"),
         temperaturaAmbiente: valorOuTraco("temperaturaAmbiente"),
         umidadeRelativa: valorOuTraco("umidadeRelativa"),
-        pressaoEntrada: valorOuTraco("pressaoEntrada"),
+        pressaoEntrada: "-",
         sentidoAperto: valorOuTraco("sentidoAperto"),
         porcentagem: valorOuTraco("porcentagem"),
         torqueMaiorBase: valorOuTraco("torqueMaiorBase"),
         torqueMenorBase: valorOuTraco("torqueMenorBase"),
-        identificacaoJuntaRigida: valorOuTraco("identificacaoJuntaRigida"),
-        identificacaoJuntaFlexivel: valorOuTraco("identificacaoJuntaFlexivel"),
+        identificacaoJuntaRigida: "Junta rígida - 30 Graus",
+        identificacaoJuntaFlexivel: "Junta flexível - 720 Graus",
         observacoesEnsaio: valorOuTraco("observacoesEnsaio"),
         amostras: obterTotalAmostras() || "-",
         maxExpMaior: document.getElementById("maxExpMaior").value || "-",
@@ -694,11 +716,11 @@
         <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
         <div><strong>Controlador:</strong> ${d.controladorModelo}</div>
         <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-        <div><strong>Junta rígida:</strong> ${d.identificacaoJuntaRigida}</div>
-        <div><strong>Junta flexível:</strong> ${d.identificacaoJuntaFlexivel}</div>
+        <div><strong>Junta rígida:</strong> Junta rígida - 30 Graus</div>
+        <div><strong>Junta flexível:</strong> Junta flexível - 720 Graus</div>
         <div><strong>Torque superior:</strong> ${d.torqueMaiorBase}</div>
         <div><strong>Torque inferior:</strong> ${d.torqueMenorBase}</div>
-        <div><strong>Tolerância WS:</strong> ${d.porcentagem}%</div>
+        <div><strong>Tolerância:</strong> ${d.porcentagem}%</div>
         <div><strong>Total de amostras:</strong> ${d.amostras}</div>
       `;
       document.getElementById("pct-inicial-view").textContent = d.porcentagem !== "-" ? `${d.porcentagem}%` : "-";
@@ -1061,7 +1083,6 @@
               <div><strong>Cliente / projeto / linha:</strong> ${d.clienteProjeto}</div>
               <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
               <div><strong>Crowfoot:</strong> ${d.crowfoot}</div>
-              <div><strong>Tipo de alimentação:</strong> ${d.tipoAlimentacao}</div>
               <div><strong>Total de amostras:</strong> ${d.amostras}</div>
               <div><strong>Apertadeira modelo:</strong> ${d.apertadeiraModelo}</div>
               <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
@@ -1069,15 +1090,12 @@
               <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
               <div><strong>Transdutor:</strong> ${d.transdutor}</div>
               <div><strong>Certificado de calibração:</strong> ${d.certificadoCalibracao}</div>
-              <div><strong>Faixa do transdutor:</strong> ${d.faixaTransdutor}</div>
-              <div><strong>Data de calibração:</strong> ${d.dataCalibracao}</div>
-              <div><strong>Validade da calibração:</strong> ${d.validadeCalibracao}</div>
-              <div><strong>Painel STA 6000:</strong> ${d.painel}</div>
-              <div><strong>Junta rígida (alta taxa):</strong> ${d.identificacaoJuntaRigida}</div>
-              <div><strong>Junta flexível (baixa taxa):</strong> ${d.identificacaoJuntaFlexivel}</div>
+              <div><strong>STA 6000:</strong> ${d.painel}</div>
+              <div><strong>Junta rígida:</strong> Junta rígida - 30 Graus</div>
+              <div><strong>Junta flexível:</strong> Junta flexível - 720 Graus</div>
               <div><strong>Torque de teste superior:</strong> ${d.torqueMaiorBase}</div>
               <div><strong>Torque de teste inferior:</strong> ${d.torqueMenorBase}</div>
-              <div><strong>Tolerância interna WS:</strong> ${d.porcentagem}%</div>
+              <div><strong>Tolerância:</strong> ${d.porcentagem}%</div>
               <div><strong>Máx. esperado torque superior:</strong> ${d.maxExpMaior}</div>
               <div><strong>Mín. esperado torque superior:</strong> ${d.minExpMaior}</div>
               <div><strong>Máx. esperado torque inferior:</strong> ${d.maxExpMenor}</div>
@@ -1477,13 +1495,9 @@
               <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
               <div><strong>Transdutor:</strong> ${d.transdutor}</div>
               <div><strong>Certificado de calibração:</strong> ${d.certificadoCalibracao}</div>
-              <div><strong>Faixa do transdutor:</strong> ${d.faixaTransdutor}</div>
-              <div><strong>Data de calibração:</strong> ${d.dataCalibracao}</div>
-              <div><strong>Validade da calibração:</strong> ${d.validadeCalibracao}</div>
-              <div><strong>Painel STA 6000:</strong> ${d.painel}</div>
+              <div><strong>STA 6000:</strong> ${d.painel}</div>
               <div><strong>Temperatura ambiente:</strong> ${d.temperaturaAmbiente} °C</div>
               <div><strong>Umidade relativa:</strong> ${d.umidadeRelativa}%</div>
-              <div><strong>Alimentação / pressão:</strong> ${d.pressaoEntrada}</div>
               <div><strong>Sentido de aperto:</strong> ${d.sentidoAperto}</div>
             </div>
           </div>
@@ -1499,7 +1513,7 @@
               <div><strong>Técnico responsável:</strong> ${tecnicoResponsavel}</div>
               <div><strong>Tipo de junta:</strong> ${tipoJunta}</div>
               <div><strong>Torque nominal:</strong> ${torque}</div>
-              <div><strong>Tolerância WS:</strong> ${formatarNumero(tolerancia)}%</div>
+              <div><strong>Tolerância:</strong> ${formatarNumero(tolerancia)}%</div>
               <div><strong>Limite mínimo:</strong> ${formatarNumero(limiteMin)}</div>
               <div><strong>Limite máximo:</strong> ${formatarNumero(limiteMax)}</div>
               <div><strong>Média:</strong> ${formatarNumero(est.media)}</div>
@@ -1692,11 +1706,11 @@
     });
 
     [
-      "numeroRelatorio", "dataEnsaio", "localEnsaio", "clienteProjeto", "crowfoot", "tipoAlimentacao",
+      "numeroRelatorio", "dataEnsaio", "localEnsaio", "clienteProjeto", "crowfoot",
       "apertadeiraModelo", "serialApertadeira", "controladorModelo", "serialControlador", "transdutor",
-      "certificadoCalibracao", "faixaTransdutor", "dataCalibracao", "validadeCalibracao", "painel",
-      "tecnicoResponsavel", "temperaturaAmbiente", "umidadeRelativa", "pressaoEntrada", "sentidoAperto",
-      "identificacaoJuntaRigida", "identificacaoJuntaFlexivel", "observacoesEnsaio", "porcentagem",
+      "certificadoCalibracao", "painel",
+      "tecnicoResponsavel", "temperaturaAmbiente", "umidadeRelativa", "sentidoAperto",
+      "observacoesEnsaio", "porcentagem",
       "torqueMaiorBase", "torqueMenorBase"
     ].forEach(id => {
       const el = document.getElementById(id);
