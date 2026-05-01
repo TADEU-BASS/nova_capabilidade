@@ -1035,8 +1035,9 @@
             .tabela-medicoes th { background: #eef7fb; font-weight: 700; }
             .tabela-bloco { margin-bottom: 3px; }
             canvas { background: #fff; border-radius: 6px; max-height: 185px !important; }
-            .graficos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; }
+            .graficos-grid { display: grid; grid-template-columns: 1fr; gap: 5px; }
             .graficos-grid .bloco { margin-bottom: 0; }
+            .graficos-grid canvas { width: 100% !important; height: 155px !important; max-height: 155px !important; display: block; }
             @media print { .print-btn { display: none; } body { margin: 0; } }
           </style>
         </head>
@@ -1148,8 +1149,8 @@
           </div>
 
           <div class="graficos-grid">
-            <div class="bloco"><h2>Histograma do ensaio</h2><canvas id="histogramaRel" height="170"></canvas></div>
-            <div class="bloco"><h2>Gráfico de Probabilidade Normal</h2><canvas id="probNormalRel" height="170"></canvas></div>
+            <div class="bloco"><h2>Histograma do ensaio</h2><canvas id="histogramaRel" height="155"></canvas></div>
+            <div class="bloco"><h2>Gráfico de Probabilidade Normal</h2><canvas id="probNormalRel" height="155"></canvas></div>
           </div>
 
           ${tabelaHtmlRelatorio("Torque inferior — Junta rígida", minRigida)}
@@ -1268,12 +1269,12 @@
             new Chart(document.getElementById("histogramaRel"), {
               type: "bar",
               data: { labels: histRel.labels, datasets: [{ label: "Frequência - medições normalizadas (%)", data: histRel.frequencias, borderWidth: 1 }] },
-              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "% do torque nominal" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: "Frequência" }, beginAtZero: true } } }
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "% do torque nominal" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: "Frequência" }, beginAtZero: true } } }
             });
             new Chart(document.getElementById("probNormalRel"), {
               type: "scatter",
               data: { datasets: [{ label: "Medições normalizadas (%)", data: probRel, pointRadius: 2.4, borderWidth: 1, showLine: false }] },
-              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "Quantil normal teórico" } }, y: { title: { display: true, text: "% do torque nominal" } } } }
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "Quantil normal teórico" } }, y: { title: { display: true, text: "% do torque nominal" } } } }
             });
           <\/script>
         </body>
@@ -1441,8 +1442,9 @@
             .print-btn { padding: 7px 10px; border: none; border-radius: 7px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
             .bloco { border: 1px solid #c8dce5; border-radius: 7px; padding: 6px; margin-bottom: 5px; background: #fff; break-inside: avoid; }
             .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: 9.5px; }
-            .graficos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+            .graficos-grid { display: grid; grid-template-columns: 1fr; gap: 5px; }
             .graficos-grid .bloco { margin-bottom: 0; }
+            .graficos-grid canvas { width: 100% !important; height: 155px !important; max-height: 155px !important; display: block; }
             .status { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: 800; color: white; background: ${status === "APROVADO" ? "#27ae60" : "#d93b3b"}; }
             .nota { padding: 5px 6px; border-radius: 6px; background: #eef8fc; border: 1px solid #b9dceb; font-size: 8px; line-height: 1.2; }
             table { width: 100%; border-collapse: collapse; margin-top: 3px; table-layout: fixed; }
@@ -1512,8 +1514,8 @@
             </div>
           </div>
           <div class="graficos-grid">
-            <div class="bloco"><h2>Histograma</h2><canvas id="histogramaTorqueUnicoRel" height="170"></canvas></div>
-            <div class="bloco"><h2>Gráfico de Probabilidade Normal</h2><canvas id="probNormalTorqueUnicoRel" height="170"></canvas></div>
+            <div class="bloco"><h2>Histograma</h2><canvas id="histogramaTorqueUnicoRel" height="155"></canvas></div>
+            <div class="bloco"><h2>Gráfico de Probabilidade Normal</h2><canvas id="probNormalTorqueUnicoRel" height="155"></canvas></div>
           </div>
           <div class="bloco">
             <h2>Tabela de amostras</h2>
@@ -1567,12 +1569,12 @@
             new Chart(document.getElementById("histogramaTorqueUnicoRel"), {
               type: "bar",
               data: { labels: histTU.labels, datasets: [{ label: "Frequência", data: histTU.frequencias, borderWidth: 1 }] },
-              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "Torque medido" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: "Frequência" }, beginAtZero: true } } }
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "Torque medido" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: "Frequência" }, beginAtZero: true } } }
             });
             new Chart(document.getElementById("probNormalTorqueUnicoRel"), {
               type: "scatter",
               data: { datasets: [{ label: "Valores medidos", data: probTU, pointRadius: 2.4, borderWidth: 1, showLine: false }] },
-              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "Quantil normal teórico" } }, y: { title: { display: true, text: "Torque medido" } } } }
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "Quantil normal teórico" } }, y: { title: { display: true, text: "Torque medido" } } } }
             });
           <\/script>
         </body>
