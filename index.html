@@ -149,9 +149,12 @@
             <div style="font-size:11px; color:#d7eef8; line-height:1.35; margin:2px 0 8px;">Informe manualmente a quantidade de amostras.</div>
           </div>
 
-          <button class="menu-btn" type="button" onclick="mostrarPagina('pagina-dados')">Dados da ferramenta</button>
+          <button class="menu-btn" type="button" onclick="mostrarPagina('pagina-dados')">Dados do Ensaio</button>
           <button class="menu-btn" type="button" onclick="abrirTabelas()">Abrir tabelas</button>
-          <button class="menu-btn" type="button" onclick="abrirTorqueUnico()">Capabilidade Torque Único</button>
+          <button class="menu-btn" type="button" onclick="abrirTorqueUnico()">Torque único</button>
+          <button class="menu-btn secondary" type="button" onclick="salvarEnsaio()">Salvar ensaio</button>
+          <button class="menu-btn secondary" type="button" onclick="document.getElementById('arquivoEnsaio').click()">Carregar ensaio</button>
+          <input type="file" id="arquivoEnsaio" accept=".json,application/json" style="display:none" onchange="carregarEnsaio(event)">
         </div>
       </div>
 
@@ -225,7 +228,7 @@
               <div class="field"><label for="controladorModelo">Controlador modelo</label><input type="text" id="controladorModelo" placeholder="EX.: PF6000 / MTF6000"></div>
               <div class="field"><label for="serialControlador">Serial controlador</label><input type="text" id="serialControlador" placeholder="EX.: CTRL123456"></div>
               <div class="field"><label for="transdutor">Transdutor</label><input type="text" id="transdutor" placeholder="EX.: STA 6000 / RTT"></div>
-              <div class="field"><label for="serialTransdutor">Serial do transdutor</label><input type="text" id="serialTransdutor" placeholder="EX.: TRD-123456"></div>
+              <div class="field"><label for="certificadoCalibracao">Certificado de calibração</label><input type="text" id="certificadoCalibracao" placeholder="EX.: CERT-2026-001 / RBC-12345"></div>
               <div class="field"><label for="faixaTransdutor">Faixa do transdutor</label><input type="text" id="faixaTransdutor" placeholder="EX.: 2 A 200 NM"></div>
               <div class="field"><label for="dataCalibracao">Data da calibração</label><input type="date" id="dataCalibracao"></div>
               <div class="field"><label for="validadeCalibracao">Validade da calibração</label><input type="date" id="validadeCalibracao"></div>
@@ -392,9 +395,8 @@
             <div class="grafico-box">
               <div class="samples-header"><h3>Gráficos</h3></div>
               <div class="grafico-grid">
-                <canvas id="graficoMaior" height="120"></canvas>
-                <canvas id="graficoMenor" height="120"></canvas>
-                <canvas id="graficoGeral" height="120" style="grid-column: 1 / -1;"></canvas>
+                <canvas id="graficoMaior" height="150"></canvas>
+                <canvas id="graficoMenor" height="150"></canvas>
               </div>
             </div>
           </div>
@@ -488,7 +490,7 @@
 
             <div class="grafico-box">
               <div class="samples-header"><h3>Gráfico do torque único</h3></div>
-              <canvas id="graficoTorqueUnico" height="120"></canvas>
+              <canvas id="graficoTorqueUnico" height="150"></canvas>
             </div>
           </div>
         </section>
@@ -553,7 +555,6 @@
 
     let graficoMaior = null;
     let graficoMenor = null;
-    let graficoGeral = null;
     let graficoTorqueUnico = null;
 
     function mostrarPagina(id) {
@@ -658,7 +659,7 @@
         controladorModelo: valorOuTraco("controladorModelo"),
         serialControlador: valorOuTraco("serialControlador"),
         transdutor: valorOuTraco("transdutor"),
-        serialTransdutor: valorOuTraco("serialTransdutor"),
+        certificadoCalibracao: valorOuTraco("certificadoCalibracao"),
         faixaTransdutor: valorOuTraco("faixaTransdutor"),
         dataCalibracao: valorOuTraco("dataCalibracao"),
         validadeCalibracao: valorOuTraco("validadeCalibracao"),
@@ -734,8 +735,7 @@
     function destruirGraficos() {
       if (graficoMaior) graficoMaior.destroy();
       if (graficoMenor) graficoMenor.destroy();
-      if (graficoGeral) graficoGeral.destroy();
-      graficoMaior = graficoMenor = graficoGeral = null;
+      graficoMaior = graficoMenor = null;
     }
 
     function serieConstante(valor, tamanho) {
@@ -763,6 +763,18 @@
       destruirGraficos();
       const total = obterTotalAmostras();
       const labels = Array.from({ length: total }, (_, i) => i + 1);
+      const torqueSuperior = parseNumero(document.getElementById("torqueMaiorBase").value);
+      const torqueInferior = parseNumero(document.getElementById("torqueMenorBase").value);
+
+      const opcoesGraficoTorque = (tituloEixo) => ({
+        responsive: true,
+        interaction: { mode: "nearest", intersect: false },
+        plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 11 } } } },
+        scales: {
+          x: { title: { display: true, text: "Amostra" } },
+          y: { title: { display: true, text: tituloEixo } }
+        }
+      });
 
       graficoMaior = new Chart(document.getElementById("graficoMaior"), {
         type: "line",
@@ -771,15 +783,12 @@
           datasets: [
             { label: "Superior rígida", data: dados.maxRigida, borderWidth: 2, yAxisID: "y" },
             { label: "Superior flexível", data: dados.maxFlexivel, borderWidth: 2, yAxisID: "y" },
+            { label: "Nominal", data: serieConstante(torqueSuperior, total), borderDash: [3, 3], borderWidth: 1, yAxisID: "y" },
             { label: "LSL", data: serieConstante(dados.limites.minExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
-            { label: "USL", data: serieConstante(dados.limites.maxExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
-            { label: "Cm rígida", data: serieConstante(dados.estMaxRig.cm, total), borderWidth: 1, yAxisID: "y1" },
-            { label: "Cmk rígida", data: serieConstante(dados.estMaxRig.cmk, total), borderWidth: 1, yAxisID: "y1" },
-            { label: "Cm flexível", data: serieConstante(dados.estMaxFlex.cm, total), borderWidth: 1, yAxisID: "y1" },
-            { label: "Cmk flexível", data: serieConstante(dados.estMaxFlex.cmk, total), borderWidth: 1, yAxisID: "y1" }
+            { label: "USL", data: serieConstante(dados.limites.maxExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" }
           ]
         },
-        options: { responsive: true, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque superior" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
+        options: opcoesGraficoTorque("Torque superior")
       });
 
       graficoMenor = new Chart(document.getElementById("graficoMenor"), {
@@ -789,30 +798,12 @@
           datasets: [
             { label: "Inferior rígida", data: dados.minRigida, borderWidth: 2, yAxisID: "y" },
             { label: "Inferior flexível", data: dados.minFlexivel, borderWidth: 2, yAxisID: "y" },
+            { label: "Nominal", data: serieConstante(torqueInferior, total), borderDash: [3, 3], borderWidth: 1, yAxisID: "y" },
             { label: "LSL", data: serieConstante(dados.limites.minExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
-            { label: "USL", data: serieConstante(dados.limites.maxExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
-            { label: "Cm rígida", data: serieConstante(dados.estMinRig.cm, total), borderWidth: 1, yAxisID: "y1" },
-            { label: "Cmk rígida", data: serieConstante(dados.estMinRig.cmk, total), borderWidth: 1, yAxisID: "y1" },
-            { label: "Cm flexível", data: serieConstante(dados.estMinFlex.cm, total), borderWidth: 1, yAxisID: "y1" },
-            { label: "Cmk flexível", data: serieConstante(dados.estMinFlex.cmk, total), borderWidth: 1, yAxisID: "y1" }
+            { label: "USL", data: serieConstante(dados.limites.maxExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" }
           ]
         },
-        options: { responsive: true, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque inferior" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
-      });
-
-      graficoGeral = new Chart(document.getElementById("graficoGeral"), {
-        type: "line",
-        data: { labels, datasets: montarDatasetsGraficoGeral(labels.length, dados) },
-        options: {
-          responsive: true,
-          interaction: { mode: "nearest", intersect: false },
-          plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 9 } } } },
-          scales: {
-            x: { title: { display: true, text: "Amostra" } },
-            y: { title: { display: true, text: "Torque" } },
-            y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } }
-          }
-        }
+        options: opcoesGraficoTorque("Torque inferior")
       });
     }
 
@@ -906,7 +897,6 @@
       requestAnimationFrame(() => {
         if (graficoMaior) graficoMaior.resize();
         if (graficoMenor) graficoMenor.resize();
-        if (graficoGeral) graficoGeral.resize();
       });
     }
 
@@ -1022,13 +1012,13 @@
           <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
           <style>
             @page { size: A4 portrait; margin: 6mm; }
-            body { font-family: Arial, sans-serif; margin: 8px; color: #1f3f4d; font-size: 8px; line-height: 1.12; }
+            body { font-family: Arial, sans-serif; margin: 8px; color: #1f3f4d; font-size: 9.5px; line-height: 1.18; }
             h1, h2, h3 { color: #0f5f7d; margin: 0 0 3px; line-height: 1.05; }
-            h1 { font-size: 15px; } h2 { font-size: 10.5px; } h3 { font-size: 9px; }
+            h1 { font-size: 17px; } h2 { font-size: 12px; } h3 { font-size: 10px; }
             .cabecalho, .bloco { border: 1px solid #c8dce5; border-radius: 6px; padding: 5px; margin-bottom: 4px; background: #fff; break-inside: avoid; }
             .cabecalho { background: #f5fbfe; }
-            .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px 8px; }
-            .resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px 8px; }
+            .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: 9.5px; }
+            .resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: 9.5px; }
             .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; gap: 8px; }
             .topo-esq { display: flex; align-items: center; gap: 8px; }
             .topo-esq img { height: 30px; object-fit: contain; }
@@ -1044,7 +1034,7 @@
             .tabela-medicoes th, .tabela-medicoes td { border: 1px solid #d4e3ea; padding: 1px 2px; font-size: 6.6px; line-height: 1.05; text-align: center; word-break: break-word; }
             .tabela-medicoes th { background: #eef7fb; font-weight: 700; }
             .tabela-bloco { margin-bottom: 3px; }
-            canvas { background: #fff; border-radius: 6px; max-height: 115px !important; }
+            canvas { background: #fff; border-radius: 6px; max-height: 185px !important; }
             .graficos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; }
             .graficos-grid .bloco { margin-bottom: 0; }
             @media print { .print-btn { display: none; } body { margin: 0; } }
@@ -1077,7 +1067,7 @@
               <div><strong>Controlador modelo:</strong> ${d.controladorModelo}</div>
               <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
               <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-              <div><strong>Serial do transdutor:</strong> ${d.serialTransdutor}</div>
+              <div><strong>Certificado de calibração:</strong> ${d.certificadoCalibracao}</div>
               <div><strong>Faixa do transdutor:</strong> ${d.faixaTransdutor}</div>
               <div><strong>Data de calibração:</strong> ${d.dataCalibracao}</div>
               <div><strong>Validade da calibração:</strong> ${d.validadeCalibracao}</div>
@@ -1158,11 +1148,8 @@
           </div>
 
           <div class="graficos-grid">
-            <div class="bloco"><h2>Gráfico torque superior</h2><canvas id="graficoMaiorRel" height="105"></canvas></div>
-            <div class="bloco"><h2>Gráfico torque inferior</h2><canvas id="graficoMenorRel" height="105"></canvas></div>
-            <div class="bloco"><h2>Gráfico geral</h2><canvas id="graficoGeralRel" height="105"></canvas></div>
-            <div class="bloco"><h2>Histograma torque superior</h2><canvas id="histogramaMaiorRel" height="105"></canvas></div>
-            <div class="bloco"><h2>Histograma torque inferior</h2><canvas id="histogramaMenorRel" height="105"></canvas></div>
+            <div class="bloco"><h2>Histograma do ensaio</h2><canvas id="histogramaRel" height="170"></canvas></div>
+            <div class="bloco"><h2>Gráfico de Probabilidade Normal</h2><canvas id="probNormalRel" height="170"></canvas></div>
           </div>
 
           ${tabelaHtmlRelatorio("Torque inferior — Junta rígida", minRigida)}
@@ -1244,62 +1231,49 @@
                 return idx >= 0 ? hist.frequencias[idx] : 0;
               });
             }
-            new Chart(document.getElementById("graficoMaiorRel"), {
-              type: "line",
-              data: { labels, datasets: [
-                { label: "Superior rígida", data: maxRigida, borderWidth: 2, yAxisID: "y" },
-                { label: "Superior flexível", data: maxFlexivel, borderWidth: 2, yAxisID: "y" },
-                { label: "LSL", data: serieConstante(minExpMaior, labels.length), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
-                { label: "USL", data: serieConstante(maxExpMaior, labels.length), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
-                { label: "Cm rígida", data: serieConstante(cmMaxRigida, labels.length), borderWidth: 1, yAxisID: "y1" },
-                { label: "Cmk rígida", data: serieConstante(cmkMaxRigida, labels.length), borderWidth: 1, yAxisID: "y1" },
-                { label: "Cm flexível", data: serieConstante(cmMaxFlexivel, labels.length), borderWidth: 1, yAxisID: "y1" },
-                { label: "Cmk flexível", data: serieConstante(cmkMaxFlexivel, labels.length), borderWidth: 1, yAxisID: "y1" }
-              ] },
-              options: { responsive: true, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque superior" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
-            });
-            new Chart(document.getElementById("graficoMenorRel"), {
-              type: "line",
-              data: { labels, datasets: [
-                { label: "Inferior rígida", data: minRigida, borderWidth: 2, yAxisID: "y" },
-                { label: "Inferior flexível", data: minFlexivel, borderWidth: 2, yAxisID: "y" },
-                { label: "LSL", data: serieConstante(minExpMenor, labels.length), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
-                { label: "USL", data: serieConstante(maxExpMenor, labels.length), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
-                { label: "Cm rígida", data: serieConstante(cmMinRigida, labels.length), borderWidth: 1, yAxisID: "y1" },
-                { label: "Cmk rígida", data: serieConstante(cmkMinRigida, labels.length), borderWidth: 1, yAxisID: "y1" },
-                { label: "Cm flexível", data: serieConstante(cmMinFlexivel, labels.length), borderWidth: 1, yAxisID: "y1" },
-                { label: "Cmk flexível", data: serieConstante(cmkMinFlexivel, labels.length), borderWidth: 1, yAxisID: "y1" }
-              ] },
-              options: { responsive: true, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque inferior" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
-            });
-            new Chart(document.getElementById("graficoGeralRel"), {
-              type: "line",
-              data: { labels, datasets: montarDatasetsGraficoGeral(labels.length) },
-              options: { responsive: true, interaction: { mode: "nearest", intersect: false }, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
-            });
-            const histSupRigida = calcularBins(maxRigida);
-            const histSupFlexivel = calcularBins(maxFlexivel);
-            const histInfRigida = calcularBins(minRigida);
-            const histInfFlexivel = calcularBins(minFlexivel);
-
-            const labelsHistMaior = juntarLabelsHistograma([histSupRigida, histSupFlexivel]);
-            new Chart(document.getElementById("histogramaMaiorRel"), {
+            function invNorm(p) {
+              if (p <= 0 || p >= 1) return 0;
+              const a1=-39.6968302866538,a2=220.946098424521,a3=-275.928510446969,a4=138.357751867269,a5=-30.6647980661472,a6=2.50662827745924;
+              const b1=-54.4760987982241,b2=161.585836858041,b3=-155.698979859887,b4=66.8013118877197,b5=-13.2806815528857;
+              const c1=-0.00778489400243029,c2=-0.322396458041136,c3=-2.40075827716184,c4=-2.54973253934373,c5=4.37466414146497,c6=2.93816398269878;
+              const d1=0.00778469570904146,d2=0.32246712907004,d3=2.445134137143,d4=3.75440866190742;
+              const plow=0.02425, phigh=1-plow;
+              let q, r;
+              if (p < plow) {
+                q = Math.sqrt(-2*Math.log(p));
+                return (((((c1*q+c2)*q+c3)*q+c4)*q+c5)*q+c6)/((((d1*q+d2)*q+d3)*q+d4)*q+1);
+              }
+              if (p > phigh) {
+                q = Math.sqrt(-2*Math.log(1-p));
+                return -(((((c1*q+c2)*q+c3)*q+c4)*q+c5)*q+c6)/((((d1*q+d2)*q+d3)*q+d4)*q+1);
+              }
+              q = p - 0.5; r = q*q;
+              return (((((a1*r+a2)*r+a3)*r+a4)*r+a5)*r+a6)*q/(((((b1*r+b2)*r+b3)*r+b4)*r+b5)*r+1);
+            }
+            function prepararProbNormal(valores) {
+              const lista = (valores || []).filter(v => Number.isFinite(v)).sort((a,b)=>a-b);
+              const n = lista.length;
+              return lista.map((valor, i) => ({ x: invNorm((i + 0.5) / n), y: valor }));
+            }
+            const torqueSupNominal = ${parseNumero(document.getElementById("torqueMaiorBase").value)};
+            const torqueInfNominal = ${parseNumero(document.getElementById("torqueMenorBase").value)};
+            const valoresRelatorio = [].concat(
+              maxRigida.map(v => torqueSupNominal ? (v / torqueSupNominal) * 100 : v),
+              maxFlexivel.map(v => torqueSupNominal ? (v / torqueSupNominal) * 100 : v),
+              minRigida.map(v => torqueInfNominal ? (v / torqueInfNominal) * 100 : v),
+              minFlexivel.map(v => torqueInfNominal ? (v / torqueInfNominal) * 100 : v)
+            ).filter(v => Number.isFinite(v) && v > 0);
+            const histRel = calcularBins(valoresRelatorio, 12);
+            const probRel = prepararProbNormal(valoresRelatorio);
+            new Chart(document.getElementById("histogramaRel"), {
               type: "bar",
-              data: { labels: labelsHistMaior, datasets: [
-                { label: "Superior rígida", data: alinharFrequencias(labelsHistMaior, histSupRigida), borderWidth: 1 },
-                { label: "Superior flexível", data: alinharFrequencias(labelsHistMaior, histSupFlexivel), borderWidth: 1 }
-              ] },
-              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Faixas de torque superior" } }, y: { beginAtZero: true, title: { display: true, text: "Frequência" } } } }
+              data: { labels: histRel.labels, datasets: [{ label: "Frequência - medições normalizadas (%)", data: histRel.frequencias, borderWidth: 1 }] },
+              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "% do torque nominal" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: "Frequência" }, beginAtZero: true } } }
             });
-
-            const labelsHistMenor = juntarLabelsHistograma([histInfRigida, histInfFlexivel]);
-            new Chart(document.getElementById("histogramaMenorRel"), {
-              type: "bar",
-              data: { labels: labelsHistMenor, datasets: [
-                { label: "Inferior rígida", data: alinharFrequencias(labelsHistMenor, histInfRigida), borderWidth: 1 },
-                { label: "Inferior flexível", data: alinharFrequencias(labelsHistMenor, histInfFlexivel), borderWidth: 1 }
-              ] },
-              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Faixas de torque inferior" } }, y: { beginAtZero: true, title: { display: true, text: "Frequência" } } } }
+            new Chart(document.getElementById("probNormalRel"), {
+              type: "scatter",
+              data: { datasets: [{ label: "Medições normalizadas (%)", data: probRel, pointRadius: 2.4, borderWidth: 1, showLine: false }] },
+              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "Quantil normal teórico" } }, y: { title: { display: true, text: "% do torque nominal" } } } }
             });
           <\/script>
         </body>
@@ -1393,6 +1367,7 @@
       if (graficoTorqueUnico) graficoTorqueUnico.destroy();
       const total = Math.max(obterTotalAmostrasTorqueUnico(), valores.length);
       const labels = Array.from({ length: total }, (_, i) => i + 1);
+      const torqueNominal = parseNumero(document.getElementById("tuTorqueNominal").value);
       const ctx = document.getElementById("graficoTorqueUnico");
       graficoTorqueUnico = new Chart(ctx, {
         type: "line",
@@ -1400,19 +1375,18 @@
           labels,
           datasets: [
             { label: "Valores medidos", data: valores, borderWidth: 2, yAxisID: "y" },
+            { label: "Nominal", data: serieConstante(torqueNominal, labels.length), borderDash: [3, 3], borderWidth: 1, yAxisID: "y" },
             { label: "LSL", data: serieConstante(limiteMin, labels.length), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
-            { label: "USL", data: serieConstante(limiteMax, labels.length), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
-            { label: "Cm", data: serieConstante(est.cm, labels.length), borderWidth: 1, yAxisID: "y1" },
-            { label: "Cmk", data: serieConstante(est.cmk, labels.length), borderWidth: 1, yAxisID: "y1" }
+            { label: "USL", data: serieConstante(limiteMax, labels.length), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" }
           ]
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: true } },
+          interaction: { mode: "nearest", intersect: false },
+          plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 11 } } } },
           scales: {
             x: { title: { display: true, text: "Amostra" } },
-            y: { title: { display: true, text: "Torque" } },
-            y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } }
+            y: { title: { display: true, text: "Torque" } }
           }
         }
       });
@@ -1458,21 +1432,23 @@
           <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
           <style>
             @page { size: A4 portrait; margin: 6mm; }
-            body { font-family: Arial, sans-serif; margin: 8px; color: #1f3f4d; font-size: 8.2px; line-height: 1.12; }
+            body { font-family: Arial, sans-serif; margin: 8px; color: #1f3f4d; font-size: 9.5px; line-height: 1.18; }
             h1, h2 { color: #0f5f7d; margin: 0 0 4px; }
-            h1 { font-size: 15px; } h2 { font-size: 10.5px; }
+            h1 { font-size: 17px; } h2 { font-size: 12px; }
             .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; gap: 10px; }
             .topo-esq { display: flex; align-items: center; gap: 10px; }
             .topo-esq img { height: 30px; object-fit: contain; }
             .print-btn { padding: 7px 10px; border: none; border-radius: 7px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
             .bloco { border: 1px solid #c8dce5; border-radius: 7px; padding: 6px; margin-bottom: 5px; background: #fff; break-inside: avoid; }
-            .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px 8px; }
+            .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: 9.5px; }
+            .graficos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+            .graficos-grid .bloco { margin-bottom: 0; }
             .status { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: 800; color: white; background: ${status === "APROVADO" ? "#27ae60" : "#d93b3b"}; }
             .nota { padding: 5px 6px; border-radius: 6px; background: #eef8fc; border: 1px solid #b9dceb; font-size: 8px; line-height: 1.2; }
             table { width: 100%; border-collapse: collapse; margin-top: 3px; table-layout: fixed; }
             th, td { border: 1px solid #d4e3ea; padding: 1px 2px; font-size: 6.8px; line-height: 1.05; text-align: center; }
             th { background: #eef7fb; }
-            canvas { background: #fff; border-radius: 8px; max-height: 130px !important; }
+            canvas { background: #fff; border-radius: 8px; max-height: 185px !important; }
             @media print { .print-btn { display: none; } body { margin: 0; } }
           </style>
         </head>
@@ -1498,7 +1474,7 @@
               <div><strong>Controlador modelo:</strong> ${d.controladorModelo}</div>
               <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
               <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-              <div><strong>Serial do transdutor:</strong> ${d.serialTransdutor}</div>
+              <div><strong>Certificado de calibração:</strong> ${d.certificadoCalibracao}</div>
               <div><strong>Faixa do transdutor:</strong> ${d.faixaTransdutor}</div>
               <div><strong>Data de calibração:</strong> ${d.dataCalibracao}</div>
               <div><strong>Validade da calibração:</strong> ${d.validadeCalibracao}</div>
@@ -1535,26 +1511,68 @@
               <div style="grid-column:1/-1;"><strong>Status:</strong> <span class="status">${status}</span></div>
             </div>
           </div>
-          <div class="bloco">
-            <h2>Gráfico</h2>
-            <canvas id="graficoTorqueUnicoRel" height="125"></canvas>
+          <div class="graficos-grid">
+            <div class="bloco"><h2>Histograma</h2><canvas id="histogramaTorqueUnicoRel" height="170"></canvas></div>
+            <div class="bloco"><h2>Gráfico de Probabilidade Normal</h2><canvas id="probNormalTorqueUnicoRel" height="170"></canvas></div>
           </div>
           <div class="bloco">
             <h2>Tabela de amostras</h2>
             <table><thead><tr>${cabecalhoTU}</tr></thead><tbody>${linhas || '<tr><td colspan="16">Sem dados</td></tr>'}</tbody></table>
           </div>
           <script>
-            function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
-            new Chart(document.getElementById("graficoTorqueUnicoRel"), {
-              type: "line",
-              data: { labels: ${JSON.stringify(labels)}, datasets: [
-                { label: "Valores medidos", data: ${JSON.stringify(valores)}, borderWidth: 2, yAxisID: "y" },
-                { label: "LSL", data: serieConstante(${limiteMin}, ${labels.length}), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
-                { label: "USL", data: serieConstante(${limiteMax}, ${labels.length}), borderDash: [6,4], borderWidth: 1, yAxisID: "y" },
-                { label: "Cm", data: serieConstante(${est.cm}, ${labels.length}), borderWidth: 1, yAxisID: "y1" },
-                { label: "Cmk", data: serieConstante(${est.cmk}, ${labels.length}), borderWidth: 1, yAxisID: "y1" }
-              ] },
-              options: { responsive: true, plugins: { legend: { display: true } }, scales: { x: { title: { display: true, text: "Amostra" } }, y: { title: { display: true, text: "Torque" } }, y1: { position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Cm / Cmk" } } } }
+            function calcularBins(valores, quantidadeBins = 10) {
+              const numeros = (valores || []).filter(v => Number.isFinite(v));
+              if (!numeros.length) return { labels: [], frequencias: [] };
+              const minimo = Math.min(...numeros);
+              const maximo = Math.max(...numeros);
+              if (minimo === maximo) return { labels: [minimo.toFixed(2).replace(".", ",")], frequencias: [numeros.length] };
+              const bins = Math.max(5, quantidadeBins);
+              const largura = (maximo - minimo) / bins;
+              const frequencias = new Array(bins).fill(0);
+              const labels = [];
+              for (let i = 0; i < bins; i++) {
+                const inicio = minimo + (largura * i);
+                const fim = i === bins - 1 ? maximo : inicio + largura;
+                labels.push(inicio.toFixed(2).replace(".", ",") + " a " + fim.toFixed(2).replace(".", ","));
+              }
+              numeros.forEach(valor => {
+                let indice = Math.floor((valor - minimo) / largura);
+                if (indice >= bins) indice = bins - 1;
+                if (indice < 0) indice = 0;
+                frequencias[indice]++;
+              });
+              return { labels, frequencias };
+            }
+            function invNorm(p) {
+              if (p <= 0 || p >= 1) return 0;
+              const a1=-39.6968302866538,a2=220.946098424521,a3=-275.928510446969,a4=138.357751867269,a5=-30.6647980661472,a6=2.50662827745924;
+              const b1=-54.4760987982241,b2=161.585836858041,b3=-155.698979859887,b4=66.8013118877197,b5=-13.2806815528857;
+              const c1=-0.00778489400243029,c2=-0.322396458041136,c3=-2.40075827716184,c4=-2.54973253934373,c5=4.37466414146497,c6=2.93816398269878;
+              const d1=0.00778469570904146,d2=0.32246712907004,d3=2.445134137143,d4=3.75440866190742;
+              const plow=0.02425, phigh=1-plow;
+              let q, r;
+              if (p < plow) { q = Math.sqrt(-2*Math.log(p)); return (((((c1*q+c2)*q+c3)*q+c4)*q+c5)*q+c6)/((((d1*q+d2)*q+d3)*q+d4)*q+1); }
+              if (p > phigh) { q = Math.sqrt(-2*Math.log(1-p)); return -(((((c1*q+c2)*q+c3)*q+c4)*q+c5)*q+c6)/((((d1*q+d2)*q+d3)*q+d4)*q+1); }
+              q = p - 0.5; r = q*q;
+              return (((((a1*r+a2)*r+a3)*r+a4)*r+a5)*r+a6)*q/(((((b1*r+b2)*r+b3)*r+b4)*r+b5)*r+1);
+            }
+            function prepararProbNormal(valores) {
+              const lista = (valores || []).filter(v => Number.isFinite(v)).sort((a,b)=>a-b);
+              const n = lista.length;
+              return lista.map((valor, i) => ({ x: invNorm((i + 0.5) / n), y: valor }));
+            }
+            const valoresTU = ${JSON.stringify(valores)};
+            const histTU = calcularBins(valoresTU, 10);
+            const probTU = prepararProbNormal(valoresTU);
+            new Chart(document.getElementById("histogramaTorqueUnicoRel"), {
+              type: "bar",
+              data: { labels: histTU.labels, datasets: [{ label: "Frequência", data: histTU.frequencias, borderWidth: 1 }] },
+              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "Torque medido" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: "Frequência" }, beginAtZero: true } } }
+            });
+            new Chart(document.getElementById("probNormalTorqueUnicoRel"), {
+              type: "scatter",
+              data: { datasets: [{ label: "Valores medidos", data: probTU, pointRadius: 2.4, borderWidth: 1, showLine: false }] },
+              options: { responsive: true, plugins: { legend: { display: true, labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { x: { title: { display: true, text: "Quantil normal teórico" } }, y: { title: { display: true, text: "Torque medido" } } } }
             });
           <\/script>
         </body>
@@ -1562,6 +1580,98 @@
       `);
       relatorio.document.close();
     }
+
+
+    function obterValoresInputsTabela(tbodyId) {
+      return [...document.querySelectorAll(`#${tbodyId} input`)].map(input => input.value || "");
+    }
+
+    function preencherValoresInputsTabela(tbodyId, valores) {
+      const inputs = [...document.querySelectorAll(`#${tbodyId} input`)];
+      inputs.forEach((input, i) => {
+        input.value = valores && valores[i] !== undefined ? valores[i] : "";
+      });
+    }
+
+    function obterEstadoEnsaio() {
+      const campos = {};
+      document.querySelectorAll("input[id], select[id], textarea[id]").forEach(el => {
+        if (el.type !== "file") campos[el.id] = el.value;
+      });
+      return {
+        versao: "capabilidade-ws-v2",
+        salvoEm: new Date().toISOString(),
+        campos,
+        tabelas: {
+          minRigida: obterValoresInputsTabela("tbody-min-rigida"),
+          minFlexivel: obterValoresInputsTabela("tbody-min-flexivel"),
+          maxRigida: obterValoresInputsTabela("tbody-max-rigida"),
+          maxFlexivel: obterValoresInputsTabela("tbody-max-flexivel"),
+          torqueUnico: obterValoresInputsTabela("tbody-torque-unico")
+        }
+      };
+    }
+
+    function salvarEnsaio() {
+      const estado = obterEstadoEnsaio();
+      const numero = (document.getElementById("numeroRelatorio").value || "sem_relatorio").replace(/[^a-zA-Z0-9_-]/g, "_");
+      const data = new Date().toISOString().slice(0, 10);
+      const blob = new Blob([JSON.stringify(estado, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `capabilidade_${numero}_${data}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function carregarEnsaio(event) {
+      const arquivo = event.target.files && event.target.files[0];
+      if (!arquivo) return;
+      const leitor = new FileReader();
+      leitor.onload = () => {
+        try {
+          const estado = JSON.parse(leitor.result);
+          if (!estado || !estado.campos) throw new Error("Arquivo inválido");
+
+          Object.entries(estado.campos).forEach(([id, valor]) => {
+            const el = document.getElementById(id);
+            if (el && el.type !== "file") el.value = valor;
+          });
+
+          const totalPrincipal = parseInt(estado.campos.amostrasManual, 10) || estado.tabelas?.minRigida?.length || 25;
+          inputAmostrasManual.value = totalPrincipal;
+          criarLinhas(totalPrincipal);
+
+          const totalTU = parseInt(estado.campos.tuAmostras, 10) || estado.tabelas?.torqueUnico?.length || 25;
+          document.getElementById("tuAmostras").value = totalTU;
+          criarLinhasTorqueUnico(totalTU);
+
+          preencherValoresInputsTabela("tbody-min-rigida", estado.tabelas?.minRigida || []);
+          preencherValoresInputsTabela("tbody-min-flexivel", estado.tabelas?.minFlexivel || []);
+          preencherValoresInputsTabela("tbody-max-rigida", estado.tabelas?.maxRigida || []);
+          preencherValoresInputsTabela("tbody-max-flexivel", estado.tabelas?.maxFlexivel || []);
+          preencherValoresInputsTabela("tbody-torque-unico", estado.tabelas?.torqueUnico || []);
+
+          atualizarCampoCrowfoot();
+          atualizarCampoAmostrasManual();
+          calcularLimitesAutomaticos();
+          calcularLimitesTorqueUnico();
+          atualizarResumoDados();
+          calcularTudo();
+          calcularTorqueUnico();
+          alert("Ensaio carregado com sucesso. Você já pode continuar editando.");
+        } catch (erro) {
+          alert("Não foi possível carregar este ensaio. Verifique se o arquivo é um JSON salvo por este app.");
+        } finally {
+          event.target.value = "";
+        }
+      };
+      leitor.readAsText(arquivo);
+    }
+
 
     inputAmostrasManual.addEventListener("input", () => {
       const total = obterTotalAmostras();
@@ -1582,7 +1692,7 @@
     [
       "numeroRelatorio", "dataEnsaio", "localEnsaio", "clienteProjeto", "crowfoot", "tipoAlimentacao",
       "apertadeiraModelo", "serialApertadeira", "controladorModelo", "serialControlador", "transdutor",
-      "serialTransdutor", "faixaTransdutor", "dataCalibracao", "validadeCalibracao", "painel",
+      "certificadoCalibracao", "faixaTransdutor", "dataCalibracao", "validadeCalibracao", "painel",
       "tecnicoResponsavel", "temperaturaAmbiente", "umidadeRelativa", "pressaoEntrada", "sentidoAperto",
       "identificacaoJuntaRigida", "identificacaoJuntaFlexivel", "observacoesEnsaio", "porcentagem",
       "torqueMaiorBase", "torqueMenorBase"
