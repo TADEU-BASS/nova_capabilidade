@@ -1604,16 +1604,23 @@
       return true;
     }
 
-    function criarLinhas(total) {
+    function criarLinhas(total, preservarValores = true, limparResultado = true) {
       Object.values(tabelas).forEach(tbody => {
+        const valoresAntigos = preservarValores
+          ? [...tbody.querySelectorAll("input")].map(input => input.value || "")
+          : [];
+
         tbody.innerHTML = "";
+
         for (let i = 1; i <= total; i++) {
           const tr = document.createElement("tr");
-          tr.innerHTML = `<td>${i}</td><td><input type="text" inputmode="decimal"></td>`;
+          const valor = valoresAntigos[i - 1] !== undefined ? valoresAntigos[i - 1] : "";
+          tr.innerHTML = `<td>${i}</td><td><input type="text" inputmode="decimal" value="${valor}"></td>`;
           tbody.appendChild(tr);
         }
       });
-      limparResultados();
+
+      if (limparResultado) limparResultados();
     }
 
     function validarTabelasObrigatorias() {
@@ -1657,7 +1664,11 @@
       calcularLimitesAutomaticos();
 
       const total = obterTotalAmostras();
-      if (total > 0) criarLinhas(total);
+      const linhasAtuais = tabelas.minRigida ? tabelas.minRigida.querySelectorAll("tr").length : 0;
+
+      if (total > 0 && linhasAtuais !== total) {
+        criarLinhas(total, true, false);
+      }
 
       atualizarResumoDados();
       mostrarPagina("pagina-tabelas");
@@ -2655,16 +2666,24 @@
       });
     }
 
-    function criarLinhasTorqueUnico(total) {
+    function criarLinhasTorqueUnico(total, preservarValores = true, limparResultado = true) {
       const tbody = el("tbody-torque-unico");
       if (!tbody) return;
+
+      const valoresAntigos = preservarValores
+        ? [...tbody.querySelectorAll("input")].map(input => input.value || "")
+        : [];
+
       tbody.innerHTML = "";
+
       for (let i = 1; i <= total; i++) {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${i}</td><td><input type="text" inputmode="decimal"></td>`;
+        const valor = valoresAntigos[i - 1] !== undefined ? valoresAntigos[i - 1] : "";
+        tr.innerHTML = `<td>${i}</td><td><input type="text" inputmode="decimal" value="${valor}"></td>`;
         tbody.appendChild(tr);
       }
-      limparResultadosTorqueUnico();
+
+      if (limparResultado) limparResultadosTorqueUnico();
     }
 
     function calcularLimitesTorqueUnico() {
@@ -3024,11 +3043,11 @@
 
           const totalPrincipal = parseInt(estado.campos.amostrasManual, 10) || estado.tabelas?.minRigida?.length || 25;
           inputAmostrasManual.value = totalPrincipal;
-          criarLinhas(totalPrincipal);
+          criarLinhas(totalPrincipal, false, true);
 
           const totalTU = parseInt(estado.campos.tuAmostras, 10) || estado.tabelas?.torqueUnico?.length || 25;
           el("tuAmostras").value = totalTU;
-          criarLinhasTorqueUnico(totalTU);
+          criarLinhasTorqueUnico(totalTU, false, true);
 
           preencherValoresInputsTabela("tbody-min-rigida", estado.tabelas?.minRigida || []);
           preencherValoresInputsTabela("tbody-min-flexivel", estado.tabelas?.minFlexivel || []);
@@ -3099,8 +3118,8 @@
       calcularLimitesAutomaticos();
       calcularLimitesTorqueUnico();
 
-      criarLinhas(obterTotalAmostras() || 25);
-      criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25);
+      criarLinhas(obterTotalAmostras() || 25, false, true);
+      criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25, false, true);
 
       limparResultados();
       limparResultadosTorqueUnico();
@@ -3117,7 +3136,7 @@
 
     inputAmostrasManual.addEventListener("input", () => {
       const total = obterTotalAmostras();
-      if (total > 0) criarLinhas(total);
+      if (total > 0) criarLinhas(total, true, true);
       else {
         Object.values(tabelas).forEach(tbody => tbody.innerHTML = "");
         limparResultados();
@@ -3172,7 +3191,7 @@
     if (tuAmostrasEl) {
       tuAmostrasEl.addEventListener("input", () => {
         const total = obterTotalAmostrasTorqueUnico();
-        if (total > 0) criarLinhasTorqueUnico(total);
+        if (total > 0) criarLinhasTorqueUnico(total, true, true);
         else el("tbody-torque-unico").innerHTML = "";
         aplicarVisualObrigatorios();
       });
@@ -3185,11 +3204,11 @@
       el("dataEnsaio").value = new Date().toISOString().split("T")[0];
 
       atualizarCampoCrowfoot();
-      criarLinhas(obterTotalAmostras() || 25);
+      criarLinhas(obterTotalAmostras() || 25, true, true);
       atualizarResumoDados();
       limparResultados();
       calcularLimitesAutomaticos();
-      criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25);
+      criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25, false, true);
       calcularLimitesTorqueUnico();
       aplicarVisualObrigatorios();
 
