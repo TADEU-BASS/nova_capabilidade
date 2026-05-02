@@ -2873,10 +2873,15 @@
     }
 
     function abrirTorqueUnico() {
+      if (!validarCamposObrigatoriosDados()) return;
+
       mostrarPagina("pagina-torque-unico");
       calcularLimitesTorqueUnico();
+      aplicarVisualObrigatorios();
+
       requestAnimationFrame(() => {
         if (graficoTorqueUnico) graficoTorqueUnico.resize();
+        if (histTorqueUnico) histTorqueUnico.resize();
       });
     }
 
