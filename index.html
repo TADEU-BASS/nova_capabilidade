@@ -2411,7 +2411,53 @@
         "Escolha um tema no sumário para abrir o texto de ajuda. O botão imprimir salva todo o HELP em PDF.": "Choose a topic in the summary to open the help text. The print button saves all HELP as PDF.",
         "Voltar para tela principal": "Back to main screen",
         "Imprimir todo HELP / salvar PDF": "Print all HELP / save PDF",
-        "Sumário": "Summary"
+        "Sumário": "Summary",
+        "1. Visão geral do app": "1. App overview",
+        "2. Dados do ensaio": "2. Test data",
+        "3. Campos obrigatórios": "3. Mandatory fields",
+        "4. Quantidade de amostras": "4. Number of samples",
+        "5. Tabelas de medição": "5. Measurement tables",
+        "6. Cálculo dos resultados": "6. Result calculation",
+        "7. Aprovação / reprovação": "7. Approval / rejection",
+        "8. Gráficos": "8. Charts",
+        "9. Relatório PDF": "9. PDF report",
+        "10. Salvar e carregar ensaio": "10. Save and load test",
+        "11. Torque único": "11. Single torque",
+        "12. Problemas comuns": "12. Common issues",
+        "Este sistema foi criado para apoiar ensaios de capabilidade conforme método ISO 5393 e critérios internos WS.": "This system was created to support capability tests according to the ISO 5393 method and internal WS criteria.",
+        "O fluxo principal é: preencher os dados do ensaio, abrir as tabelas, inserir as amostras, calcular os resultados e gerar o relatório final.": "The main flow is: fill in the test data, open the tables, enter the samples, calculate the results and generate the final report.",
+        "Nesta tela são informados os dados da ferramenta, controlador, transdutor, STA 6000, certificados e parâmetros do ensaio.": "This screen contains the tool, controller, transducer, STA 6000, certificates and test parameter data.",
+        "Essas informações aparecem no resumo e também no relatório final.": "This information appears in the summary and also in the final report.",
+        "Campos em laranja são obrigatórios. Eles também possuem o símbolo * no título e o ícone de atenção dentro do campo.": "Orange fields are mandatory. They also have the * symbol in the title and the warning icon inside the field.",
+        "Se algum campo obrigatório não for preenchido, o app exibe um popup avisando o que falta e não permite avançar.": "If any mandatory field is not filled in, the app displays a popup showing what is missing and does not allow you to continue.",
+        "A quantidade de amostras define quantas linhas serão criadas nas tabelas.": "The number of samples defines how many rows will be created in the tables.",
+        "Exemplo: se informar 25, cada tabela obrigatória terá 25 leituras para preenchimento.": "Example: if you enter 25, each mandatory table will have 25 readings to fill in.",
+        "O ensaio principal usa quatro tabelas:": "The main test uses four tables:",
+        "Torque inferior — junta rígida": "Lower torque — hard joint",
+        "Torque inferior — junta flexível": "Lower torque — soft joint",
+        "Torque superior — junta rígida": "Upper torque — hard joint",
+        "Torque superior — junta flexível": "Upper torque — soft joint",
+        "É possível digitar os valores manualmente ou colar uma coluna copiada do Excel.": "You can type the values manually or paste a column copied from Excel.",
+        "O app calcula média, desvio padrão, mínimo, máximo, amplitude, scatter, Cm e Cmk.": "The app calculates average, standard deviation, minimum, maximum, range, scatter, Cm and Cmk.",
+        "Os limites mínimo e máximo são calculados automaticamente com base no torque nominal e na tolerância informada.": "The minimum and maximum limits are calculated automatically based on the nominal torque and the entered tolerance.",
+        "O status interno WS considera a tolerância, o scatter e os índices Cm/Cmk.": "The internal WS status considers tolerance, scatter and the Cm/Cmk indexes.",
+        "Quando reprova, o sistema mostra o motivo: amostras fora do limite, scatter acima da tolerância ou Cm/Cmk abaixo do critério interno.": "When rejected, the system shows the reason: samples outside the limit, scatter above tolerance or Cm/Cmk below the internal criterion.",
+        "Os gráficos mostram as medições, o torque nominal e os limites mínimo e máximo.": "The charts show the measurements, nominal torque and minimum and maximum limits.",
+        "Eles ajudam a visualizar rapidamente a estabilidade das leituras e possíveis pontos fora da faixa.": "They help quickly visualize reading stability and possible points outside the range.",
+        "Após calcular os resultados, clique em Gerar relatório.": "After calculating the results, click Generate report.",
+        "Na nova janela, clique em Imprimir relatório e selecione a opção de salvar em PDF.": "In the new window, click Print report and select the option to save as PDF.",
+        "O botão Salvar ensaio gera um arquivo JSON com os dados preenchidos e as tabelas.": "The Save test button generates a JSON file with the filled data and tables.",
+        "O botão Carregar ensaio permite abrir novamente um ensaio salvo anteriormente.": "The Load test button allows you to reopen a previously saved test.",
+        "A função Torque único é usada quando o usuário precisa avaliar apenas um ponto de torque com uma única tabela.": "The Single torque function is used when the user needs to evaluate only one torque point with a single table.",
+        "Os campos tipo de junta, torque nominal, tolerância e quantidade de amostras são obrigatórios.": "The joint type, nominal torque, tolerance and number of samples fields are mandatory.",
+        "Não abre tabelas:": "Tables do not open:",
+        "Não calcula:": "Does not calculate:",
+        "Relatório não abre:": "Report does not open:",
+        "Gráfico não aparece:": "Chart does not appear:",
+        "algum campo obrigatório não foi preenchido.": "a mandatory field was not filled in.",
+        "alguma tabela obrigatória está incompleta.": "a mandatory table is incomplete.",
+        "verifique se o navegador bloqueou popup.": "check whether the browser blocked the popup.",
+        "confira se existe internet para carregar o Chart.js.": "check whether there is internet access to load Chart.js."
       },
       es: {
         "Linguagem": "Idioma",
@@ -2508,12 +2554,58 @@
         "Escolha um tema no sumário para abrir o texto de ajuda. O botão imprimir salva todo o HELP em PDF.": "Elija un tema en el índice para abrir el texto de ayuda. El botón imprimir guarda todo el HELP en PDF.",
         "Voltar para tela principal": "Volver a la pantalla principal",
         "Imprimir todo HELP / salvar PDF": "Imprimir todo HELP / guardar PDF",
-        "Sumário": "Índice"
+        "Sumário": "Índice",
+        "1. Visão geral do app": "1. Visión general de la app",
+        "2. Dados do ensaio": "2. Datos del ensayo",
+        "3. Campos obrigatórios": "3. Campos obligatorios",
+        "4. Quantidade de amostras": "4. Cantidad de muestras",
+        "5. Tabelas de medição": "5. Tablas de medición",
+        "6. Cálculo dos resultados": "6. Cálculo de resultados",
+        "7. Aprovação / reprovação": "7. Aprobación / rechazo",
+        "8. Gráficos": "8. Gráficos",
+        "9. Relatório PDF": "9. Informe PDF",
+        "10. Salvar e carregar ensaio": "10. Guardar y cargar ensayo",
+        "11. Torque único": "11. Torque único",
+        "12. Problemas comuns": "12. Problemas comunes",
+        "Este sistema foi criado para apoiar ensaios de capabilidade conforme método ISO 5393 e critérios internos WS.": "Este sistema fue creado para apoyar ensayos de capacidad según el método ISO 5393 y criterios internos WS.",
+        "O fluxo principal é: preencher os dados do ensaio, abrir as tabelas, inserir as amostras, calcular os resultados e gerar o relatório final.": "El flujo principal es: completar los datos del ensayo, abrir las tablas, ingresar las muestras, calcular los resultados y generar el informe final.",
+        "Nesta tela são informados os dados da ferramenta, controlador, transdutor, STA 6000, certificados e parâmetros do ensaio.": "En esta pantalla se informan los datos de la herramienta, controlador, transductor, STA 6000, certificados y parámetros del ensayo.",
+        "Essas informações aparecem no resumo e também no relatório final.": "Esta información aparece en el resumen y también en el informe final.",
+        "Campos em laranja são obrigatórios. Eles também possuem o símbolo * no título e o ícone de atenção dentro do campo.": "Los campos en naranja son obligatorios. También tienen el símbolo * en el título y el icono de atención dentro del campo.",
+        "Se algum campo obrigatório não for preenchido, o app exibe um popup avisando o que falta e não permite avançar.": "Si algún campo obligatorio no se completa, la app muestra un popup indicando lo que falta y no permite continuar.",
+        "A quantidade de amostras define quantas linhas serão criadas nas tabelas.": "La cantidad de muestras define cuántas filas se crearán en las tablas.",
+        "Exemplo: se informar 25, cada tabela obrigatória terá 25 leituras para preenchimento.": "Ejemplo: si informa 25, cada tabla obligatoria tendrá 25 lecturas para completar.",
+        "O ensaio principal usa quatro tabelas:": "El ensayo principal usa cuatro tablas:",
+        "Torque inferior — junta rígida": "Torque inferior — junta rígida",
+        "Torque inferior — junta flexível": "Torque inferior — junta flexible",
+        "Torque superior — junta rígida": "Torque superior — junta rígida",
+        "Torque superior — junta flexível": "Torque superior — junta flexible",
+        "É possível digitar os valores manualmente ou colar uma coluna copiada do Excel.": "Es posible ingresar los valores manualmente o pegar una columna copiada de Excel.",
+        "O app calcula média, desvio padrão, mínimo, máximo, amplitude, scatter, Cm e Cmk.": "La app calcula promedio, desviación estándar, mínimo, máximo, amplitud, scatter, Cm y Cmk.",
+        "Os limites mínimo e máximo são calculados automaticamente com base no torque nominal e na tolerância informada.": "Los límites mínimo y máximo se calculan automáticamente según el torque nominal y la tolerancia informada.",
+        "O status interno WS considera a tolerância, o scatter e os índices Cm/Cmk.": "El estado interno WS considera la tolerancia, el scatter y los índices Cm/Cmk.",
+        "Quando reprova, o sistema mostra o motivo: amostras fora do limite, scatter acima da tolerância ou Cm/Cmk abaixo do critério interno.": "Cuando rechaza, el sistema muestra el motivo: muestras fuera del límite, scatter por encima de la tolerancia o Cm/Cmk por debajo del criterio interno.",
+        "Os gráficos mostram as medições, o torque nominal e os limites mínimo e máximo.": "Los gráficos muestran las mediciones, el torque nominal y los límites mínimo y máximo.",
+        "Eles ajudam a visualizar rapidamente a estabilidade das leituras e possíveis pontos fora da faixa.": "Ayudan a visualizar rápidamente la estabilidad de las lecturas y posibles puntos fuera del rango.",
+        "Após calcular os resultados, clique em Gerar relatório.": "Después de calcular los resultados, haga clic en Generar informe.",
+        "Na nova janela, clique em Imprimir relatório e selecione a opção de salvar em PDF.": "En la nueva ventana, haga clic en Imprimir informe y seleccione la opción de guardar en PDF.",
+        "O botão Salvar ensaio gera um arquivo JSON com os dados preenchidos e as tabelas.": "El botón Guardar ensayo genera un archivo JSON con los datos completados y las tablas.",
+        "O botão Carregar ensaio permite abrir novamente um ensaio salvo anteriormente.": "El botón Cargar ensayo permite abrir nuevamente un ensayo guardado anteriormente.",
+        "A função Torque único é usada quando o usuário precisa avaliar apenas um ponto de torque com uma única tabela.": "La función Torque único se usa cuando el usuario necesita evaluar solo un punto de torque con una única tabla.",
+        "Os campos tipo de junta, torque nominal, tolerância e quantidade de amostras são obrigatórios.": "Los campos tipo de junta, torque nominal, tolerancia y cantidad de muestras son obligatorios.",
+        "Não abre tabelas:": "No abre tablas:",
+        "Não calcula:": "No calcula:",
+        "Relatório não abre:": "El informe no abre:",
+        "Gráfico não aparece:": "El gráfico no aparece:",
+        "algum campo obrigatório não foi preenchido.": "algún campo obligatorio no fue completado.",
+        "alguma tabela obrigatória está incompleta.": "alguna tabla obligatoria está incompleta.",
+        "verifique se o navegador bloqueou popup.": "verifique si el navegador bloqueó el popup.",
+        "confira se existe internet para carregar o Chart.js.": "verifique si hay internet para cargar Chart.js."
       }
     };
 
     function prepararTextosOriginais() {
-      const elementos = document.querySelectorAll("button, label, h1, h2, h3, p, span, strong, option, .assinatura-linha");
+      const elementos = document.querySelectorAll("button, label, h1, h2, h3, p, li, span, strong, option, .assinatura-linha");
       elementos.forEach(item => {
         if (!item.dataset.ptOriginal) {
           const texto = item.textContent.trim();
@@ -2524,7 +2616,7 @@
 
     function traduzirElementos(idioma) {
       const mapa = traducoesSistema[idioma] || {};
-      const elementos = document.querySelectorAll("button, label, h1, h2, h3, p, span, strong, option, .assinatura-linha");
+      const elementos = document.querySelectorAll("button, label, h1, h2, h3, p, li, span, strong, option, .assinatura-linha");
       elementos.forEach(item => {
         const original = item.dataset.ptOriginal;
         if (!original) return;
