@@ -141,7 +141,14 @@
       height: 270px !important;
     }
     .small-note { font-size: 12px; color: #5d7480; margin-top: 4px; width: 100%; }
-    @media (max-width: 1200px) { .tables-grid, .blocos-grid, .grafico-grid { grid-template-columns: 1fr; } }
+    .manual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .manual-card { background: #ffffff; border: 1px solid #cfe0e7; border-radius: 16px; padding: 16px; box-shadow: 0 8px 18px rgba(15, 95, 125, 0.08); }
+    .manual-card h3 { margin: 0 0 10px; color: #0f5f7d; font-size: 17px; }
+    .manual-card p, .manual-card li { color: #314e5c; font-size: 14px; line-height: 1.5; }
+    .manual-card ul, .manual-card ol { margin: 8px 0 0 18px; padding: 0; }
+    .manual-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-bottom: 16px; }
+
+    @media (max-width: 1200px) { .tables-grid, .blocos-grid, .grafico-grid, .manual-grid { grid-template-columns: 1fr; } }
     @media (max-width: 900px) {
       .app { flex-direction: column; }
       .sidebar { width: 100%; }
@@ -178,6 +185,7 @@
           <button class="menu-btn" type="button" onclick="abrirTorqueUnico()">Torque único</button>
           <button class="menu-btn secondary" type="button" onclick="salvarEnsaio()">Salvar ensaio</button>
           <button class="menu-btn secondary" type="button" onclick="document.getElementById('arquivoEnsaio').click()">Carregar ensaio</button>
+          <button class="menu-btn secondary" type="button" onclick="abrirManualPdf()">Manual PDF</button>
           <input type="file" id="arquivoEnsaio" accept=".json,application/json" style="display:none" onchange="carregarEnsaio(event)">
         </div>
       </div>
@@ -262,8 +270,9 @@
                 <h3 class="section-title">Medição e rastreabilidade</h3>
                 <div class="section-grid">
                   <div class="field"><label for="transdutor">Transdutor</label><input type="text" id="transdutor" placeholder="EX.: STA 6000 / RTT"></div>
-                  <div class="field"><label for="painel">STA 6000</label><input type="text" id="painel" placeholder="EX.: PAINEL 01"></div>
-                  <div class="field"><label for="certificadoCalibracao">Certificado de calibração</label><input type="text" id="certificadoCalibracao" placeholder="EX.: CERT-2026-001 / RBC-12345"></div>
+                  <div class="field"><label for="painel">STA 6000</label><input type="text" id="painel" placeholder="EX.: STA 6000 / PAINEL 01"></div>
+                  <div class="field"><label for="certificadoSta">Certificado de calibração do STA 6000</label><input type="text" id="certificadoSta" placeholder="EX.: CERT-STA-2026-001 / RBC-STA"></div>
+                  <div class="field"><label for="certificadoCalibracao">Certificado de calibração do transdutor</label><input type="text" id="certificadoCalibracao" placeholder="EX.: CERT-TRANS-2026-001 / RBC-12345"></div>
                   <div class="field"><label for="sentidoAperto">Sentido de aperto</label><select id="sentidoAperto"><option value="Horário">Horário</option><option value="Anti-horário">Anti-horário</option></select></div>
                   <div class="field"><label for="temperaturaAmbiente">Temperatura ambiente (°C)</label><input type="text" id="temperaturaAmbiente" placeholder="EX.: 22"></div>
                   <div class="field"><label for="umidadeRelativa">Umidade relativa (%)</label><input type="text" id="umidadeRelativa" placeholder="EX.: 55"></div>
@@ -570,6 +579,97 @@
         </section>
       </div>
 
+      <div id="pagina-manual" class="page">
+        <section class="top-card">
+          <div>
+            <h1>Manual PDF - Nova Capabilidade</h1>
+            <p>Guia rápido para preencher, calcular, salvar e gerar o relatório do ensaio.</p>
+          </div>
+          <button class="destino-badge">Manual do app</button>
+        </section>
+
+        <section class="content-card">
+          <div class="card-header">
+            <h2>Manual de utilização</h2>
+            <p>Use este manual como orientação interna. Para salvar como PDF, clique em imprimir/salvar PDF.</p>
+          </div>
+
+          <div class="card-body">
+            <div class="manual-actions">
+              <button class="action-btn secondary" type="button" onclick="mostrarPagina('pagina-dados')">Voltar para tela principal</button>
+              <button class="action-btn primary" type="button" onclick="window.print()">Imprimir / salvar PDF</button>
+            </div>
+
+            <div class="manual-grid">
+              <div class="manual-card">
+                <h3>1. Dados do ensaio</h3>
+                <ol>
+                  <li>Preencha número do relatório, data, local, cliente/projeto e técnico responsável.</li>
+                  <li>Informe a aplicação: apertadeira ou apertadeira com crowfoot.</li>
+                  <li>Preencha modelo e serial da apertadeira e do controlador.</li>
+                </ol>
+              </div>
+
+              <div class="manual-card">
+                <h3>2. Medição e rastreabilidade</h3>
+                <ol>
+                  <li>Informe o transdutor utilizado.</li>
+                  <li>Informe o certificado de calibração do transdutor.</li>
+                  <li>Informe o STA 6000 utilizado.</li>
+                  <li>Informe o certificado de calibração do STA 6000.</li>
+                  <li>Preencha sentido de aperto, temperatura e umidade quando aplicável.</li>
+                </ol>
+              </div>
+
+              <div class="manual-card">
+                <h3>3. Parâmetros</h3>
+                <ol>
+                  <li>Digite a tolerância em porcentagem, por exemplo: 15.</li>
+                  <li>Digite o torque de teste superior.</li>
+                  <li>Digite o torque de teste inferior.</li>
+                  <li>As juntas ficam fixas como rígida 30 graus e flexível 720 graus.</li>
+                </ol>
+              </div>
+
+              <div class="manual-card">
+                <h3>4. Tabelas de amostras</h3>
+                <ol>
+                  <li>Clique em Abrir tabelas.</li>
+                  <li>Informe a quantidade de amostras.</li>
+                  <li>Cole ou digite os valores nas quatro tabelas: torque inferior rígida, inferior flexível, superior rígida e superior flexível.</li>
+                  <li>Clique em Calcular resultados.</li>
+                </ol>
+              </div>
+
+              <div class="manual-card">
+                <h3>5. Resultado</h3>
+                <p>O app calcula média, desvio padrão, mínimo, máximo, amplitude, scatter, Cm e Cmk.</p>
+                <p>O status interno WS considera tolerância, Cm mínimo e Cmk mínimo. Quando reprovar, o app mostra o motivo do resultado.</p>
+              </div>
+
+              <div class="manual-card">
+                <h3>6. Relatório</h3>
+                <ol>
+                  <li>Após calcular, clique em Gerar relatório.</li>
+                  <li>Confira o cabeçalho, resultados, gráficos e tabelas.</li>
+                  <li>Use o botão Imprimir relatório para salvar em PDF.</li>
+                </ol>
+              </div>
+
+              <div class="manual-card">
+                <h3>7. Salvar e carregar ensaio</h3>
+                <p>Use Salvar ensaio para guardar os dados preenchidos em arquivo JSON. Use Carregar ensaio para abrir um ensaio salvo anteriormente.</p>
+              </div>
+
+              <div class="manual-card">
+                <h3>8. Torque único</h3>
+                <p>Use a função Torque único quando precisar avaliar apenas um ponto de torque com uma única tabela de amostras.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
     </main>
   </div>
 
@@ -635,6 +735,11 @@
     function mostrarPagina(id) {
       document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
       document.getElementById(id).classList.add("active");
+    }
+
+    function abrirManualPdf() {
+      mostrarPagina("pagina-manual");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function obterTotalAmostras() {
@@ -739,6 +844,7 @@
         dataCalibracao: "-",
         validadeCalibracao: "-",
         painel: valorOuTraco("painel"),
+        certificadoSta: valorOuTraco("certificadoSta"),
         tecnicoResponsavel: valorOuTraco("tecnicoResponsavel"),
         temperaturaAmbiente: valorOuTraco("temperaturaAmbiente"),
         umidadeRelativa: valorOuTraco("umidadeRelativa"),
@@ -769,6 +875,7 @@
         <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
         <div><strong>Controlador:</strong> ${d.controladorModelo}</div>
         <div><strong>Transdutor:</strong> ${d.transdutor}</div>
+        <div><strong>Certificado STA 6000:</strong> ${d.certificadoSta}</div>
         <div><strong>Junta rígida:</strong> Junta rígida - 30 Graus</div>
         <div><strong>Junta flexível:</strong> Junta flexível - 720 Graus</div>
         <div><strong>Torque superior:</strong> ${d.torqueMaiorBase}</div>
@@ -1334,8 +1441,9 @@
                 <h3>Medição / rastreabilidade</h3>
                 <div class="cabecalho-linhas">
                   <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-                  <div><strong>Certificado de calibração:</strong> ${d.certificadoCalibracao}</div>
+                  <div><strong>Certificado transdutor:</strong> ${d.certificadoCalibracao}</div>
                   <div><strong>STA 6000:</strong> ${d.painel}</div>
+                  <div><strong>Certificado STA 6000:</strong> ${d.certificadoSta}</div>
                   <div><strong>Junta rígida:</strong> Junta rígida - 30 Graus</div>
                   <div><strong>Junta flexível:</strong> Junta flexível - 720 Graus</div>
                 </div>
