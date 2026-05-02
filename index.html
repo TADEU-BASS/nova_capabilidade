@@ -2034,7 +2034,7 @@
       };
     }
 
-    function calcularHistograma(valores, quantidadeBins = 8) {
+    function calcularHistograma(valores, quantidadeBins = 14) {
       const numeros = (valores || []).filter(v => Number.isFinite(v));
       if (!numeros.length) return { labels: [], frequencias: [] };
 
@@ -2048,7 +2048,7 @@
         };
       }
 
-      const bins = Math.min(Math.max(5, quantidadeBins), 12);
+      const bins = Math.min(Math.max(8, quantidadeBins), 18);
       const largura = (maximo - minimo) / bins;
       const labels = [];
       const frequencias = new Array(bins).fill(0);
@@ -2074,11 +2074,11 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false },
+          legend: { display: true, position: "bottom", labels: { boxWidth: 10, boxHeight: 10, font: { size: 10, weight: "600" } } },
           tooltip: {
             callbacks: {
               label: function(context) {
-                return `Frequência: ${context.parsed.y}`;
+                return `${context.dataset.label}: ${context.parsed.y}`;
               }
             }
           }
@@ -2105,14 +2105,28 @@
       const hist = calcularHistograma(valores);
 
       return new Chart(canvas, {
-        type: "bar",
         data: {
           labels: hist.labels,
-          datasets: [{
-            label: tituloDataset,
-            data: hist.frequencias,
-            borderWidth: 1
-          }]
+          datasets: [
+            {
+              type: "bar",
+              label: tituloDataset,
+              data: hist.frequencias,
+              borderWidth: 1,
+              categoryPercentage: 1.0,
+              barPercentage: 1.0
+            },
+            {
+              type: "line",
+              label: "Linha de tendência",
+              data: hist.frequencias,
+              borderWidth: 2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              fill: false,
+              tension: 0.35
+            }
+          ]
         },
         options: obterOpcoesHistograma()
       });
