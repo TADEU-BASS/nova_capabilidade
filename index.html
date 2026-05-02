@@ -2062,7 +2062,7 @@
       for (let i = 0; i < bins; i++) {
         const inicio = minimo + (largura * i);
         const fim = i === bins - 1 ? maximo : inicio + largura;
-        labels.push(`${formatarNumero(inicio)} até ${formatarNumero(fim)}`);
+        labels.push(formatarNumero(inicio) + " até " + formatarNumero(fim));
       }
 
       numeros.forEach(valor => {
@@ -2468,7 +2468,7 @@
               for (let i = 0; i < bins; i++) {
                 const inicio = minimo + (largura * i);
                 const fim = i === bins - 1 ? maximo : inicio + largura;
-                labels.push(`${formatarNumeroRel(inicio)} até ${formatarNumeroRel(fim)}`);
+                labels.push(formatarNumeroRel(inicio) + " até " + formatarNumeroRel(fim));
               }
               numeros.forEach(valor => {
                 let indice = Math.floor((valor - minimo) / largura);
@@ -3213,7 +3213,7 @@
               for (let i = 0; i < bins; i++) {
                 const inicio = minimo + (largura * i);
                 const fim = i === bins - 1 ? maximo : inicio + largura;
-                labels.push(`${formatarNumeroRel(inicio)} até ${formatarNumeroRel(fim)}`);
+                labels.push(formatarNumeroRel(inicio) + " até " + formatarNumeroRel(fim));
               }
               numeros.forEach(valor => {
                 let indice = Math.floor((valor - minimo) / largura);
