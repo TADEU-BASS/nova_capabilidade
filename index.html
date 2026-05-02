@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ensaio ISO 5393 - Capabilidade WS</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js">    setTimeout(aplicarVisualObrigatorios, 300);
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root {
       --azul-sidebar: #0f6b86;
@@ -26,6 +26,7 @@
     * { box-sizing: border-box; }
     body { margin: 0; font-family: "Segoe UI", Tahoma, sans-serif; background: var(--fundo); color: var(--texto); }
     .app { display: flex; min-height: 100vh; }
+
     .sidebar {
       width: 270px;
       min-width: 270px;
@@ -38,17 +39,21 @@
       justify-content: space-between;
       box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
     }
+
     .logo-box { background: #f7f7f7; border-radius: 18px; padding: 14px 10px; text-align: center; margin-bottom: 10px; }
     .logo-box img { width: 170px; max-width: 100%; object-fit: contain; }
+
     .brand h2 { font-size: 18px; margin: 8px 0 2px; font-weight: 700; }
     .brand p { margin: 0 0 18px; font-size: 12px; line-height: 1.4; color: #e8f7fc; }
+
     .side-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 14px 12px; }
     .side-card h3 { margin: 0 0 12px; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: #d7eef8; }
+
     .menu-btn, .menu-select, .menu-input { width: 100%; height: 42px; border: none; border-radius: 12px; margin-bottom: 8px; font-size: 15px; }
     .menu-btn { font-weight: 600; background: linear-gradient(180deg, #26a9dd 0%, #1497c8 100%); color: white; cursor: pointer; transition: .2s; }
     .menu-btn.secondary { background: #f5f8fa; color: #125975; }
-    .menu-btn:hover, .action-btn:hover { transform: translateY(-1px); }
-    .menu-select, .menu-input { padding: 0 12px; background: #f5fbfd; color: #18495d; border: 1px solid rgba(255,255,255,.25); outline: none; font-weight: 600; }
+    .menu-btn:hover, .action-btn:hover, .popup-btn:hover { transform: translateY(-1px); }
+
     .sidebar-footer { font-size: 12px; line-height: 1.5; color: #d9eef7; margin-top: 16px; }
     .sidebar-footer-highlight {
       margin-top: 12px;
@@ -56,22 +61,285 @@
       border-radius: 14px;
       background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.08) 100%);
       border: 1px solid rgba(255,255,255,0.18);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
       display: flex;
       flex-direction: column;
       gap: 4px;
       color: #ffffff;
       text-align: center;
     }
-    .sidebar-footer-highlight strong {
+    .sidebar-footer-highlight strong { font-size: 13px; color: #ffffff; letter-spacing: 0.2px; }
+    .sidebar-footer-highlight span { font-size: 11px; color: #dff5fb; }
+
+    .main { flex: 1 1 auto; min-width: 0; padding: 24px 18px; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .top-card, .content-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--sombra);
+      border: 1px solid rgba(255,255,255,0.45);
+    }
+    .top-card {
+      padding: 18px 18px 14px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .top-card h1 { margin: 0; color: var(--azul-escuro); font-size: 24px; font-weight: 800; }
+    .top-card p { margin: 4px 0 0; color: var(--texto-suave); font-size: 14px; }
+
+    .destino-badge {
+      background: linear-gradient(180deg, #24a5d8 0%, #168eba 100%);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-weight: 700;
       font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .content-card { overflow: hidden; }
+    .card-header { padding: 16px 18px 14px; border-bottom: 1px solid #d5e3ea; }
+    .card-header h2 { margin: 0; color: var(--azul-escuro); font-size: 18px; }
+    .card-header p { margin: 4px 0 0; color: var(--texto-suave); font-size: 13px; }
+    .card-body { padding: 16px 18px 18px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .form-section, .amostras-config {
+      grid-column: 1 / -1;
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #0f6b86 0%, #0b5f77 100%);
+      padding: 14px;
+      box-shadow: 0 10px 24px rgba(15,107,134,0.16);
+    }
+    .section-title {
+      margin: 0 0 12px;
       color: #ffffff;
-      letter-spacing: 0.2px;
+      font-size: 16px;
+      font-weight: 800;
+      border-bottom: 1px solid rgba(255,255,255,0.35);
+      padding-bottom: 8px;
     }
-    .sidebar-footer-highlight span {
-      font-size: 11px;
-      color: #dff5fb;
+    .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .field.full { grid-column: 1 / -1; }
+    .field.hidden { display: none; }
+    .field label { display: block; font-size: 13px; font-weight: 700; color: #5b7380; margin-bottom: 6px; }
+    .form-section .field label, .amostras-config label { color: #ffffff; }
+
+    .field input, .field select, .field textarea {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid #ffffff;
+      background: #ffffff;
+      padding: 0 12px;
+      font-size: 14px;
+      color: #314e5c;
+      outline: none;
+      font-family: inherit;
     }
+    .field input, .field select { height: 40px; }
+    .field textarea { min-height: 92px; padding: 12px; resize: vertical; }
+
+    .field input:focus, .field select:focus, .field textarea:focus, td input:focus {
+      border-color: #2daedc;
+      box-shadow: 0 0 0 3px rgba(45,174,220,.16);
+    }
+
+    .campo-obrigatorio {
+      background: #fff2f2 !important;
+      border-color: #f3b7b7 !important;
+    }
+    .campo-obrigatorio-preenchido {
+      background: #ffffff !important;
+      border-color: #ffffff !important;
+    }
+    .campo-obrigatorio-erro {
+      background: #ffe3e3 !important;
+      border-color: #d93b3b !important;
+      box-shadow: 0 0 0 3px rgba(217, 59, 59, .24) !important;
+    }
+    .tabela-obrigatoria-erro {
+      border-color: #d93b3b !important;
+      box-shadow: 0 0 0 3px rgba(217, 59, 59, .20) !important;
+    }
+
+    .samples-box, .resultado-box, .grafico-box {
+      margin-top: 8px;
+      border: 1px dashed var(--borda-forte);
+      border-radius: 16px;
+      padding: 14px;
+      background: rgba(255,255,255,0.35);
+    }
+    .resultado-box {
+      border-style: solid;
+      background: var(--resultado-bg);
+      border-color: var(--resultado-borda);
+      margin-bottom: 16px;
+    }
+    .samples-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .samples-header h3 { margin: 0; color: var(--azul-escuro); font-size: 18px; }
+
+    .tables-grid, .blocos-grid, .grafico-grid, .manual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .table-card, .manual-card, .bloco-metrica, .grafico-card {
+      background: rgba(255,255,255,0.95);
+      border: 1px solid #cfe0e7;
+      border-radius: 16px;
+      overflow: hidden;
+      min-width: 0;
+      box-shadow: 0 8px 18px rgba(15, 95, 125, 0.08);
+    }
+    .table-card h4 {
+      margin: 0;
+      padding: 12px 14px;
+      background: linear-gradient(180deg, #1fa6d9 0%, #158fbe 100%);
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .table-actions {
+      padding: 10px 12px;
+      border-bottom: 1px solid #dce8ee;
+      background: #f7fbfd;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .table-scroll { max-height: 320px; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 280px; }
+    th, td { border-bottom: 1px solid #e0eaef; padding: 8px; text-align: center; font-size: 13px; }
+    th { background: #eef7fb; color: #315767; position: sticky; top: 0; z-index: 1; }
+    td:first-child, th:first-child { width: 80px; font-weight: 700; }
+    td input {
+      width: 100%;
+      height: 32px;
+      border: 1px solid #c8d9e1;
+      border-radius: 8px;
+      padding: 0 8px;
+      text-align: center;
+      background: white;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .resultado-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+    .resultado-item { background: white; border: 1px solid var(--resultado-borda); border-radius: 10px; padding: 10px; }
+    .resultado-item strong { display: block; font-size: 12px; color: #4f6976; margin-bottom: 4px; }
+    .resultado-item span { font-size: 15px; font-weight: 700; color: #0f5f7d; }
+
+    .status-badge {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: 180px !important;
+      min-height: 42px !important;
+      padding: 8px 18px !important;
+      border-radius: 12px !important;
+      font-size: 15px !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.5px !important;
+      text-align: center;
+    }
+    .status-aprovado { background: #27ae60 !important; color: #ffffff !important; }
+    .status-reprovado { background: #d93b3b !important; color: #ffffff !important; }
+    .status-neutro { background: #ffffff !important; color: #111111 !important; border: 1px solid #cfd8dc !important; }
+    .motivo-texto {
+      display: block;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      line-height: 1.45;
+      color: #244453 !important;
+      white-space: normal;
+    }
+
+    .action-btn {
+      min-width: 140px;
+      height: 38px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s;
+      background: linear-gradient(180deg, #25a8db 0%, #1592c0 100%);
+      color: white;
+    }
+    .action-btn.secondary { background: linear-gradient(180deg, #25a8db 0%, #1592c0 100%); color: white; }
+    .action-btn.danger { background: linear-gradient(180deg, #ef5350 0%, #d93b3b 100%); color: white; }
+    .action-btn.full {
+      width: auto;
+      min-width: 110px;
+      height: 26px;
+      margin-bottom: 0;
+      font-size: 10px;
+      border-radius: 6px;
+      padding: 0 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .page-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      margin: 0 0 16px;
+      padding: 12px;
+      border: 1px solid #cfe0e7;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.70);
+    }
+
+    .resumo-dados {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 16px;
+      margin-bottom: 16px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid #d5e4ea;
+    }
+    .resumo-dados div { font-size: 14px; }
+    .resumo-dados strong { color: #0f5f7d; }
+
+    .bloco-metrica { padding: 14px; }
+    .bloco-metrica h4, .grafico-card h4, .manual-card h3 {
+      margin: 0 0 12px;
+      color: #0f5f7d;
+      font-size: 16px;
+    }
+    canvas { background: #fff; border-radius: 14px; padding: 10px; }
+    .grafico-card { padding: 12px; min-height: 330px; }
+    .grafico-card h4 { text-align: center; font-weight: 800; }
+    .grafico-card canvas { width: 100% !important; height: 270px !important; }
+    .small-note { font-size: 12px; color: #5d7480; margin-top: 4px; width: 100%; }
+
+    .manual-card { padding: 16px; }
+    .manual-card p, .manual-card li { color: #314e5c; font-size: 14px; line-height: 1.5; }
+    .manual-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-bottom: 16px; }
+
     .popup-overlay {
       position: fixed;
       inset: 0;
@@ -98,17 +366,8 @@
       color: #ffffff;
       padding: 18px 20px 16px;
     }
-    .popup-header h3 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 800;
-      color: #ffffff;
-    }
-    .popup-header p {
-      margin: 5px 0 0;
-      font-size: 13px;
-      color: #e8f7fc;
-    }
+    .popup-header h3 { margin: 0; font-size: 20px; font-weight: 800; color: #ffffff; }
+    .popup-header p { margin: 5px 0 0; font-size: 13px; color: #e8f7fc; }
     .popup-body {
       padding: 22px 20px 18px;
       color: #244453;
@@ -150,114 +409,15 @@
       background: #ffffff;
       border: 1px solid #b9dceb;
     }
-    .popup-btn:hover { transform: translateY(-1px); }
     @keyframes popupShow {
       from { transform: translateY(8px) scale(.98); opacity: 0; }
       to { transform: translateY(0) scale(1); opacity: 1; }
     }
-    .main { flex: 1 1 auto; min-width: 0; padding: 24px 18px; }
-    .page { display: none; }
-    .page.active { display: block; }
-    .top-card, .content-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--sombra); border: 1px solid rgba(255,255,255,0.45); }
-    .top-card { padding: 18px 18px 14px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-    .top-card h1 { margin: 0; color: var(--azul-escuro); font-size: 24px; font-weight: 800; }
-    .top-card p { margin: 4px 0 0; color: var(--texto-suave); font-size: 14px; }
-    .destino-badge { background: linear-gradient(180deg, #24a5d8 0%, #168eba 100%); color: white; border: none; padding: 10px 18px; border-radius: 999px; font-weight: 700; font-size: 13px; white-space: nowrap; }
-    .content-card { overflow: hidden; }
-    .card-header { padding: 16px 18px 14px; border-bottom: 1px solid #d5e3ea; }
-    .card-header h2 { margin: 0; color: var(--azul-escuro); font-size: 18px; }
-    .card-header p { margin: 4px 0 0; color: var(--texto-suave); font-size: 13px; }
-    .card-body { padding: 16px 18px 18px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
-    .form-section { grid-column: 1 / -1; border: 1px solid rgba(255,255,255,0.35); border-radius: 16px; background: linear-gradient(180deg, #0f6b86 0%, #0b5f77 100%); padding: 14px; box-shadow: 0 10px 24px rgba(15,107,134,0.16); }
-    .section-title { margin: 0 0 12px; color: #ffffff; font-size: 16px; font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.35); padding-bottom: 8px; }
-    .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .amostras-config { margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.35); border-radius: 16px; background: linear-gradient(180deg, #0f6b86 0%, #0b5f77 100%); padding: 14px; box-shadow: 0 10px 24px rgba(15,107,134,0.16); }
-    .amostras-config .section-title { color: #ffffff; border-bottom: 1px solid rgba(255,255,255,0.35); }
-    .amostras-config label { color: #ffffff !important; }
-    .amostras-config input { background: #ffffff; border: 1px solid #ffffff; color: #314e5c; }
-
-    .field.full { grid-column: 1 / -1; }
-    .field.hidden { display: none; }
-    .field label { display: block; font-size: 13px; font-weight: 700; color: #5b7380; margin-bottom: 6px; }
-    .form-section .field label { color: #ffffff; }
-    .field input, .field select, .field textarea {
-      width: 100%; border-radius: 12px; border: 1px solid #ffffff; background: #ffffff;
-      padding: 0 12px; font-size: 14px; color: #314e5c; outline: none; font-family: inherit;
-    }
-    .field input, .field select { height: 40px; }
-    .field textarea { min-height: 92px; padding: 12px; resize: vertical; }
-    .field input:focus, .field select:focus, .field textarea:focus, td input:focus {
-      border-color: #2daedc; box-shadow: 0 0 0 3px rgba(45,174,220,.16);
-    }
-    .samples-box, .resultado-box, .grafico-box {
-      margin-top: 8px; border: 1px dashed var(--borda-forte); border-radius: 16px; padding: 14px; background: rgba(255,255,255,0.35);
-    }
-    .resultado-box { border-style: solid; background: var(--resultado-bg); border-color: var(--resultado-borda); margin-bottom: 16px; }
-    .samples-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
-    .samples-header h3 { margin: 0; color: var(--azul-escuro); font-size: 18px; }
-    .tables-grid, .blocos-grid, .grafico-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .table-card { background: rgba(255,255,255,0.95); border: 1px solid #cfe0e7; border-radius: 16px; overflow: hidden; min-width: 0; }
-    .table-card h4 { margin: 0; padding: 12px 14px; background: linear-gradient(180deg, #1fa6d9 0%, #158fbe 100%); color: white; font-size: 15px; font-weight: 700; }
-    .table-actions { padding: 10px 12px; border-bottom: 1px solid #dce8ee; background: #f7fbfd; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-    .table-scroll { max-height: 320px; overflow: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 280px; }
-    th, td { border-bottom: 1px solid #e0eaef; padding: 8px; text-align: center; font-size: 13px; }
-    th { background: #eef7fb; color: #315767; position: sticky; top: 0; z-index: 1; }
-    td:first-child, th:first-child { width: 80px; font-weight: 700; }
-    td input { width: 100%; height: 32px; border: 1px solid #c8d9e1; border-radius: 8px; padding: 0 8px; text-align: center; background: white; outline: none; font-size: 13px; }
-    .resultado-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
-    .resultado-item { background: white; border: 1px solid var(--resultado-borda); border-radius: 10px; padding: 10px; }
-    .resultado-item strong { display: block; font-size: 12px; color: #4f6976; margin-bottom: 4px; }
-    .resultado-item span { font-size: 15px; font-weight: 700; color: #0f5f7d; }
-    .status-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 180px; height: 42px; padding: 0 18px; border-radius: 12px; font-size: 15px; font-weight: 800; letter-spacing: 0.5px; }
-    .status-aprovado { background: #27ae60; color: #fff; }
-    .status-reprovado { background: #d93b3b; color: #fff; }
-    .status-neutro { background: #cfd8dc; color: #35505c; }
-    .motivo-texto { display: block; font-size: 13px !important; font-weight: 700 !important; line-height: 1.45; color: #244453 !important; white-space: normal; }
-    .action-btn { min-width: 140px; height: 38px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; background: linear-gradient(180deg, #25a8db 0%, #1592c0 100%); color: white; }
-    .action-btn.primary, .action-btn.secondary { background: linear-gradient(180deg, #25a8db 0%, #1592c0 100%); color: white; }
-    .action-btn.danger { background: linear-gradient(180deg, #ef5350 0%, #d93b3b 100%); color: white; }
-    .action-btn.full { width: auto; min-width: 110px; height: 26px; margin-bottom: 0; font-size: 10px; border-radius: 6px; padding: 0 8px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
-    .page-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: flex-end; margin: 0 0 16px; padding: 12px; border: 1px solid #cfe0e7; border-radius: 14px; background: rgba(255,255,255,0.70); }
-    .page-actions .action-btn { min-width: 170px; }
-    .resumo-dados { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin-bottom: 16px; padding: 14px; border-radius: 14px; background: rgba(255,255,255,0.65); border: 1px solid #d5e4ea; }
-    .resumo-dados div { font-size: 14px; }
-    .resumo-dados strong { color: #0f5f7d; }
-    .bloco-metrica { background: rgba(255,255,255,0.95); border: 1px solid #cfe0e7; border-radius: 16px; padding: 14px; }
-    .bloco-metrica h4 { margin: 0 0 12px; color: #0f5f7d; font-size: 16px; }
-    canvas { background: #fff; border-radius: 14px; padding: 10px; }
-    .grafico-card {
-      background: #ffffff;
-      border: 1px solid #cfe0e7;
-      border-radius: 16px;
-      padding: 12px;
-      min-height: 330px;
-      box-shadow: 0 8px 18px rgba(15, 95, 125, 0.08);
-    }
-    .grafico-card h4 {
-      margin: 0 0 10px;
-      color: #0f5f7d;
-      font-size: 15px;
-      font-weight: 800;
-      text-align: center;
-    }
-    .grafico-card canvas {
-      width: 100% !important;
-      height: 270px !important;
-    }
-    .small-note { font-size: 12px; color: #5d7480; margin-top: 4px; width: 100%; }
-    .manual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .manual-card { background: #ffffff; border: 1px solid #cfe0e7; border-radius: 16px; padding: 16px; box-shadow: 0 8px 18px rgba(15, 95, 125, 0.08); }
-    .manual-card h3 { margin: 0 0 10px; color: #0f5f7d; font-size: 17px; }
-    .manual-card p, .manual-card li { color: #314e5c; font-size: 14px; line-height: 1.5; }
-    .manual-card ul, .manual-card ol { margin: 8px 0 0 18px; padding: 0; }
-    .manual-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; margin-bottom: 16px; }
 
     @media (max-width: 1200px) { .tables-grid, .blocos-grid, .grafico-grid, .manual-grid { grid-template-columns: 1fr; } }
     @media (max-width: 900px) {
       .app { flex-direction: column; }
-      .sidebar { width: 100%; }
+      .sidebar { width: 100%; min-width: 0; flex: none; }
       .form-grid, .section-grid, .resumo-dados, .resultado-grid { grid-template-columns: 1fr; }
       .top-card { flex-direction: column; align-items: flex-start; }
     }
@@ -267,80 +427,9 @@
       .main { padding: 0; }
       .content-card { box-shadow: none; border: none; background: white; }
     }
-  
-    .resultado-item span.status-badge,
-    span.status-badge {
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      min-width: 180px !important;
-      height: 42px !important;
-      padding: 0 18px !important;
-      border-radius: 12px !important;
-      font-size: 15px !important;
-      font-weight: 900 !important;
-      letter-spacing: 0.5px !important;
-    }
-    .resultado-item span.status-badge.status-aprovado,
-    span.status-badge.status-aprovado {
-      background: #27ae60 !important;
-      color: #ffffff !important;
-      font-weight: 900 !important;
-      border: none !important;
-    }
-    .resultado-item span.status-badge.status-reprovado,
-    span.status-badge.status-reprovado {
-      background: #d93b3b !important;
-      color: #ffffff !important;
-      font-weight: 900 !important;
-      border: none !important;
-    }
-    .resultado-item span.status-badge.status-neutro,
-    span.status-badge.status-neutro {
-      background: #ffffff !important;
-      color: #111111 !important;
-      font-weight: 800 !important;
-      border: 1px solid #cfd8dc !important;
-    }
-    .campo-obrigatorio-erro {
-      border-color: #d93b3b !important;
-      box-shadow: 0 0 0 3px rgba(217, 59, 59, .22) !important;
-      background: #fff8f8 !important;
-    }
-    .tabela-obrigatoria-erro {
-      border-color: #d93b3b !important;
-      box-shadow: 0 0 0 3px rgba(217, 59, 59, .20) !important;
-    }
-
-  
-    .campo-obrigatorio {
-      background: #fff2f2 !important;
-      border-color: #f3b7b7 !important;
-    }
-    .campo-obrigatorio::placeholder {
-      color: #9b6b6b;
-    }
-    .campo-obrigatorio:focus {
-      border-color: #d93b3b !important;
-      box-shadow: 0 0 0 3px rgba(217, 59, 59, .16) !important;
-      background: #ffffff !important;
-    }
-    .campo-obrigatorio-preenchido {
-      background: #ffffff !important;
-      border-color: #ffffff !important;
-    }
-    .campo-obrigatorio-erro {
-      background: #ffe3e3 !important;
-      border-color: #d93b3b !important;
-      box-shadow: 0 0 0 3px rgba(217, 59, 59, .24) !important;
-    }
-    .tabela-obrigatoria-erro {
-      border-color: #d93b3b !important;
-      box-shadow: 0 0 0 3px rgba(217, 59, 59, .20) !important;
-    }
-
   </style>
 </head>
+
 <body>
   <div class="app">
     <aside class="sidebar">
@@ -437,41 +526,95 @@
                     <label for="crowfoot">Identificação do Crowfoot</label>
                     <input type="text" id="crowfoot" placeholder="EX.: CROWFOOT 32MM / CF-01">
                   </div>
-                  <div class="field"><label for="apertadeiraModelo">Apertadeira modelo</label><input type="text" id="apertadeiraModelo" placeholder="EX.: ETP STB33 12 I06 B"></div>
-                  <div class="field"><label for="serialApertadeira">Serial apertadeira</label><input type="text" id="serialApertadeira" placeholder="EX.: A200045"></div>
-                  <div class="field"><label for="controladorModelo">Controlador modelo</label><input type="text" id="controladorModelo" placeholder="EX.: PF6000 / MTF6000"></div>
-                  <div class="field"><label for="serialControlador">Serial controlador</label><input type="text" id="serialControlador" placeholder="EX.: CTRL123456"></div>
+                  <div class="field">
+                    <label for="apertadeiraModelo">Apertadeira modelo</label>
+                    <input type="text" id="apertadeiraModelo" placeholder="EX.: ETP STB33 12 I06 B">
+                  </div>
+                  <div class="field">
+                    <label for="serialApertadeira">Serial apertadeira</label>
+                    <input type="text" id="serialApertadeira" placeholder="EX.: A200045">
+                  </div>
+                  <div class="field">
+                    <label for="controladorModelo">Controlador modelo</label>
+                    <input type="text" id="controladorModelo" placeholder="EX.: PF6000 / MTF6000">
+                  </div>
+                  <div class="field">
+                    <label for="serialControlador">Serial controlador</label>
+                    <input type="text" id="serialControlador" placeholder="EX.: CTRL123456">
+                  </div>
                 </div>
               </div>
 
               <div class="form-section">
                 <h3 class="section-title">Medição e rastreabilidade</h3>
                 <div class="section-grid">
-                  <div class="field"><label for="transdutor">Transdutor</label><input type="text" id="transdutor" placeholder="EX.: STA 6000 / RTT"></div>
-                  <div class="field"><label for="painel">STA 6000</label><input type="text" id="painel" placeholder="EX.: STA 6000 / PAINEL 01"></div>
-                  <div class="field"><label for="certificadoSta">Certificado de calibração do STA 6000</label><input type="text" id="certificadoSta" placeholder="EX.: CERT-STA-2026-001 / RBC-STA"></div>
-                  <div class="field"><label for="certificadoCalibracao">Certificado de calibração do transdutor</label><input type="text" id="certificadoCalibracao" placeholder="EX.: CERT-TRANS-2026-001 / RBC-12345"></div>
-                  <div class="field"><label for="sentidoAperto">Sentido de aperto</label><select id="sentidoAperto"><option value="Horário">Horário</option><option value="Anti-horário">Anti-horário</option></select></div>
-                  <div class="field"><label for="temperaturaAmbiente">Temperatura ambiente (°C)</label><input type="text" id="temperaturaAmbiente" placeholder="EX.: 22"></div>
-                  <div class="field"><label for="umidadeRelativa">Umidade relativa (%)</label><input type="text" id="umidadeRelativa" placeholder="EX.: 55"></div>
+                  <div class="field">
+                    <label for="transdutor">Transdutor</label>
+                    <input type="text" id="transdutor" placeholder="EX.: STA 6000 / RTT">
+                  </div>
+                  <div class="field">
+                    <label for="painel">STA 6000</label>
+                    <input type="text" id="painel" placeholder="EX.: STA 6000 / PAINEL 01">
+                  </div>
+                  <div class="field">
+                    <label for="certificadoSta">Certificado de calibração do STA 6000</label>
+                    <input type="text" id="certificadoSta" placeholder="EX.: CERT-STA-2026-001 / RBC-STA">
+                  </div>
+                  <div class="field">
+                    <label for="certificadoCalibracao">Certificado de calibração do transdutor</label>
+                    <input type="text" id="certificadoCalibracao" placeholder="EX.: CERT-TRANS-2026-001 / RBC-12345">
+                  </div>
+                  <div class="field">
+                    <label for="sentidoAperto">Sentido de aperto</label>
+                    <select id="sentidoAperto">
+                      <option value="Horário">Horário</option>
+                      <option value="Anti-horário">Anti-horário</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="temperaturaAmbiente">Temperatura ambiente (°C)</label>
+                    <input type="text" id="temperaturaAmbiente" placeholder="EX.: 22">
+                  </div>
+                  <div class="field">
+                    <label for="umidadeRelativa">Umidade relativa (%)</label>
+                    <input type="text" id="umidadeRelativa" placeholder="EX.: 55">
+                  </div>
                 </div>
               </div>
 
               <div class="form-section">
                 <h3 class="section-title">Parâmetros do ensaio</h3>
                 <div class="section-grid">
-                  <div class="field"><label for="porcentagem">Tolerância (%)</label><input type="text" id="porcentagem" placeholder="EX.: 15"></div>
-                  <div class="field"><label for="torqueMaiorBase">Torque de teste superior</label><input type="text" id="torqueMaiorBase" placeholder="EX.: 100"></div>
-                  <div class="field"><label for="torqueMenorBase">Torque de teste inferior</label><input type="text" id="torqueMenorBase" placeholder="EX.: 20"></div>
-                  <div class="field"><label>Junta rígida</label><input type="text" value="30 Graus" readonly></div>
-                  <div class="field"><label>Junta flexível</label><input type="text" value="720 Graus" readonly></div>
+                  <div class="field">
+                    <label for="porcentagem">Tolerância (%)</label>
+                    <input type="text" id="porcentagem" placeholder="EX.: 15">
+                  </div>
+                  <div class="field">
+                    <label for="torqueMaiorBase">Torque de teste superior</label>
+                    <input type="text" id="torqueMaiorBase" placeholder="EX.: 100">
+                  </div>
+                  <div class="field">
+                    <label for="torqueMenorBase">Torque de teste inferior</label>
+                    <input type="text" id="torqueMenorBase" placeholder="EX.: 20">
+                  </div>
+                  <div class="field">
+                    <label>Junta rígida</label>
+                    <input type="text" value="30 Graus" readonly>
+                  </div>
+                  <div class="field">
+                    <label>Junta flexível</label>
+                    <input type="text" value="720 Graus" readonly>
+                  </div>
                 </div>
               </div>
 
               <div class="form-section">
                 <h3 class="section-title">Observações</h3>
                 <div class="section-grid">
-                  <div class="field full"><label for="observacoesEnsaio">Observações do ensaio</label><textarea id="observacoesEnsaio" rows="3" placeholder="EX.: FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO, ALINHAMENTO VERIFICADO, SEM DESVIOS DO MÉTODO."></textarea></div>
+                  <div class="field full">
+                    <label for="observacoesEnsaio">Observações do ensaio</label>
+                    <textarea id="observacoesEnsaio" rows="3" placeholder="EX.: FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO."></textarea>
+                  </div>
                 </div>
               </div>
             </div>
@@ -525,48 +668,12 @@
             <div class="blocos-grid">
               <div class="bloco-metrica">
                 <h4>Resultado Torque Superior</h4>
-                <div class="resultado-grid">
-                  <div class="resultado-item"><strong>Média rígida</strong><span id="media-max-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Média flexível</strong><span id="media-max-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>DP rígida</strong><span id="dp-max-rigida">-</span></div>
-                  <div class="resultado-item"><strong>DP flexível</strong><span id="dp-max-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Mínimo rígida</strong><span id="min-max-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Mínimo flexível</strong><span id="min-max-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Máximo rígida</strong><span id="max-max-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Máximo flexível</strong><span id="max-max-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Amplitude rígida</strong><span id="amp-max-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Amplitude flexível</strong><span id="amp-max-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Scatter rígida (%)</strong><span id="scatter-max-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Scatter flexível (%)</strong><span id="scatter-max-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Cm rígida</strong><span id="cm-max-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Cmk rígida</strong><span id="cmk-max-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Cm flexível</strong><span id="cm-max-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Cmk flexível</strong><span id="cmk-max-flexivel">-</span></div>
-                  <div class="resultado-item" style="grid-column: 1 / -1;"><strong>% calculada torque superior</strong><span id="pct-max">-</span></div>
-                </div>
+                <div class="resultado-grid" id="resultadoSuperior"></div>
               </div>
 
               <div class="bloco-metrica">
                 <h4>Resultado Torque Inferior</h4>
-                <div class="resultado-grid">
-                  <div class="resultado-item"><strong>Média rígida</strong><span id="media-min-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Média flexível</strong><span id="media-min-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>DP rígida</strong><span id="dp-min-rigida">-</span></div>
-                  <div class="resultado-item"><strong>DP flexível</strong><span id="dp-min-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Mínimo rígida</strong><span id="min-min-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Mínimo flexível</strong><span id="min-min-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Máximo rígida</strong><span id="max-min-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Máximo flexível</strong><span id="max-min-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Amplitude rígida</strong><span id="amp-min-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Amplitude flexível</strong><span id="amp-min-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Scatter rígida (%)</strong><span id="scatter-min-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Scatter flexível (%)</strong><span id="scatter-min-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Cm rígida</strong><span id="cm-min-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Cmk rígida</strong><span id="cmk-min-rigida">-</span></div>
-                  <div class="resultado-item"><strong>Cm flexível</strong><span id="cm-min-flexivel">-</span></div>
-                  <div class="resultado-item"><strong>Cmk flexível</strong><span id="cmk-min-flexivel">-</span></div>
-                  <div class="resultado-item" style="grid-column: 1 / -1;"><strong>% calculada torque inferior</strong><span id="pct-min">-</span></div>
-                </div>
+                <div class="resultado-grid" id="resultadoInferior"></div>
               </div>
             </div>
 
@@ -607,6 +714,7 @@
                   </div>
                   <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-min-rigida"></tbody></table></div>
                 </div>
+
                 <div class="table-card">
                   <h4>Torque inferior — Junta flexível - 720 Graus</h4>
                   <div class="table-actions">
@@ -616,6 +724,7 @@
                   </div>
                   <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-min-flexivel"></tbody></table></div>
                 </div>
+
                 <div class="table-card">
                   <h4>Torque superior — Junta rígida - 30 Graus</h4>
                   <div class="table-actions">
@@ -625,6 +734,7 @@
                   </div>
                   <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-max-rigida"></tbody></table></div>
                 </div>
+
                 <div class="table-card">
                   <h4>Torque superior — Junta flexível - 720 Graus</h4>
                   <div class="table-actions">
@@ -656,6 +766,7 @@
           </div>
         </section>
       </div>
+
       <div id="pagina-torque-unico" class="page">
         <section class="top-card">
           <div>
@@ -668,7 +779,7 @@
         <section class="content-card">
           <div class="card-header">
             <h2>Parâmetros do torque único</h2>
-            <p>Informe o torque nominal, a tolerância e a quantidade de amostras. O critério de aprovação é o mesmo do ensaio principal.</p>
+            <p>Informe o torque nominal, a tolerância e a quantidade de amostras.</p>
           </div>
 
           <div class="card-body">
@@ -779,80 +890,34 @@
             </div>
 
             <div class="manual-grid">
-              <div class="manual-card">
-                <h3>1. Dados do ensaio</h3>
-                <ol>
-                  <li>Preencha número do relatório, data, local, cliente/projeto e técnico responsável.</li>
-                  <li>Informe a aplicação: apertadeira ou apertadeira com crowfoot.</li>
-                  <li>Preencha modelo e serial da apertadeira e do controlador.</li>
-                </ol>
-              </div>
-
-              <div class="manual-card">
-                <h3>2. Medição e rastreabilidade</h3>
-                <ol>
-                  <li>Informe o transdutor utilizado.</li>
-                  <li>Informe o certificado de calibração do transdutor.</li>
-                  <li>Informe o STA 6000 utilizado.</li>
-                  <li>Informe o certificado de calibração do STA 6000.</li>
-                  <li>Preencha sentido de aperto, temperatura e umidade quando aplicável.</li>
-                </ol>
-              </div>
-
-              <div class="manual-card">
-                <h3>3. Parâmetros</h3>
-                <ol>
-                  <li>Digite a tolerância em porcentagem, por exemplo: 15.</li>
-                  <li>Digite o torque de teste superior.</li>
-                  <li>Digite o torque de teste inferior.</li>
-                  <li>As juntas ficam fixas como rígida 30 graus e flexível 720 graus.</li>
-                </ol>
-              </div>
-
-              <div class="manual-card">
-                <h3>4. Tabelas de amostras</h3>
-                <ol>
-                  <li>Clique em Abrir tabelas.</li>
-                  <li>Informe a quantidade de amostras.</li>
-                  <li>Cole ou digite os valores nas quatro tabelas: torque inferior rígida, inferior flexível, superior rígida e superior flexível.</li>
-                  <li>Clique em Calcular resultados.</li>
-                </ol>
-              </div>
-
-              <div class="manual-card">
-                <h3>5. Resultado</h3>
-                <p>O app calcula média, desvio padrão, mínimo, máximo, amplitude, scatter, Cm e Cmk.</p>
-                <p>O status interno WS considera tolerância, Cm mínimo e Cmk mínimo. Quando reprovar, o app mostra o motivo do resultado.</p>
-              </div>
-
-              <div class="manual-card">
-                <h3>6. Relatório</h3>
-                <ol>
-                  <li>Após calcular, clique em Gerar relatório.</li>
-                  <li>Confira o cabeçalho, resultados, gráficos e tabelas.</li>
-                  <li>Use o botão Imprimir relatório para salvar em PDF.</li>
-                </ol>
-              </div>
-
-              <div class="manual-card">
-                <h3>7. Salvar e carregar ensaio</h3>
-                <p>Use Salvar ensaio para guardar os dados preenchidos em arquivo JSON. Use Carregar ensaio para abrir um ensaio salvo anteriormente.</p>
-              </div>
-
-              <div class="manual-card">
-                <h3>8. Torque único</h3>
-                <p>Use a função Torque único quando precisar avaliar apenas um ponto de torque com uma única tabela de amostras.</p>
-              </div>
+              <div class="manual-card"><h3>1. Dados do ensaio</h3><p>Preencha técnico, ferramenta, rastreabilidade, torque superior, torque inferior, tolerância e quantidade de amostras.</p></div>
+              <div class="manual-card"><h3>2. Tabelas</h3><p>Clique em Abrir tabelas. O app só avança se os campos obrigatórios estiverem preenchidos.</p></div>
+              <div class="manual-card"><h3>3. Resultado</h3><p>O app calcula média, desvio padrão, mínimo, máximo, amplitude, scatter, Cm e Cmk.</p></div>
+              <div class="manual-card"><h3>4. Relatório</h3><p>Após calcular, clique em Gerar relatório e depois em Imprimir relatório para salvar em PDF.</p></div>
+              <div class="manual-card"><h3>5. Salvar e carregar</h3><p>Salvar ensaio gera um arquivo JSON. Carregar ensaio abre esse arquivo novamente.</p></div>
+              <div class="manual-card"><h3>6. Torque único</h3><p>Use quando precisar avaliar apenas um ponto de torque com uma única tabela.</p></div>
             </div>
           </div>
         </section>
       </div>
-
     </main>
   </div>
 
+  <div id="popupOverlay" class="popup-overlay" aria-hidden="true">
+    <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+      <div class="popup-header">
+        <h3 id="popupTitle">Aviso do sistema</h3>
+        <p id="popupSubtitle">Atlas Copco WS</p>
+      </div>
+      <div class="popup-body" id="popupMessage">Mensagem</div>
+      <div class="popup-actions">
+        <button type="button" id="popupCancel" class="popup-btn secondary">Cancelar</button>
+        <button type="button" id="popupConfirm" class="popup-btn primary">OK</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-        const campoAmostrasManual = document.getElementById("campo-amostras-manual");
     const inputAmostrasManual = document.getElementById("amostrasManual");
     const tipoAplicacao = document.getElementById("tipoAplicacao");
     const crowfootField = document.getElementById("crowfootField");
@@ -869,82 +934,52 @@
       maxFlexivel: document.getElementById("tbody-max-flexivel")
     };
 
-    const ids = {
-      mediaMaxRigida: document.getElementById("media-max-rigida"),
-      mediaMaxFlexivel: document.getElementById("media-max-flexivel"),
-      dpMaxRigida: document.getElementById("dp-max-rigida"),
-      dpMaxFlexivel: document.getElementById("dp-max-flexivel"),
-      minMaxRigida: document.getElementById("min-max-rigida"),
-      minMaxFlexivel: document.getElementById("min-max-flexivel"),
-      maxMaxRigida: document.getElementById("max-max-rigida"),
-      maxMaxFlexivel: document.getElementById("max-max-flexivel"),
-      ampMaxRigida: document.getElementById("amp-max-rigida"),
-      ampMaxFlexivel: document.getElementById("amp-max-flexivel"),
-      scatterMaxRigida: document.getElementById("scatter-max-rigida"),
-      scatterMaxFlexivel: document.getElementById("scatter-max-flexivel"),
-      cmMaxRigida: document.getElementById("cm-max-rigida"),
-      cmkMaxRigida: document.getElementById("cmk-max-rigida"),
-      cmMaxFlexivel: document.getElementById("cm-max-flexivel"),
-      cmkMaxFlexivel: document.getElementById("cmk-max-flexivel"),
-      pctMax: document.getElementById("pct-max"),
-      mediaMinRigida: document.getElementById("media-min-rigida"),
-      mediaMinFlexivel: document.getElementById("media-min-flexivel"),
-      dpMinRigida: document.getElementById("dp-min-rigida"),
-      dpMinFlexivel: document.getElementById("dp-min-flexivel"),
-      minMinRigida: document.getElementById("min-min-rigida"),
-      minMinFlexivel: document.getElementById("min-min-flexivel"),
-      maxMinRigida: document.getElementById("max-min-rigida"),
-      maxMinFlexivel: document.getElementById("max-min-flexivel"),
-      ampMinRigida: document.getElementById("amp-min-rigida"),
-      ampMinFlexivel: document.getElementById("amp-min-flexivel"),
-      scatterMinRigida: document.getElementById("scatter-min-rigida"),
-      scatterMinFlexivel: document.getElementById("scatter-min-flexivel"),
-      cmMinRigida: document.getElementById("cm-min-rigida"),
-      cmkMinRigida: document.getElementById("cmk-min-rigida"),
-      cmMinFlexivel: document.getElementById("cm-min-flexivel"),
-      cmkMinFlexivel: document.getElementById("cmk-min-flexivel"),
-      pctMin: document.getElementById("pct-min")
-    };
-
     let graficoMaior = null;
     let graficoMenor = null;
     let graficoTorqueUnico = null;
+    let popupResolver = null;
+
+    const metricasSuperior = [
+      ["media-max-rigida", "Média rígida"], ["media-max-flexivel", "Média flexível"],
+      ["dp-max-rigida", "DP rígida"], ["dp-max-flexivel", "DP flexível"],
+      ["min-max-rigida", "Mínimo rígida"], ["min-max-flexivel", "Mínimo flexível"],
+      ["max-max-rigida", "Máximo rígida"], ["max-max-flexivel", "Máximo flexível"],
+      ["amp-max-rigida", "Amplitude rígida"], ["amp-max-flexivel", "Amplitude flexível"],
+      ["scatter-max-rigida", "Scatter rígida (%)"], ["scatter-max-flexivel", "Scatter flexível (%)"],
+      ["cm-max-rigida", "Cm rígida"], ["cmk-max-rigida", "Cmk rígida"],
+      ["cm-max-flexivel", "Cm flexível"], ["cmk-max-flexivel", "Cmk flexível"],
+      ["pct-max", "% calculada torque superior", true]
+    ];
+
+    const metricasInferior = [
+      ["media-min-rigida", "Média rígida"], ["media-min-flexivel", "Média flexível"],
+      ["dp-min-rigida", "DP rígida"], ["dp-min-flexivel", "DP flexível"],
+      ["min-min-rigida", "Mínimo rígida"], ["min-min-flexivel", "Mínimo flexível"],
+      ["max-min-rigida", "Máximo rígida"], ["max-min-flexivel", "Máximo flexível"],
+      ["amp-min-rigida", "Amplitude rígida"], ["amp-min-flexivel", "Amplitude flexível"],
+      ["scatter-min-rigida", "Scatter rígida (%)"], ["scatter-min-flexivel", "Scatter flexível (%)"],
+      ["cm-min-rigida", "Cm rígida"], ["cmk-min-rigida", "Cmk rígida"],
+      ["cm-min-flexivel", "Cm flexível"], ["cmk-min-flexivel", "Cmk flexível"],
+      ["pct-min", "% calculada torque inferior", true]
+    ];
+
+    function montarMetricas(containerId, lista) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = lista.map(([id, titulo, full]) =>
+        `<div class="resultado-item" style="${full ? 'grid-column:1/-1;' : ''}"><strong>${titulo}</strong><span id="${id}">-</span></div>`
+      ).join("");
+    }
+
+    function el(id) { return document.getElementById(id); }
 
     function mostrarPagina(id) {
       document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
       document.getElementById(id).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function abrirManualPdf() {
       mostrarPagina("pagina-manual");
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function obterTotalAmostras() {
-      const totalManual = parseInt(inputAmostrasManual.value, 10);
-      return Number.isInteger(totalManual) && totalManual > 0 ? totalManual : 0;
-    }
-
-    function atualizarCampoAmostrasManual() {
-      campoAmostrasManual.style.display = "block";
-    }
-
-    function atualizarCampoCrowfoot() {
-      const usarCrowfoot = tipoAplicacao.value === "Apertadeira + Crowfoot";
-      crowfootField.classList.toggle("hidden", !usarCrowfoot);
-      if (!usarCrowfoot) crowfootInput.value = "";
-    }
-
-    function criarLinhas(total) {
-      Object.values(tabelas).forEach(tbody => {
-        tbody.innerHTML = "";
-        for (let i = 1; i <= total; i++) {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `<td>${i}</td><td><input type="text" inputmode="decimal"></td>`;
-          tbody.appendChild(tr);
-        }
-      });
-      limparResultados();
     }
 
     function parseNumero(valor) {
@@ -957,496 +992,42 @@
       return valor.toFixed(casas).replace(".", ",");
     }
 
-    function lerValoresTabela(tbodyId) {
-      return [...document.querySelectorAll(`#${tbodyId} input`)]
-        .map(input => parseNumero(input.value))
-        .filter(v => Number.isFinite(v) && v > 0);
-    }
-
-    function media(lista) {
-      if (!lista.length) return 0;
-      return lista.reduce((a, b) => a + b, 0) / lista.length;
-    }
-
-    function desvioPadrao(lista) {
-      if (lista.length < 2) return 0;
-      const m = media(lista);
-      const variancia = lista.reduce((acc, v) => acc + Math.pow(v - m, 2), 0) / (lista.length - 1);
-      return Math.sqrt(variancia);
-    }
-
-    function estatisticas(lista, lsl, usl) {
-      if (!lista.length) {
-        return { media: 0, dp: 0, min: 0, max: 0, amplitude: 0, scatter: 0, cm: 0, cmk: 0 };
-      }
-      const m = media(lista);
-      const dp = desvioPadrao(lista);
-      const min = Math.min(...lista);
-      const max = Math.max(...lista);
-      const amplitude = max - min;
-      const scatter = m ? (amplitude / m) * 100 : 0;
-      const tolerancia = usl - lsl;
-      const cm = dp > 0 ? tolerancia / (6 * dp) : 0;
-      const cpu = dp > 0 ? (usl - m) / (3 * dp) : 0;
-      const cpl = dp > 0 ? (m - lsl) / (3 * dp) : 0;
-      const cmk = Math.min(cpu, cpl);
-      return { media: m, dp, min, max, amplitude, scatter, cm, cmk };
-    }
-
-    function definirTexto(el, valor, casas = 2, sufixo = "") {
-      el.textContent = Number.isFinite(valor) ? `${formatarNumero(valor, casas)}${sufixo}` : "-";
-    }
-
     function valorOuTraco(id) {
-      const el = document.getElementById(id);
-      return el && el.value ? el.value : "-";
+      const campo = el(id);
+      return campo && String(campo.value || "").trim() ? campo.value : "-";
     }
 
-    function obterDadosFerramenta() {
-      return {
-        normaReferencia: valorOuTraco("normaReferencia"),
-        numeroRelatorio: valorOuTraco("numeroRelatorio"),
-        dataEnsaio: valorOuTraco("dataEnsaio"),
-        localEnsaio: valorOuTraco("localEnsaio"),
-        clienteProjeto: valorOuTraco("clienteProjeto"),
-        tipoAplicacao: valorOuTraco("tipoAplicacao"),
-        crowfoot: valorOuTraco("crowfoot"),
-        tipoAlimentacao: "-",
-        apertadeiraModelo: valorOuTraco("apertadeiraModelo"),
-        serialApertadeira: valorOuTraco("serialApertadeira"),
-        controladorModelo: valorOuTraco("controladorModelo"),
-        serialControlador: valorOuTraco("serialControlador"),
-        transdutor: valorOuTraco("transdutor"),
-        certificadoCalibracao: valorOuTraco("certificadoCalibracao"),
-        faixaTransdutor: "-",
-        dataCalibracao: "-",
-        validadeCalibracao: "-",
-        painel: valorOuTraco("painel"),
-        certificadoSta: valorOuTraco("certificadoSta"),
-        tecnicoResponsavel: valorOuTraco("tecnicoResponsavel"),
-        temperaturaAmbiente: valorOuTraco("temperaturaAmbiente"),
-        umidadeRelativa: valorOuTraco("umidadeRelativa"),
-        pressaoEntrada: "-",
-        sentidoAperto: valorOuTraco("sentidoAperto"),
-        porcentagem: valorOuTraco("porcentagem"),
-        torqueMaiorBase: valorOuTraco("torqueMaiorBase"),
-        torqueMenorBase: valorOuTraco("torqueMenorBase"),
-        identificacaoJuntaRigida: "Junta rígida - 30 Graus",
-        identificacaoJuntaFlexivel: "Junta flexível - 720 Graus",
-        observacoesEnsaio: valorOuTraco("observacoesEnsaio"),
-        amostras: obterTotalAmostras() || "-",
-        maxExpMaior: document.getElementById("maxExpMaior").value || "-",
-        minExpMaior: document.getElementById("minExpMaior").value || "-",
-        maxExpMenor: document.getElementById("maxExpMenor").value || "-",
-        minExpMenor: document.getElementById("minExpMenor").value || "-"
-      };
+    function obterTotalAmostras() {
+      const total = parseInt(inputAmostrasManual.value, 10);
+      return Number.isInteger(total) && total > 0 ? total : 0;
     }
 
-    function atualizarResumoDados() {
-      const d = obterDadosFerramenta();
-      resumoDados.innerHTML = `
-        <div><strong>Relatório:</strong> ${d.numeroRelatorio}</div>
-        <div><strong>Data do ensaio:</strong> ${d.dataEnsaio}</div>
-        <div><strong>Cliente / projeto:</strong> ${d.clienteProjeto}</div>
-        <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
-        <div><strong>Apertadeira:</strong> ${d.apertadeiraModelo}</div>
-        <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
-        <div><strong>Controlador:</strong> ${d.controladorModelo}</div>
-        <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-        <div><strong>Certificado STA 6000:</strong> ${d.certificadoSta}</div>
-        <div><strong>Junta rígida:</strong> Junta rígida - 30 Graus</div>
-        <div><strong>Junta flexível:</strong> Junta flexível - 720 Graus</div>
-        <div><strong>Torque superior:</strong> ${d.torqueMaiorBase}</div>
-        <div><strong>Torque inferior:</strong> ${d.torqueMenorBase}</div>
-        <div><strong>Tolerância:</strong> ${d.porcentagem}%</div>
-        <div><strong>Total de amostras:</strong> ${d.amostras}</div>
-      `;
-      document.getElementById("pct-inicial-view").textContent = d.porcentagem !== "-" ? `${d.porcentagem}%` : "-";
+    function atualizarCampoCrowfoot() {
+      const usarCrowfoot = tipoAplicacao.value === "Apertadeira + Crowfoot";
+      crowfootField.classList.toggle("hidden", !usarCrowfoot);
+      if (!usarCrowfoot) crowfootInput.value = "";
+      aplicarVisualObrigatorios();
     }
-
-    function calcularLimitesAutomaticos() {
-      const percentual = parseNumero(document.getElementById("porcentagem").value);
-      const torqueMaior = parseNumero(document.getElementById("torqueMaiorBase").value);
-      const torqueMenor = parseNumero(document.getElementById("torqueMenorBase").value);
-      const fator = percentual / 100;
-
-      const maxExpMaior = torqueMaior ? torqueMaior * (1 + fator) : 0;
-      const minExpMaior = torqueMaior ? torqueMaior * (1 - fator) : 0;
-      const maxExpMenor = torqueMenor ? torqueMenor * (1 + fator) : 0;
-      const minExpMenor = torqueMenor ? torqueMenor * (1 - fator) : 0;
-
-      document.getElementById("maxExpMaior").value = maxExpMaior ? formatarNumero(maxExpMaior) : "";
-      document.getElementById("minExpMaior").value = minExpMaior ? formatarNumero(minExpMaior) : "";
-      document.getElementById("maxExpMenor").value = maxExpMenor ? formatarNumero(maxExpMenor) : "";
-      document.getElementById("minExpMenor").value = minExpMenor ? formatarNumero(minExpMenor) : "";
-      atualizarResumoDados();
-    }
-
-
-    function contarForaLimites(lista, limiteMin, limiteMax) {
-      return (lista || []).filter(valor => Number.isFinite(valor) && (valor < limiteMin || valor > limiteMax)).length;
-    }
-
-    function avaliarMotivosGeral(dados) {
-      const motivos = [];
-      const totalEsperado = obterTotalAmostras();
-      const tabelasValidas = [dados.maxRigida, dados.maxFlexivel, dados.minRigida, dados.minFlexivel];
-      const totalPreenchido = tabelasValidas.reduce((soma, lista) => soma + lista.length, 0);
-      const totalNecessario = totalEsperado * 4;
-
-      if (!totalEsperado || totalPreenchido === 0) {
-        return "Nenhuma amostra válida foi preenchida para calcular o ensaio.";
-      }
-
-      if (totalNecessario > 0 && totalPreenchido < totalNecessario) {
-        motivos.push(`Existem amostras incompletas: preenchidas ${totalPreenchido} de ${totalNecessario} leituras esperadas.`);
-      }
-
-      const foraSuperior = contarForaLimites(dados.maxRigida, dados.limites.minExpMaior, dados.limites.maxExpMaior) + contarForaLimites(dados.maxFlexivel, dados.limites.minExpMaior, dados.limites.maxExpMaior);
-      const foraInferior = contarForaLimites(dados.minRigida, dados.limites.minExpMenor, dados.limites.maxExpMenor) + contarForaLimites(dados.minFlexivel, dados.limites.minExpMenor, dados.limites.maxExpMenor);
-      const totalFora = foraSuperior + foraInferior;
-
-      if (totalFora > 0) {
-        motivos.push(`${totalFora} leitura(s) ficaram fora dos limites de tolerância calculados.`);
-      }
-
-      if (dados.pctFinal > dados.tolerancia) {
-        motivos.push(`A % final encontrada (${formatarNumero(dados.pctFinal)}%) ficou acima da tolerância informada (${formatarNumero(dados.tolerancia)}%).`);
-      }
-
-      if (dados.cmMinimo < 1.67) {
-        motivos.push(`O menor Cm encontrado (${formatarNumero(dados.cmMinimo)}) ficou abaixo do mínimo interno WS de 1,67.`);
-      }
-
-      if (dados.cmkMinimo < 1.67) {
-        motivos.push(`O menor Cmk encontrado (${formatarNumero(dados.cmkMinimo)}) ficou abaixo do mínimo interno WS de 1,67.`);
-      }
-
-      return motivos.length ? motivos.join(" ") : "Aprovado: scatter dentro da tolerância e índices Cm/Cmk iguais ou acima de 1,67.";
-    }
-
-    function avaliarMotivosTorqueUnico(valores, est, tolerancia, limiteMin, limiteMax) {
-      const motivos = [];
-      const totalEsperado = obterTotalAmostrasTorqueUnico();
-
-      if (!valores.length) {
-        return "Nenhuma amostra válida foi preenchida para calcular o torque único.";
-      }
-
-      if (totalEsperado > 0 && valores.length < totalEsperado) {
-        motivos.push(`Existem amostras incompletas: preenchidas ${valores.length} de ${totalEsperado} leituras esperadas.`);
-      }
-
-      const foraLimites = contarForaLimites(valores, limiteMin, limiteMax);
-      if (foraLimites > 0) {
-        motivos.push(`${foraLimites} leitura(s) ficaram fora dos limites de tolerância calculados.`);
-      }
-
-      if (est.scatter > tolerancia) {
-        motivos.push(`O scatter calculado (${formatarNumero(est.scatter)}%) ficou acima da tolerância informada (${formatarNumero(tolerancia)}%).`);
-      }
-
-      if (est.cm < 1.67) {
-        motivos.push(`O Cm calculado (${formatarNumero(est.cm)}) ficou abaixo do mínimo interno WS de 1,67.`);
-      }
-
-      if (est.cmk < 1.67) {
-        motivos.push(`O Cmk calculado (${formatarNumero(est.cmk)}) ficou abaixo do mínimo interno WS de 1,67.`);
-      }
-
-      return motivos.length ? motivos.join(" ") : "Aprovado: scatter dentro da tolerância e índices Cm/Cmk iguais ou acima de 1,67.";
-    }
-
-    function limparResultados() {
-      Object.values(ids).forEach(el => el.textContent = "-");
-      document.getElementById("pct-final").textContent = "-";
-      statusGeralEl.textContent = "AGUARDANDO";
-      statusGeralEl.className = "status-badge status-neutro";
-      statusIsoEl.textContent = "ENSAIO REGISTRADO";
-      statusIsoEl.className = "status-badge status-neutro";
-      if (motivoGeralEl) motivoGeralEl.textContent = "Aguardando cálculo.";
-      destruirGraficos();
-    }
-
-    function destruirGraficos() {
-      if (graficoMaior) graficoMaior.destroy();
-      if (graficoMenor) graficoMenor.destroy();
-      graficoMaior = graficoMenor = null;
-    }
-
-    function serieConstante(valor, tamanho) {
-      return Array.from({ length: tamanho }, () => valor);
-    }
-
-    function criarSeriePontos(label, data) {
-      return {
-        label,
-        data,
-        showLine: true,
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        borderWidth: 2,
-        fill: false,
-        tension: 0
-      };
-    }
-
-    function criarLinhaReferencia(label, valor, tamanho) {
-      return {
-        label,
-        data: serieConstante(valor, tamanho),
-        borderDash: [6, 4],
-        borderWidth: 1.4,
-        pointRadius: 0,
-        pointHoverRadius: 0,
-        fill: false
-      };
-    }
-
-    function obterOpcoesGraficoLimpo(tituloEixo) {
-      return {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: "nearest", intersect: false },
-        plugins: {
-          legend: {
-            display: true,
-            position: "bottom",
-            labels: {
-              boxWidth: 10,
-              boxHeight: 10,
-              padding: 14,
-              font: { size: 11, weight: "600" },
-              usePointStyle: true
-            }
-          },
-          tooltip: {
-            enabled: true,
-            backgroundColor: "rgba(15, 95, 125, 0.92)",
-            titleFont: { size: 12, weight: "700" },
-            bodyFont: { size: 12 },
-            padding: 10,
-            callbacks: {
-              label: function(context) {
-                const valor = context.parsed.y;
-                const textoValor = Number.isFinite(valor) ? valor.toFixed(2).replace(".", ",") : "-";
-                return `${context.dataset.label}: ${textoValor}`;
-              }
-            }
-          }
-        },
-        elements: {
-          line: { tension: 0, borderWidth: 2 },
-          point: { radius: 4, hoverRadius: 6, borderWidth: 1 }
-        },
-        scales: {
-          x: {
-            title: { display: true, text: "Amostra", color: "#315767", font: { weight: "700" } },
-            grid: { display: false },
-            ticks: { maxTicksLimit: 12, color: "#5d7480" }
-          },
-          y: {
-            title: { display: true, text: tituloEixo, color: "#315767", font: { weight: "700" } },
-            grid: { color: "rgba(36,68,83,0.10)" },
-            ticks: { color: "#5d7480" }
-          }
-        }
-      };
-    }
-
-    function montarDatasetsGraficoGeral(total, dados) {
-      return [
-        { label: "Sup rígida", data: dados.maxRigida, borderWidth: 2, yAxisID: "y" },
-        { label: "Sup flexível", data: dados.maxFlexivel, borderWidth: 2, yAxisID: "y" },
-        { label: "Inf rígida", data: dados.minRigida, borderWidth: 2, yAxisID: "y" },
-        { label: "Inf flexível", data: dados.minFlexivel, borderWidth: 2, yAxisID: "y" },
-        { label: "LSL Sup", data: serieConstante(dados.limites.minExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
-        { label: "USL Sup", data: serieConstante(dados.limites.maxExpMaior, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
-        { label: "LSL Inf", data: serieConstante(dados.limites.minExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
-        { label: "USL Inf", data: serieConstante(dados.limites.maxExpMenor, total), borderDash: [6, 4], borderWidth: 1, yAxisID: "y" },
-        { label: "Cm Sup rígida", data: serieConstante(dados.estMaxRig.cm, total), borderWidth: 1, yAxisID: "y1" },
-        { label: "Cmk Sup rígida", data: serieConstante(dados.estMaxRig.cmk, total), borderWidth: 1, yAxisID: "y1" },
-        { label: "Cm Inf rígida", data: serieConstante(dados.estMinRig.cm, total), borderWidth: 1, yAxisID: "y1" },
-        { label: "Cmk Inf rígida", data: serieConstante(dados.estMinRig.cmk, total), borderWidth: 1, yAxisID: "y1" }
-      ];
-    }
-
-    function atualizarGraficos(dados) {
-      destruirGraficos();
-
-      const total = Math.max(
-        obterTotalAmostras(),
-        dados.maxRigida.length,
-        dados.maxFlexivel.length,
-        dados.minRigida.length,
-        dados.minFlexivel.length,
-        1
-      );
-
-      const labels = Array.from({ length: total }, (_, i) => i + 1);
-      const torqueSuperior = parseNumero(document.getElementById("torqueMaiorBase").value);
-      const torqueInferior = parseNumero(document.getElementById("torqueMenorBase").value);
-
-      const configSuperior = {
-        type: "line",
-        data: {
-          labels,
-          datasets: [
-            { ...criarSeriePontos("Rígida", dados.maxRigida), pointStyle: "circle" },
-            { ...criarSeriePontos("Flexível", dados.maxFlexivel), pointStyle: "rectRounded" },
-            { ...criarLinhaReferencia("Nominal", torqueSuperior, total), pointStyle: "line" },
-            { ...criarLinhaReferencia("Limite mínimo", dados.limites.minExpMaior, total), pointStyle: "line" },
-            { ...criarLinhaReferencia("Limite máximo", dados.limites.maxExpMaior, total), pointStyle: "line" }
-          ]
-        },
-        options: obterOpcoesGraficoLimpo("Torque superior")
-      };
-
-      const configInferior = {
-        type: "line",
-        data: {
-          labels,
-          datasets: [
-            { ...criarSeriePontos("Rígida", dados.minRigida), pointStyle: "circle" },
-            { ...criarSeriePontos("Flexível", dados.minFlexivel), pointStyle: "rectRounded" },
-            { ...criarLinhaReferencia("Nominal", torqueInferior, total), pointStyle: "line" },
-            { ...criarLinhaReferencia("Limite mínimo", dados.limites.minExpMenor, total), pointStyle: "line" },
-            { ...criarLinhaReferencia("Limite máximo", dados.limites.maxExpMenor, total), pointStyle: "line" }
-          ]
-        },
-        options: obterOpcoesGraficoLimpo("Torque inferior")
-      };
-
-      const canvasSuperior = document.getElementById("graficoMaior");
-      const canvasInferior = document.getElementById("graficoMenor");
-
-      if (canvasSuperior) {
-        graficoMaior = new Chart(canvasSuperior, configSuperior);
-      }
-
-      if (canvasInferior) {
-        graficoMenor = new Chart(canvasInferior, configInferior);
-      }
-    }
-
-    function calcularTudoSemValidacao() {
-      const maxRigida = lerValoresTabela("tbody-max-rigida");
-      const maxFlexivel = lerValoresTabela("tbody-max-flexivel");
-      const minRigida = lerValoresTabela("tbody-min-rigida");
-      const minFlexivel = lerValoresTabela("tbody-min-flexivel");
-
-      const limites = {
-        maxExpMaior: parseNumero(document.getElementById("maxExpMaior").value),
-        minExpMaior: parseNumero(document.getElementById("minExpMaior").value),
-        maxExpMenor: parseNumero(document.getElementById("maxExpMenor").value),
-        minExpMenor: parseNumero(document.getElementById("minExpMenor").value)
-      };
-
-      const estMaxRig = estatisticas(maxRigida, limites.minExpMaior, limites.maxExpMaior);
-      const estMaxFlex = estatisticas(maxFlexivel, limites.minExpMaior, limites.maxExpMaior);
-      const estMinRig = estatisticas(minRigida, limites.minExpMenor, limites.maxExpMenor);
-      const estMinFlex = estatisticas(minFlexivel, limites.minExpMenor, limites.maxExpMenor);
-
-      definirTexto(ids.mediaMaxRigida, estMaxRig.media);
-      definirTexto(ids.mediaMaxFlexivel, estMaxFlex.media);
-      definirTexto(ids.dpMaxRigida, estMaxRig.dp);
-      definirTexto(ids.dpMaxFlexivel, estMaxFlex.dp);
-      definirTexto(ids.minMaxRigida, estMaxRig.min);
-      definirTexto(ids.minMaxFlexivel, estMaxFlex.min);
-      definirTexto(ids.maxMaxRigida, estMaxRig.max);
-      definirTexto(ids.maxMaxFlexivel, estMaxFlex.max);
-      definirTexto(ids.ampMaxRigida, estMaxRig.amplitude);
-      definirTexto(ids.ampMaxFlexivel, estMaxFlex.amplitude);
-      definirTexto(ids.scatterMaxRigida, estMaxRig.scatter, 2, "%");
-      definirTexto(ids.scatterMaxFlexivel, estMaxFlex.scatter, 2, "%");
-      definirTexto(ids.cmMaxRigida, estMaxRig.cm);
-      definirTexto(ids.cmkMaxRigida, estMaxRig.cmk);
-      definirTexto(ids.cmMaxFlexivel, estMaxFlex.cm);
-      definirTexto(ids.cmkMaxFlexivel, estMaxFlex.cmk);
-
-      definirTexto(ids.mediaMinRigida, estMinRig.media);
-      definirTexto(ids.mediaMinFlexivel, estMinFlex.media);
-      definirTexto(ids.dpMinRigida, estMinRig.dp);
-      definirTexto(ids.dpMinFlexivel, estMinFlex.dp);
-      definirTexto(ids.minMinRigida, estMinRig.min);
-      definirTexto(ids.minMinFlexivel, estMinFlex.min);
-      definirTexto(ids.maxMinRigida, estMinRig.max);
-      definirTexto(ids.maxMinFlexivel, estMinFlex.max);
-      definirTexto(ids.ampMinRigida, estMinRig.amplitude);
-      definirTexto(ids.ampMinFlexivel, estMinFlex.amplitude);
-      definirTexto(ids.scatterMinRigida, estMinRig.scatter, 2, "%");
-      definirTexto(ids.scatterMinFlexivel, estMinFlex.scatter, 2, "%");
-      definirTexto(ids.cmMinRigida, estMinRig.cm);
-      definirTexto(ids.cmkMinRigida, estMinRig.cmk);
-      definirTexto(ids.cmMinFlexivel, estMinFlex.cm);
-      definirTexto(ids.cmkMinFlexivel, estMinFlex.cmk);
-
-      const pctMax = Math.max(estMaxRig.scatter, estMaxFlex.scatter);
-      const pctMin = Math.max(estMinRig.scatter, estMinFlex.scatter);
-      const pctFinal = Math.max(pctMax, pctMin);
-      ids.pctMax.textContent = `${formatarNumero(pctMax)}%`;
-      ids.pctMin.textContent = `${formatarNumero(pctMin)}%`;
-      document.getElementById("pct-final").textContent = `${formatarNumero(pctFinal)}%`;
-
-      const cmMinimo = Math.min(estMaxRig.cm, estMaxFlex.cm, estMinRig.cm, estMinFlex.cm);
-      const cmkMinimo = Math.min(estMaxRig.cmk, estMaxFlex.cmk, estMinRig.cmk, estMinFlex.cmk);
-      const tolerancia = parseNumero(document.getElementById("porcentagem").value);
-
-      statusIsoEl.textContent = "ENSAIO REGISTRADO";
-      statusIsoEl.className = "status-badge status-neutro";
-
-      const motivoResultado = avaliarMotivosGeral({
-        maxRigida, maxFlexivel, minRigida, minFlexivel,
-        limites, pctFinal, tolerancia, cmMinimo, cmkMinimo
-      });
-      const aprovado = pctFinal <= tolerancia && cmMinimo >= 1.67 && cmkMinimo >= 1.67 && motivoResultado.startsWith("Aprovado");
-      statusGeralEl.textContent = aprovado ? "APROVADO" : "REPROVADO";
-      statusGeralEl.className = `status-badge ${aprovado ? "status-aprovado" : "status-reprovado"}`;
-      if (motivoGeralEl) motivoGeralEl.textContent = motivoResultado;
-
-      const dadosGraficos = {
-        maxRigida, maxFlexivel, minRigida, minFlexivel,
-        estMaxRig, estMaxFlex, estMinRig, estMinFlex,
-        limites
-      };
-
-      const paginaTabelasAtiva = document.getElementById("pagina-tabelas").classList.contains("active");
-      if (paginaTabelasAtiva) {
-        requestAnimationFrame(() => {
-          atualizarGraficos(dadosGraficos);
-        });
-      }
-    }
-
-
-    let popupResolver = null;
 
     function abrirPopupSistema(opcoes = {}) {
-      const titulo = opcoes.titulo || "Aviso do sistema";
-      const subtitulo = opcoes.subtitulo || "Atlas Copco WS";
-      const mensagem = opcoes.mensagem || "";
-      const mostrarCancelar = !!opcoes.mostrarCancelar;
-      const textoConfirmar = opcoes.textoConfirmar || "OK";
-      const textoCancelar = opcoes.textoCancelar || "Cancelar";
-
-      const overlay = document.getElementById("popupOverlay");
-      const title = document.getElementById("popupTitle");
-      const subtitle = document.getElementById("popupSubtitle");
-      const message = document.getElementById("popupMessage");
-      const confirmBtn = document.getElementById("popupConfirm");
-      const cancelBtn = document.getElementById("popupCancel");
+      const overlay = el("popupOverlay");
+      const title = el("popupTitle");
+      const subtitle = el("popupSubtitle");
+      const message = el("popupMessage");
+      const confirmBtn = el("popupConfirm");
+      const cancelBtn = el("popupCancel");
 
       if (!overlay || !title || !subtitle || !message || !confirmBtn || !cancelBtn) {
-        alert(mensagem.replace(/<[^>]+>/g, " "));
+        alert((opcoes.mensagem || "").replace(/<[^>]+>/g, " "));
         return Promise.resolve(true);
       }
 
-      title.textContent = titulo;
-      subtitle.textContent = subtitulo;
-      message.innerHTML = mensagem;
-      confirmBtn.textContent = textoConfirmar;
-      cancelBtn.textContent = textoCancelar;
-      cancelBtn.style.display = mostrarCancelar ? "inline-flex" : "none";
+      title.textContent = opcoes.titulo || "Aviso do sistema";
+      subtitle.textContent = opcoes.subtitulo || "Atlas Copco WS";
+      message.innerHTML = opcoes.mensagem || "";
+      confirmBtn.textContent = opcoes.textoConfirmar || "OK";
+      cancelBtn.textContent = opcoes.textoCancelar || "Cancelar";
+      cancelBtn.style.display = opcoes.mostrarCancelar ? "inline-flex" : "none";
 
       confirmBtn.onclick = () => fecharPopupSistema(true);
       cancelBtn.onclick = () => fecharPopupSistema(false);
@@ -1457,13 +1038,11 @@
       overlay.classList.add("show");
       overlay.setAttribute("aria-hidden", "false");
 
-      return new Promise(resolve => {
-        popupResolver = resolve;
-      });
+      return new Promise(resolve => { popupResolver = resolve; });
     }
 
     function fecharPopupSistema(resultado) {
-      const overlay = document.getElementById("popupOverlay");
+      const overlay = el("popupOverlay");
       if (overlay) {
         overlay.classList.remove("show");
         overlay.setAttribute("aria-hidden", "true");
@@ -1474,7 +1053,7 @@
       }
     }
 
-    async function mostrarPopup(mensagem, titulo = "Aviso do sistema") {
+    function mostrarPopup(mensagem, titulo = "Aviso do sistema") {
       return abrirPopupSistema({
         titulo,
         subtitulo: "Atlas Copco WS",
@@ -1484,7 +1063,7 @@
       });
     }
 
-    async function confirmarPopup(mensagem, titulo = "Confirmar ação") {
+    function confirmarPopup(mensagem, titulo = "Confirmar ação") {
       return abrirPopupSistema({
         titulo,
         subtitulo: "Atlas Copco WS",
@@ -1495,92 +1074,6 @@
       });
     }
 
-
-    function marcarCampoObrigatorio(id) {
-      const el = document.getElementById(id);
-      if (el) el.classList.add("campo-obrigatorio-erro");
-    }
-
-    function obterCampoCertificadoSTA() {
-      return document.getElementById("certificadoCalibracaoSTA") ||
-             document.getElementById("certificadoSTA") ||
-             document.getElementById("certificadoCalibracaoSta");
-    }
-
-      });
-
-      const certSTA = obterCampoCertificadoSTA();
-      if (certSTA && !String(certSTA.value || "").trim()) {
-        certSTA.classList.add("campo-obrigatorio-erro");
-        faltando.push("Certificado de calibração do STA 6000");
-      }
-
-      const tipoAplicacaoEl = document.getElementById("tipoAplicacao");
-      if (tipoAplicacaoEl && tipoAplicacaoEl.value === "Apertadeira + Crowfoot" && !valorCampoObrigatorio("crowfoot")) {
-        marcarCampoObrigatorio("crowfoot");
-        faltando.push("Identificação do Crowfoot");
-      }
-
-      const torqueSuperior = parseNumero(valorCampoObrigatorio("torqueMaiorBase"));
-      const torqueInferior = parseNumero(valorCampoObrigatorio("torqueMenorBase"));
-      const tolerancia = parseNumero(valorCampoObrigatorio("porcentagem"));
-      const amostras = parseInt(valorCampoObrigatorio("amostrasManual"), 10);
-
-      if (valorCampoObrigatorio("torqueMaiorBase") && torqueSuperior <= 0) {
-        marcarCampoObrigatorio("torqueMaiorBase");
-        faltando.push("Torque superior deve ser maior que zero");
-      }
-
-      if (valorCampoObrigatorio("torqueMenorBase") && torqueInferior <= 0) {
-        marcarCampoObrigatorio("torqueMenorBase");
-        faltando.push("Torque inferior deve ser maior que zero");
-      }
-
-      if (valorCampoObrigatorio("porcentagem") && tolerancia <= 0) {
-        marcarCampoObrigatorio("porcentagem");
-        faltando.push("Tolerância deve ser maior que zero");
-      }
-
-      if (valorCampoObrigatorio("amostrasManual") && (!Number.isInteger(amostras) || amostras <= 0)) {
-        marcarCampoObrigatorio("amostrasManual");
-        faltando.push("Quantidade de amostras deve ser maior que zero");
-      }
-
-      if (faltando.length) {
-        mostrarPagina("pagina-dados");
-        mostrarPopup(
-          "Antes de continuar, preencha os campos obrigatórios:<br><br><strong>" + faltando.join("<br>") + "</strong>",
-          "Campos obrigatórios"
-        );
-        return false;
-      }
-
-      return true;
-    }
-
-      });
-
-      if (faltando.length) {
-        mostrarPagina("pagina-tabelas");
-        mostrarPopup(
-          "Antes de calcular ou gerar o relatório, preencha todas as tabelas obrigatórias:<br><br><strong>" + faltando.join("<br>") + "</strong>",
-          "Tabelas obrigatórias"
-        );
-        return false;
-      }
-
-      return true;
-    }
-
-
-
-    function calcularTudo() {
-      if (!validarTabelasObrigatorias()) return false;
-      calcularTudoSemValidacao();
-      return true;
-    }
-
-
     function idsCamposObrigatoriosDados() {
       const ids = [
         "tecnicoResponsavel",
@@ -1590,6 +1083,7 @@
         "serialControlador",
         "transdutor",
         "painel",
+        "certificadoSta",
         "certificadoCalibracao",
         "torqueMaiorBase",
         "torqueMenorBase",
@@ -1597,58 +1091,11 @@
         "amostrasManual"
       ];
 
-      const certSTA = document.getElementById("certificadoCalibracaoSTA") ||
-                      document.getElementById("certificadoSTA") ||
-                      document.getElementById("certificadoCalibracaoSta");
-
-      if (certSTA && !ids.includes(certSTA.id)) ids.push(certSTA.id);
-
-      const tipoAplicacaoEl = document.getElementById("tipoAplicacao");
-      if (tipoAplicacaoEl && tipoAplicacaoEl.value === "Apertadeira + Crowfoot") {
+      if (tipoAplicacao && tipoAplicacao.value === "Apertadeira + Crowfoot") {
         ids.push("crowfoot");
       }
 
       return ids;
-    }
-
-    function aplicarVisualObrigatorios() {
-      idsCamposObrigatoriosDados().forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-
-        el.classList.add("campo-obrigatorio");
-
-        if (String(el.value || "").trim()) {
-          el.classList.add("campo-obrigatorio-preenchido");
-          el.classList.remove("campo-obrigatorio-erro");
-        } else {
-          el.classList.remove("campo-obrigatorio-preenchido");
-        }
-
-        if (!el.dataset.obrigatorioListener) {
-          el.addEventListener("input", aplicarVisualObrigatorios);
-          el.addEventListener("change", aplicarVisualObrigatorios);
-          el.dataset.obrigatorioListener = "1";
-        }
-      });
-    }
-
-    function limparErrosObrigatorios() {
-      document.querySelectorAll(".campo-obrigatorio-erro").forEach(el => el.classList.remove("campo-obrigatorio-erro"));
-      document.querySelectorAll(".tabela-obrigatoria-erro").forEach(el => el.classList.remove("tabela-obrigatoria-erro"));
-    }
-
-    function valorCampoObrigatorio(id) {
-      const el = document.getElementById(id);
-      return el ? String(el.value || "").trim() : "";
-    }
-
-    function marcarErroCampo(id) {
-      const el = document.getElementById(id);
-      if (el) {
-        el.classList.add("campo-obrigatorio");
-        el.classList.add("campo-obrigatorio-erro");
-      }
     }
 
     function nomeCampoObrigatorio(id) {
@@ -1660,10 +1107,8 @@
         serialControlador: "Serial do controlador",
         transdutor: "Transdutor",
         painel: "STA 6000",
+        certificadoSta: "Certificado de calibração do STA 6000",
         certificadoCalibracao: "Certificado de calibração do transdutor",
-        certificadoCalibracaoSTA: "Certificado de calibração do STA 6000",
-        certificadoSTA: "Certificado de calibração do STA 6000",
-        certificadoCalibracaoSta: "Certificado de calibração do STA 6000",
         torqueMaiorBase: "Torque superior",
         torqueMenorBase: "Torque inferior",
         porcentagem: "Tolerância",
@@ -1671,6 +1116,48 @@
         crowfoot: "Identificação do Crowfoot"
       };
       return nomes[id] || id;
+    }
+
+    function aplicarVisualObrigatorios() {
+      document.querySelectorAll(".campo-obrigatorio").forEach(campo => {
+        campo.classList.remove("campo-obrigatorio");
+        campo.classList.remove("campo-obrigatorio-preenchido");
+      });
+
+      idsCamposObrigatoriosDados().forEach(id => {
+        const campo = el(id);
+        if (!campo) return;
+        campo.classList.add("campo-obrigatorio");
+
+        if (String(campo.value || "").trim()) {
+          campo.classList.add("campo-obrigatorio-preenchido");
+          campo.classList.remove("campo-obrigatorio-erro");
+        }
+
+        if (!campo.dataset.obrigatorioListener) {
+          campo.addEventListener("input", aplicarVisualObrigatorios);
+          campo.addEventListener("change", aplicarVisualObrigatorios);
+          campo.dataset.obrigatorioListener = "1";
+        }
+      });
+    }
+
+    function limparErrosObrigatorios() {
+      document.querySelectorAll(".campo-obrigatorio-erro").forEach(campo => campo.classList.remove("campo-obrigatorio-erro"));
+      document.querySelectorAll(".tabela-obrigatoria-erro").forEach(card => card.classList.remove("tabela-obrigatoria-erro"));
+    }
+
+    function valorCampoObrigatorio(id) {
+      const campo = el(id);
+      return campo ? String(campo.value || "").trim() : "";
+    }
+
+    function marcarErroCampo(id) {
+      const campo = el(id);
+      if (campo) {
+        campo.classList.add("campo-obrigatorio");
+        campo.classList.add("campo-obrigatorio-erro");
+      }
     }
 
     function validarCamposObrigatoriosDados() {
@@ -1713,18 +1200,26 @@
 
       if (faltando.length) {
         mostrarPagina("pagina-dados");
-        if (typeof mostrarPopup === "function") {
-          mostrarPopup(
-            "Não foi possível ir para as tabelas.<br><br>Falta preencher campos obrigatórios:<br><br><strong>" + faltando.join("<br>") + "</strong>",
-            "Campos obrigatórios"
-          );
-        } else {
-          alert("Não foi possível ir para as tabelas. Falta preencher campos obrigatórios:\\n\\n" + faltando.join("\\n"));
-        }
+        mostrarPopup(
+          "Não foi possível ir para as tabelas.<br><br>Falta preencher campos obrigatórios:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+          "Campos obrigatórios"
+        );
         return false;
       }
 
       return true;
+    }
+
+    function criarLinhas(total) {
+      Object.values(tabelas).forEach(tbody => {
+        tbody.innerHTML = "";
+        for (let i = 1; i <= total; i++) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${i}</td><td><input type="text" inputmode="decimal"></td>`;
+          tbody.appendChild(tr);
+        }
+      });
+      limparResultados();
     }
 
     function validarTabelasObrigatorias() {
@@ -1740,7 +1235,7 @@
       ];
 
       tabelasObrigatorias.forEach(([tbodyId, nome]) => {
-        const tbody = document.getElementById(tbodyId);
+        const tbody = el(tbodyId);
         const inputs = tbody ? [...tbody.querySelectorAll("input")] : [];
         const preenchidos = inputs.filter(input => String(input.value || "").trim() !== "").length;
         const card = tbody ? tbody.closest(".table-card") : null;
@@ -1753,37 +1248,391 @@
 
       if (faltando.length) {
         mostrarPagina("pagina-tabelas");
-        if (typeof mostrarPopup === "function") {
-          mostrarPopup(
-            "Não foi possível calcular ou gerar o relatório.<br><br>Falta preencher as tabelas obrigatórias:<br><br><strong>" + faltando.join("<br>") + "</strong>",
-            "Tabelas obrigatórias"
-          );
-        } else {
-          alert("Falta preencher as tabelas obrigatórias:\\n\\n" + faltando.join("\\n"));
-        }
+        mostrarPopup(
+          "Não foi possível calcular ou gerar o relatório.<br><br>Falta preencher as tabelas obrigatórias:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+          "Tabelas obrigatórias"
+        );
         return false;
       }
 
       return true;
     }
 
-    document.addEventListener("DOMContentLoaded", aplicarVisualObrigatorios);
-
     function abrirTabelas() {
       if (!validarCamposObrigatoriosDados()) return;
-
       calcularLimitesAutomaticos();
 
       const total = obterTotalAmostras();
       if (total > 0) criarLinhas(total);
 
-      mostrarPagina("pagina-tabelas");
       atualizarResumoDados();
+      mostrarPagina("pagina-tabelas");
+    }
 
-      requestAnimationFrame(() => {
-        if (graficoMaior) graficoMaior.resize();
-        if (graficoMenor) graficoMenor.resize();
+    function calcularLimitesAutomaticos() {
+      const percentual = parseNumero(el("porcentagem").value);
+      const torqueMaior = parseNumero(el("torqueMaiorBase").value);
+      const torqueMenor = parseNumero(el("torqueMenorBase").value);
+      const fator = percentual / 100;
+
+      const maxExpMaior = torqueMaior ? torqueMaior * (1 + fator) : 0;
+      const minExpMaior = torqueMaior ? torqueMaior * (1 - fator) : 0;
+      const maxExpMenor = torqueMenor ? torqueMenor * (1 + fator) : 0;
+      const minExpMenor = torqueMenor ? torqueMenor * (1 - fator) : 0;
+
+      el("maxExpMaior").value = maxExpMaior ? formatarNumero(maxExpMaior) : "";
+      el("minExpMaior").value = minExpMaior ? formatarNumero(minExpMaior) : "";
+      el("maxExpMenor").value = maxExpMenor ? formatarNumero(maxExpMenor) : "";
+      el("minExpMenor").value = minExpMenor ? formatarNumero(minExpMenor) : "";
+      atualizarResumoDados();
+    }
+
+    function obterDadosFerramenta() {
+      return {
+        normaReferencia: valorOuTraco("normaReferencia"),
+        numeroRelatorio: valorOuTraco("numeroRelatorio"),
+        dataEnsaio: valorOuTraco("dataEnsaio"),
+        localEnsaio: valorOuTraco("localEnsaio"),
+        clienteProjeto: valorOuTraco("clienteProjeto"),
+        tipoAplicacao: valorOuTraco("tipoAplicacao"),
+        crowfoot: valorOuTraco("crowfoot"),
+        apertadeiraModelo: valorOuTraco("apertadeiraModelo"),
+        serialApertadeira: valorOuTraco("serialApertadeira"),
+        controladorModelo: valorOuTraco("controladorModelo"),
+        serialControlador: valorOuTraco("serialControlador"),
+        transdutor: valorOuTraco("transdutor"),
+        painel: valorOuTraco("painel"),
+        certificadoSta: valorOuTraco("certificadoSta"),
+        certificadoCalibracao: valorOuTraco("certificadoCalibracao"),
+        tecnicoResponsavel: valorOuTraco("tecnicoResponsavel"),
+        temperaturaAmbiente: valorOuTraco("temperaturaAmbiente"),
+        umidadeRelativa: valorOuTraco("umidadeRelativa"),
+        sentidoAperto: valorOuTraco("sentidoAperto"),
+        porcentagem: valorOuTraco("porcentagem"),
+        torqueMaiorBase: valorOuTraco("torqueMaiorBase"),
+        torqueMenorBase: valorOuTraco("torqueMenorBase"),
+        observacoesEnsaio: valorOuTraco("observacoesEnsaio"),
+        amostras: obterTotalAmostras() || "-",
+        maxExpMaior: el("maxExpMaior").value || "-",
+        minExpMaior: el("minExpMaior").value || "-",
+        maxExpMenor: el("maxExpMenor").value || "-",
+        minExpMenor: el("minExpMenor").value || "-"
+      };
+    }
+
+    function atualizarResumoDados() {
+      const d = obterDadosFerramenta();
+      resumoDados.innerHTML = `
+        <div><strong>Relatório:</strong> ${d.numeroRelatorio}</div>
+        <div><strong>Data do ensaio:</strong> ${d.dataEnsaio}</div>
+        <div><strong>Cliente / projeto:</strong> ${d.clienteProjeto}</div>
+        <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
+        <div><strong>Apertadeira:</strong> ${d.apertadeiraModelo}</div>
+        <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
+        <div><strong>Controlador:</strong> ${d.controladorModelo}</div>
+        <div><strong>Transdutor:</strong> ${d.transdutor}</div>
+        <div><strong>STA 6000:</strong> ${d.painel}</div>
+        <div><strong>Certificado STA 6000:</strong> ${d.certificadoSta}</div>
+        <div><strong>Junta rígida:</strong> Junta rígida - 30 Graus</div>
+        <div><strong>Junta flexível:</strong> Junta flexível - 720 Graus</div>
+        <div><strong>Torque superior:</strong> ${d.torqueMaiorBase}</div>
+        <div><strong>Torque inferior:</strong> ${d.torqueMenorBase}</div>
+        <div><strong>Tolerância:</strong> ${d.porcentagem}%</div>
+        <div><strong>Total de amostras:</strong> ${d.amostras}</div>
+      `;
+
+      el("pct-inicial-view").textContent = d.porcentagem !== "-" ? `${d.porcentagem}%` : "-";
+    }
+
+    function lerValoresTabela(tbodyId) {
+      return [...document.querySelectorAll(`#${tbodyId} input`)]
+        .map(input => parseNumero(input.value))
+        .filter(v => Number.isFinite(v) && v > 0);
+    }
+
+    function media(lista) {
+      if (!lista.length) return 0;
+      return lista.reduce((a, b) => a + b, 0) / lista.length;
+    }
+
+    function desvioPadrao(lista) {
+      if (lista.length < 2) return 0;
+      const m = media(lista);
+      const variancia = lista.reduce((acc, v) => acc + Math.pow(v - m, 2), 0) / (lista.length - 1);
+      return Math.sqrt(variancia);
+    }
+
+    function estatisticas(lista, lsl, usl) {
+      if (!lista.length) {
+        return { media: 0, dp: 0, min: 0, max: 0, amplitude: 0, scatter: 0, cm: 0, cmk: 0 };
+      }
+      const m = media(lista);
+      const dp = desvioPadrao(lista);
+      const min = Math.min(...lista);
+      const max = Math.max(...lista);
+      const amplitude = max - min;
+      const scatter = m ? (amplitude / m) * 100 : 0;
+      const tolerancia = usl - lsl;
+      const cm = dp > 0 ? tolerancia / (6 * dp) : 0;
+      const cpu = dp > 0 ? (usl - m) / (3 * dp) : 0;
+      const cpl = dp > 0 ? (m - lsl) / (3 * dp) : 0;
+      const cmk = Math.min(cpu, cpl);
+      return { media: m, dp, min, max, amplitude, scatter, cm, cmk };
+    }
+
+    function definirTexto(id, valor, casas = 2, sufixo = "") {
+      const campo = el(id);
+      if (campo) campo.textContent = Number.isFinite(valor) ? `${formatarNumero(valor, casas)}${sufixo}` : "-";
+    }
+
+    function limparResultados() {
+      [...metricasSuperior, ...metricasInferior].forEach(([id]) => {
+        if (el(id)) el(id).textContent = "-";
       });
+      el("pct-final").textContent = "-";
+      statusGeralEl.textContent = "AGUARDANDO";
+      statusGeralEl.className = "status-badge status-neutro";
+      statusIsoEl.textContent = "ENSAIO REGISTRADO";
+      statusIsoEl.className = "status-badge status-neutro";
+      motivoGeralEl.textContent = "Aguardando cálculo.";
+      destruirGraficos();
+    }
+
+    function destruirGraficos() {
+      if (graficoMaior) graficoMaior.destroy();
+      if (graficoMenor) graficoMenor.destroy();
+      graficoMaior = null;
+      graficoMenor = null;
+    }
+
+    function contarForaLimites(lista, limiteMin, limiteMax) {
+      return (lista || []).filter(valor => Number.isFinite(valor) && (valor < limiteMin || valor > limiteMax)).length;
+    }
+
+    function avaliarMotivosGeral(dados) {
+      const motivos = [];
+      const totalEsperado = obterTotalAmostras();
+      const tabelasValidas = [dados.maxRigida, dados.maxFlexivel, dados.minRigida, dados.minFlexivel];
+      const totalPreenchido = tabelasValidas.reduce((soma, lista) => soma + lista.length, 0);
+      const totalNecessario = totalEsperado * 4;
+
+      if (!totalEsperado || totalPreenchido === 0) {
+        return "Nenhuma amostra válida foi preenchida para calcular o ensaio.";
+      }
+
+      if (totalNecessario > 0 && totalPreenchido < totalNecessario) {
+        motivos.push(`Existem amostras incompletas: preenchidas ${totalPreenchido} de ${totalNecessario} leituras esperadas.`);
+      }
+
+      const foraSuperior = contarForaLimites(dados.maxRigida, dados.limites.minExpMaior, dados.limites.maxExpMaior) +
+                           contarForaLimites(dados.maxFlexivel, dados.limites.minExpMaior, dados.limites.maxExpMaior);
+      const foraInferior = contarForaLimites(dados.minRigida, dados.limites.minExpMenor, dados.limites.maxExpMenor) +
+                           contarForaLimites(dados.minFlexivel, dados.limites.minExpMenor, dados.limites.maxExpMenor);
+      const totalFora = foraSuperior + foraInferior;
+
+      if (totalFora > 0) motivos.push(`${totalFora} leitura(s) ficaram fora dos limites de tolerância calculados.`);
+      if (dados.pctFinal > dados.tolerancia) motivos.push(`A % final encontrada (${formatarNumero(dados.pctFinal)}%) ficou acima da tolerância informada (${formatarNumero(dados.tolerancia)}%).`);
+      if (dados.cmMinimo < 1.67) motivos.push(`O menor Cm encontrado (${formatarNumero(dados.cmMinimo)}) ficou abaixo do mínimo interno WS de 1,67.`);
+      if (dados.cmkMinimo < 1.67) motivos.push(`O menor Cmk encontrado (${formatarNumero(dados.cmkMinimo)}) ficou abaixo do mínimo interno WS de 1,67.`);
+
+      return motivos.length ? motivos.join(" ") : "Aprovado: scatter dentro da tolerância e índices Cm/Cmk iguais ou acima de 1,67.";
+    }
+
+    function calcularTudo() {
+      if (!validarTabelasObrigatorias()) return false;
+      calcularTudoSemValidacao();
+      return true;
+    }
+
+    function calcularTudoSemValidacao() {
+      const maxRigida = lerValoresTabela("tbody-max-rigida");
+      const maxFlexivel = lerValoresTabela("tbody-max-flexivel");
+      const minRigida = lerValoresTabela("tbody-min-rigida");
+      const minFlexivel = lerValoresTabela("tbody-min-flexivel");
+
+      const limites = {
+        maxExpMaior: parseNumero(el("maxExpMaior").value),
+        minExpMaior: parseNumero(el("minExpMaior").value),
+        maxExpMenor: parseNumero(el("maxExpMenor").value),
+        minExpMenor: parseNumero(el("minExpMenor").value)
+      };
+
+      const estMaxRig = estatisticas(maxRigida, limites.minExpMaior, limites.maxExpMaior);
+      const estMaxFlex = estatisticas(maxFlexivel, limites.minExpMaior, limites.maxExpMaior);
+      const estMinRig = estatisticas(minRigida, limites.minExpMenor, limites.maxExpMenor);
+      const estMinFlex = estatisticas(minFlexivel, limites.minExpMenor, limites.maxExpMenor);
+
+      definirTexto("media-max-rigida", estMaxRig.media);
+      definirTexto("media-max-flexivel", estMaxFlex.media);
+      definirTexto("dp-max-rigida", estMaxRig.dp);
+      definirTexto("dp-max-flexivel", estMaxFlex.dp);
+      definirTexto("min-max-rigida", estMaxRig.min);
+      definirTexto("min-max-flexivel", estMaxFlex.min);
+      definirTexto("max-max-rigida", estMaxRig.max);
+      definirTexto("max-max-flexivel", estMaxFlex.max);
+      definirTexto("amp-max-rigida", estMaxRig.amplitude);
+      definirTexto("amp-max-flexivel", estMaxFlex.amplitude);
+      definirTexto("scatter-max-rigida", estMaxRig.scatter, 2, "%");
+      definirTexto("scatter-max-flexivel", estMaxFlex.scatter, 2, "%");
+      definirTexto("cm-max-rigida", estMaxRig.cm);
+      definirTexto("cmk-max-rigida", estMaxRig.cmk);
+      definirTexto("cm-max-flexivel", estMaxFlex.cm);
+      definirTexto("cmk-max-flexivel", estMaxFlex.cmk);
+
+      definirTexto("media-min-rigida", estMinRig.media);
+      definirTexto("media-min-flexivel", estMinFlex.media);
+      definirTexto("dp-min-rigida", estMinRig.dp);
+      definirTexto("dp-min-flexivel", estMinFlex.dp);
+      definirTexto("min-min-rigida", estMinRig.min);
+      definirTexto("min-min-flexivel", estMinFlex.min);
+      definirTexto("max-min-rigida", estMinRig.max);
+      definirTexto("max-min-flexivel", estMinFlex.max);
+      definirTexto("amp-min-rigida", estMinRig.amplitude);
+      definirTexto("amp-min-flexivel", estMinFlex.amplitude);
+      definirTexto("scatter-min-rigida", estMinRig.scatter, 2, "%");
+      definirTexto("scatter-min-flexivel", estMinFlex.scatter, 2, "%");
+      definirTexto("cm-min-rigida", estMinRig.cm);
+      definirTexto("cmk-min-rigida", estMinRig.cmk);
+      definirTexto("cm-min-flexivel", estMinFlex.cm);
+      definirTexto("cmk-min-flexivel", estMinFlex.cmk);
+
+      const pctMax = Math.max(estMaxRig.scatter, estMaxFlex.scatter);
+      const pctMin = Math.max(estMinRig.scatter, estMinFlex.scatter);
+      const pctFinal = Math.max(pctMax, pctMin);
+
+      el("pct-max").textContent = `${formatarNumero(pctMax)}%`;
+      el("pct-min").textContent = `${formatarNumero(pctMin)}%`;
+      el("pct-final").textContent = `${formatarNumero(pctFinal)}%`;
+
+      const cmMinimo = Math.min(estMaxRig.cm, estMaxFlex.cm, estMinRig.cm, estMinFlex.cm);
+      const cmkMinimo = Math.min(estMaxRig.cmk, estMaxFlex.cmk, estMinRig.cmk, estMinFlex.cmk);
+      const tolerancia = parseNumero(el("porcentagem").value);
+
+      statusIsoEl.textContent = "ENSAIO REGISTRADO";
+      statusIsoEl.className = "status-badge status-neutro";
+
+      const motivoResultado = avaliarMotivosGeral({
+        maxRigida, maxFlexivel, minRigida, minFlexivel,
+        limites, pctFinal, tolerancia, cmMinimo, cmkMinimo
+      });
+
+      const aprovado = pctFinal <= tolerancia && cmMinimo >= 1.67 && cmkMinimo >= 1.67 && motivoResultado.startsWith("Aprovado");
+
+      statusGeralEl.textContent = aprovado ? "APROVADO" : "REPROVADO";
+      statusGeralEl.className = `status-badge ${aprovado ? "status-aprovado" : "status-reprovado"}`;
+      motivoGeralEl.textContent = motivoResultado;
+
+      atualizarGraficos({
+        maxRigida, maxFlexivel, minRigida, minFlexivel, limites
+      });
+    }
+
+    function serieConstante(valor, tamanho) {
+      return Array.from({ length: tamanho }, () => valor);
+    }
+
+    function criarSeriePontos(label, data) {
+      return {
+        label,
+        data,
+        showLine: true,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        borderWidth: 2,
+        fill: false,
+        tension: 0
+      };
+    }
+
+    function criarLinhaReferencia(label, valor, tamanho) {
+      return {
+        label,
+        data: serieConstante(valor, tamanho),
+        borderDash: [6, 4],
+        borderWidth: 1.4,
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        fill: false
+      };
+    }
+
+    function obterOpcoesGraficoLimpo(tituloEixo) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "nearest", intersect: false },
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            labels: { boxWidth: 10, boxHeight: 10, padding: 14, font: { size: 11, weight: "600" }, usePointStyle: true }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const valor = context.parsed.y;
+                const textoValor = Number.isFinite(valor) ? valor.toFixed(2).replace(".", ",") : "-";
+                return `${context.dataset.label}: ${textoValor}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: "Amostra" }, grid: { display: false } },
+          y: { title: { display: true, text: tituloEixo }, grid: { color: "rgba(36,68,83,0.10)" } }
+        }
+      };
+    }
+
+    function atualizarGraficos(dados) {
+      destruirGraficos();
+
+      const total = Math.max(
+        obterTotalAmostras(),
+        dados.maxRigida.length,
+        dados.maxFlexivel.length,
+        dados.minRigida.length,
+        dados.minFlexivel.length,
+        1
+      );
+
+      const labels = Array.from({ length: total }, (_, i) => i + 1);
+      const torqueSuperior = parseNumero(el("torqueMaiorBase").value);
+      const torqueInferior = parseNumero(el("torqueMenorBase").value);
+
+      if (el("graficoMaior")) {
+        graficoMaior = new Chart(el("graficoMaior"), {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              criarSeriePontos("Rígida", dados.maxRigida),
+              criarSeriePontos("Flexível", dados.maxFlexivel),
+              criarLinhaReferencia("Nominal", torqueSuperior, total),
+              criarLinhaReferencia("Limite mínimo", dados.limites.minExpMaior, total),
+              criarLinhaReferencia("Limite máximo", dados.limites.maxExpMaior, total)
+            ]
+          },
+          options: obterOpcoesGraficoLimpo("Torque superior")
+        });
+      }
+
+      if (el("graficoMenor")) {
+        graficoMenor = new Chart(el("graficoMenor"), {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              criarSeriePontos("Rígida", dados.minRigida),
+              criarSeriePontos("Flexível", dados.minFlexivel),
+              criarLinhaReferencia("Nominal", torqueInferior, total),
+              criarLinhaReferencia("Limite mínimo", dados.limites.minExpMenor, total),
+              criarLinhaReferencia("Limite máximo", dados.limites.maxExpMenor, total)
+            ]
+          },
+          options: obterOpcoesGraficoLimpo("Torque inferior")
+        });
+      }
     }
 
     function limparTabelas() {
@@ -1797,8 +1646,9 @@
       const valores = [...document.querySelectorAll(`#${tbodyId} input`)].map(input => input.value || "");
       try {
         await navigator.clipboard.writeText(valores.join("\n"));
+        mostrarPopup("Valores copiados com sucesso.", "Copiar valores");
       } catch {
-        await mostrarPopup("Não foi possível copiar automaticamente.", "Falha ao copiar");
+        mostrarPopup("Não foi possível copiar automaticamente.", "Falha ao copiar");
       }
     }
 
@@ -1811,7 +1661,7 @@
           if (inputs[i]) inputs[i].value = linha;
         });
       } catch {
-        await mostrarPopup("Não foi possível ler a área de transferência.", "Falha ao colar");
+        mostrarPopup("Não foi possível ler a área de transferência.", "Falha ao colar");
       }
     }
 
@@ -1829,10 +1679,11 @@
         }
         return `<tr>${tds}</tr>`;
       }).join("");
+
       return `
         <div class="bloco tabela-bloco">
           <h3>${rotulo}</h3>
-          <table class="tabela-medicoes compacta">
+          <table class="tabela-medicoes">
             <thead><tr>${cabecalho}</tr></thead>
             <tbody>${linhas || '<tr><td colspan="16">Sem dados</td></tr>'}</tbody>
           </table>
@@ -1840,55 +1691,18 @@
       `;
     }
 
-    function calcularBins(valores, quantidadeBins = 10) {
-      const numeros = (valores || []).filter(v => Number.isFinite(v));
-      if (!numeros.length) return { labels: [], frequencias: [] };
-      const minimo = Math.min(...numeros);
-      const maximo = Math.max(...numeros);
-      if (minimo === maximo) {
-        return { labels: [minimo.toFixed(2).replace(".", ",")], frequencias: [numeros.length] };
-      }
-      const bins = Math.max(5, quantidadeBins);
-      const largura = (maximo - minimo) / bins;
-      const frequencias = new Array(bins).fill(0);
-      const labels = [];
-      for (let i = 0; i < bins; i++) {
-        const inicio = minimo + (largura * i);
-        const fim = i === bins - 1 ? maximo : inicio + largura;
-        labels.push(`${inicio.toFixed(2).replace(".", ",")} a ${fim.toFixed(2).replace(".", ",")}`);
-      }
-      numeros.forEach(valor => {
-        let indice = Math.floor((valor - minimo) / largura);
-        if (indice >= bins) indice = bins - 1;
-        if (indice < 0) indice = 0;
-        frequencias[indice]++;
-      });
-      return { labels, frequencias };
-    }
-
-    function juntarLabelsHistograma(listas) {
-      const mapa = new Map();
-      listas.forEach(item => item.labels.forEach(label => { if (!mapa.has(label)) mapa.set(label, true); }));
-      return Array.from(mapa.keys());
-    }
-
-    function alinharFrequencias(labelsBase, hist) {
-      return labelsBase.map(label => {
-        const idx = hist.labels.indexOf(label);
-        return idx >= 0 ? hist.frequencias[idx] : 0;
-      });
-    }
-
     function gerarRelatorio() {
       if (!validarTabelasObrigatorias()) return;
       calcularTudoSemValidacao();
+
       const maxRigida = lerValoresTabela("tbody-max-rigida");
       const maxFlexivel = lerValoresTabela("tbody-max-flexivel");
       const minRigida = lerValoresTabela("tbody-min-rigida");
       const minFlexivel = lerValoresTabela("tbody-min-flexivel");
-      const total = obterTotalAmostras();
-      const labels = Array.from({ length: total }, (_, i) => i + 1);
       const d = obterDadosFerramenta();
+
+      const total = Math.max(obterTotalAmostras(), maxRigida.length, maxFlexivel.length, minRigida.length, minFlexivel.length, 1);
+      const labels = Array.from({ length: total }, (_, i) => i + 1);
 
       const relatorio = window.open("", "_blank");
       relatorio.document.write(`
@@ -1910,27 +1724,18 @@
             .cabecalho-card h3 { margin-bottom: 5px; padding-bottom: 3px; border-bottom: 1px solid #dcebf1; }
             .cabecalho-linhas { display: grid; grid-template-columns: 1fr; gap: 3px; font-size: 9px; }
             .cabecalho-wide { grid-column: 1 / -1; }
-            .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: 9.5px; }
             .resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: 9.5px; }
             .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; gap: 8px; }
             .topo-esq { display: flex; align-items: center; gap: 8px; }
             .topo-esq img { height: 30px; object-fit: contain; }
             .print-btn { padding: 7px 10px; border: none; border-radius: 7px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
             .status-relatorio { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: 800; color: white; font-size: 8.5px; }
-            .aprovado { background: #27ae60; }
-            .reprovado { background: #d93b3b; }
-            .aguardando { background: #90a4ae; }
+            .aprovado { background: #27ae60; } .reprovado { background: #d93b3b; } .aguardando { background: #90a4ae; }
             .nota { padding: 5px 6px; border-radius: 6px; background: #eef8fc; border: 1px solid #b9dceb; font-size: 8px; line-height: 1.2; }
-            .assinatura { margin-top: 4px; padding-top: 3px; }
-            .cargo { font-size: 8px; color: #5d7480; }
             .tabela-medicoes { width: 100%; border-collapse: collapse; margin-top: 3px; table-layout: fixed; }
             .tabela-medicoes th, .tabela-medicoes td { border: 1px solid #d4e3ea; padding: 1px 2px; font-size: 6.6px; line-height: 1.05; text-align: center; word-break: break-word; }
             .tabela-medicoes th { background: #eef7fb; font-weight: 700; }
-            .tabela-bloco { margin-bottom: 3px; }
-            canvas { background: #fff; border-radius: 8px; max-height: 185px !important; }
             .graficos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-            .graficos-grid .bloco { margin-bottom: 0; }
-            .grafico-card-rel { padding: 6px; }
             .graficos-grid canvas { width: 100% !important; height: 170px !important; max-height: 170px !important; display: block; }
             @media (max-width: 900px) { .cabecalho-grid, .graficos-grid { grid-template-columns: 1fr; } }
             @media print { .print-btn { display: none; } body { margin: 0; } }
@@ -2002,9 +1807,7 @@
 
               <div class="cabecalho-card cabecalho-wide">
                 <h3>Observações do ensaio</h3>
-                <div class="cabecalho-linhas">
-                  <div>${d.observacoesEnsaio}</div>
-                </div>
+                <div class="cabecalho-linhas"><div>${d.observacoesEnsaio}</div></div>
               </div>
             </div>
           </div>
@@ -2020,61 +1823,49 @@
           <div class="bloco">
             <h2>Resultado Torque Superior</h2>
             <div class="resumo">
-              <div><strong>Média rígida:</strong> ${ids.mediaMaxRigida.textContent}</div>
-              <div><strong>Média flexível:</strong> ${ids.mediaMaxFlexivel.textContent}</div>
-              <div><strong>DP rígida:</strong> ${ids.dpMaxRigida.textContent}</div>
-              <div><strong>DP flexível:</strong> ${ids.dpMaxFlexivel.textContent}</div>
-              <div><strong>Mínimo rígida:</strong> ${ids.minMaxRigida.textContent}</div>
-              <div><strong>Mínimo flexível:</strong> ${ids.minMaxFlexivel.textContent}</div>
-              <div><strong>Máximo rígida:</strong> ${ids.maxMaxRigida.textContent}</div>
-              <div><strong>Máximo flexível:</strong> ${ids.maxMaxFlexivel.textContent}</div>
-              <div><strong>Amplitude rígida:</strong> ${ids.ampMaxRigida.textContent}</div>
-              <div><strong>Amplitude flexível:</strong> ${ids.ampMaxFlexivel.textContent}</div>
-              <div><strong>Scatter rígida:</strong> ${ids.scatterMaxRigida.textContent}</div>
-              <div><strong>Scatter flexível:</strong> ${ids.scatterMaxFlexivel.textContent}</div>
-              <div><strong>Cm rígida:</strong> ${ids.cmMaxRigida.textContent}</div>
-              <div><strong>Cmk rígida:</strong> ${ids.cmkMaxRigida.textContent}</div>
-              <div><strong>Cm flexível:</strong> ${ids.cmMaxFlexivel.textContent}</div>
-              <div><strong>Cmk flexível:</strong> ${ids.cmkMaxFlexivel.textContent}</div>
-              <div style="grid-column:1 / -1;"><strong>% calculada torque superior:</strong> ${ids.pctMax.textContent}</div>
+              <div><strong>Média rígida:</strong> ${el("media-max-rigida").textContent}</div>
+              <div><strong>Média flexível:</strong> ${el("media-max-flexivel").textContent}</div>
+              <div><strong>DP rígida:</strong> ${el("dp-max-rigida").textContent}</div>
+              <div><strong>DP flexível:</strong> ${el("dp-max-flexivel").textContent}</div>
+              <div><strong>Scatter rígida:</strong> ${el("scatter-max-rigida").textContent}</div>
+              <div><strong>Scatter flexível:</strong> ${el("scatter-max-flexivel").textContent}</div>
+              <div><strong>Cm rígida:</strong> ${el("cm-max-rigida").textContent}</div>
+              <div><strong>Cmk rígida:</strong> ${el("cmk-max-rigida").textContent}</div>
+              <div><strong>Cm flexível:</strong> ${el("cm-max-flexivel").textContent}</div>
+              <div><strong>Cmk flexível:</strong> ${el("cmk-max-flexivel").textContent}</div>
+              <div style="grid-column:1 / -1;"><strong>% calculada torque superior:</strong> ${el("pct-max").textContent}</div>
             </div>
           </div>
 
           <div class="bloco">
             <h2>Resultado Torque Inferior</h2>
             <div class="resumo">
-              <div><strong>Média rígida:</strong> ${ids.mediaMinRigida.textContent}</div>
-              <div><strong>Média flexível:</strong> ${ids.mediaMinFlexivel.textContent}</div>
-              <div><strong>DP rígida:</strong> ${ids.dpMinRigida.textContent}</div>
-              <div><strong>DP flexível:</strong> ${ids.dpMinFlexivel.textContent}</div>
-              <div><strong>Mínimo rígida:</strong> ${ids.minMinRigida.textContent}</div>
-              <div><strong>Mínimo flexível:</strong> ${ids.minMinFlexivel.textContent}</div>
-              <div><strong>Máximo rígida:</strong> ${ids.maxMinRigida.textContent}</div>
-              <div><strong>Máximo flexível:</strong> ${ids.maxMinFlexivel.textContent}</div>
-              <div><strong>Amplitude rígida:</strong> ${ids.ampMinRigida.textContent}</div>
-              <div><strong>Amplitude flexível:</strong> ${ids.ampMinFlexivel.textContent}</div>
-              <div><strong>Scatter rígida:</strong> ${ids.scatterMinRigida.textContent}</div>
-              <div><strong>Scatter flexível:</strong> ${ids.scatterMinFlexivel.textContent}</div>
-              <div><strong>Cm rígida:</strong> ${ids.cmMinRigida.textContent}</div>
-              <div><strong>Cmk rígida:</strong> ${ids.cmkMinRigida.textContent}</div>
-              <div><strong>Cm flexível:</strong> ${ids.cmMinFlexivel.textContent}</div>
-              <div><strong>Cmk flexível:</strong> ${ids.cmkMinFlexivel.textContent}</div>
-              <div style="grid-column:1 / -1;"><strong>% calculada torque inferior:</strong> ${ids.pctMin.textContent}</div>
+              <div><strong>Média rígida:</strong> ${el("media-min-rigida").textContent}</div>
+              <div><strong>Média flexível:</strong> ${el("media-min-flexivel").textContent}</div>
+              <div><strong>DP rígida:</strong> ${el("dp-min-rigida").textContent}</div>
+              <div><strong>DP flexível:</strong> ${el("dp-min-flexivel").textContent}</div>
+              <div><strong>Scatter rígida:</strong> ${el("scatter-min-rigida").textContent}</div>
+              <div><strong>Scatter flexível:</strong> ${el("scatter-min-flexivel").textContent}</div>
+              <div><strong>Cm rígida:</strong> ${el("cm-min-rigida").textContent}</div>
+              <div><strong>Cmk rígida:</strong> ${el("cmk-min-rigida").textContent}</div>
+              <div><strong>Cm flexível:</strong> ${el("cm-min-flexivel").textContent}</div>
+              <div><strong>Cmk flexível:</strong> ${el("cmk-min-flexivel").textContent}</div>
+              <div style="grid-column:1 / -1;"><strong>% calculada torque inferior:</strong> ${el("pct-min").textContent}</div>
             </div>
           </div>
 
           <div class="bloco">
             <h2>Resultado final</h2>
             <div class="resumo">
-              <div><strong>% final encontrada:</strong> ${document.getElementById("pct-final").textContent}</div>
+              <div><strong>% final encontrada:</strong> ${el("pct-final").textContent}</div>
               <div><strong>Status interno WS:</strong> <span class="status-relatorio ${statusGeralEl.textContent === "APROVADO" ? "aprovado" : statusGeralEl.textContent === "REPROVADO" ? "reprovado" : "aguardando"}">${statusGeralEl.textContent}</span></div>
-              <div style="grid-column:1 / -1;"><strong>Motivo do resultado:</strong> ${document.getElementById("motivo-geral").textContent}</div>
+              <div style="grid-column:1 / -1;"><strong>Motivo do resultado:</strong> ${motivoGeralEl.textContent}</div>
             </div>
           </div>
 
-          <div class="graficos-grid relatorio-principal-graficos">
-            <div class="bloco grafico-card-rel"><h2>Gráfico limpo - Torque superior</h2><canvas id="graficoMaiorRel" height="155"></canvas></div>
-            <div class="bloco grafico-card-rel"><h2>Gráfico limpo - Torque inferior</h2><canvas id="graficoMenorRel" height="155"></canvas></div>
+          <div class="graficos-grid">
+            <div class="bloco"><h2>Gráfico limpo - Torque superior</h2><canvas id="graficoMaiorRel"></canvas></div>
+            <div class="bloco"><h2>Gráfico limpo - Torque inferior</h2><canvas id="graficoMenorRel"></canvas></div>
           </div>
 
           ${tabelaHtmlRelatorio("Torque inferior — Junta rígida", minRigida)}
@@ -2082,109 +1873,57 @@
           ${tabelaHtmlRelatorio("Torque superior — Junta rígida", maxRigida)}
           ${tabelaHtmlRelatorio("Torque superior — Junta flexível", maxFlexivel)}
 
-          <div class="bloco assinatura">
+          <div class="bloco">
             <strong>${d.tecnicoResponsavel}</strong>
-            <div class="cargo">Técnico responsável</div>
+            <div>Técnico responsável</div>
           </div>
 
           <script>
-            const labels = ${JSON.stringify(labels)};
+            function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
+            function criarSeriePontos(label, data) { return { label, data, showLine: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, fill: false, tension: 0 }; }
+            function criarLinhaReferencia(label, valor, tamanho) { return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false }; }
+            function opcoes(titulo) {
+              return { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Amostra" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: titulo }, ticks: { font: { size: 8 } } } } };
+            }
+            const labelsRel = ${JSON.stringify(labels)};
             const maxRigida = ${JSON.stringify(maxRigida)};
             const maxFlexivel = ${JSON.stringify(maxFlexivel)};
             const minRigida = ${JSON.stringify(minRigida)};
             const minFlexivel = ${JSON.stringify(minFlexivel)};
-            const maxExpMaior = ${parseNumero(document.getElementById("maxExpMaior").value)};
-            const minExpMaior = ${parseNumero(document.getElementById("minExpMaior").value)};
-            const maxExpMenor = ${parseNumero(document.getElementById("maxExpMenor").value)};
-            const minExpMenor = ${parseNumero(document.getElementById("minExpMenor").value)};
-            const cmMaxRigida = ${parseNumero(ids.cmMaxRigida.textContent)};
-            const cmkMaxRigida = ${parseNumero(ids.cmkMaxRigida.textContent)};
-            const cmMaxFlexivel = ${parseNumero(ids.cmMaxFlexivel.textContent)};
-            const cmkMaxFlexivel = ${parseNumero(ids.cmkMaxFlexivel.textContent)};
-            const cmMinRigida = ${parseNumero(ids.cmMinRigida.textContent)};
-            const cmkMinRigida = ${parseNumero(ids.cmkMinRigida.textContent)};
-            const cmMinFlexivel = ${parseNumero(ids.cmMinFlexivel.textContent)};
-            const cmkMinFlexivel = ${parseNumero(ids.cmkMinFlexivel.textContent)};
-            function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
-            function criarSeriePontos(label, data, pointStyle) {
-              return {
-                label,
-                data,
-                showLine: true,
-                pointRadius: 0,
-                pointHoverRadius: 4,
-                borderWidth: 2,
-                pointStyle,
-                tension: 0
-              };
-            }
-            function criarLinhaReferencia(label, valor, tamanho) {
-              return {
-                label,
-                data: serieConstante(valor, tamanho),
-                borderDash: [6, 4],
-                borderWidth: 1.3,
-                pointRadius: 0,
-                pointHoverRadius: 0,
-                fill: false
-              };
-            }
-            function obterOpcoesGraficoRelatorio(tituloEixo) {
-              return {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: "nearest", intersect: false },
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: "bottom",
-                    labels: { boxWidth: 10, boxHeight: 10, padding: 10, font: { size: 9, weight: "600" }, usePointStyle: true }
-                  }
-                },
-                elements: { line: { tension: 0 }, point: { radius: 3 } },
-                scales: {
-                  x: { title: { display: true, text: "Amostra" }, grid: { display: false }, ticks: { font: { size: 8 } } },
-                  y: { title: { display: true, text: tituloEixo }, grid: { color: "rgba(36,68,83,0.10)" }, ticks: { font: { size: 8 } } }
-                }
-              };
-            }
-            const torqueSupNominal = ${parseNumero(document.getElementById("torqueMaiorBase").value)};
-            const torqueInfNominal = ${parseNumero(document.getElementById("torqueMenorBase").value)};
-            const totalRel = Math.max(labels.length, maxRigida.length, maxFlexivel.length, minRigida.length, minFlexivel.length, 1);
-            const labelsRel = Array.from({ length: totalRel }, (_, i) => i + 1);
+            const totalRel = Math.max(labelsRel.length, 1);
             new Chart(document.getElementById("graficoMaiorRel"), {
               type: "line",
-              data: {
-                labels: labelsRel,
-                datasets: [
-                  criarSeriePontos("Rígida", maxRigida, "circle"),
-                  criarSeriePontos("Flexível", maxFlexivel, "rectRounded"),
-                  criarLinhaReferencia("Nominal", torqueSupNominal, totalRel),
-                  criarLinhaReferencia("Limite mínimo", minExpMaior, totalRel),
-                  criarLinhaReferencia("Limite máximo", maxExpMaior, totalRel)
-                ]
-              },
-              options: obterOpcoesGraficoRelatorio("Torque superior")
+              data: { labels: labelsRel, datasets: [
+                criarSeriePontos("Rígida", maxRigida),
+                criarSeriePontos("Flexível", maxFlexivel),
+                criarLinhaReferencia("Nominal", ${parseNumero(el("torqueMaiorBase").value)}, totalRel),
+                criarLinhaReferencia("Limite mínimo", ${parseNumero(el("minExpMaior").value)}, totalRel),
+                criarLinhaReferencia("Limite máximo", ${parseNumero(el("maxExpMaior").value)}, totalRel)
+              ] },
+              options: opcoes("Torque superior")
             });
             new Chart(document.getElementById("graficoMenorRel"), {
               type: "line",
-              data: {
-                labels: labelsRel,
-                datasets: [
-                  criarSeriePontos("Rígida", minRigida, "circle"),
-                  criarSeriePontos("Flexível", minFlexivel, "rectRounded"),
-                  criarLinhaReferencia("Nominal", torqueInfNominal, totalRel),
-                  criarLinhaReferencia("Limite mínimo", minExpMenor, totalRel),
-                  criarLinhaReferencia("Limite máximo", maxExpMenor, totalRel)
-                ]
-              },
-              options: obterOpcoesGraficoRelatorio("Torque inferior")
+              data: { labels: labelsRel, datasets: [
+                criarSeriePontos("Rígida", minRigida),
+                criarSeriePontos("Flexível", minFlexivel),
+                criarLinhaReferencia("Nominal", ${parseNumero(el("torqueMenorBase").value)}, totalRel),
+                criarLinhaReferencia("Limite mínimo", ${parseNumero(el("minExpMenor").value)}, totalRel),
+                criarLinhaReferencia("Limite máximo", ${parseNumero(el("maxExpMenor").value)}, totalRel)
+              ] },
+              options: opcoes("Torque inferior")
             });
           <\/script>
-</body>
+        </body>
         </html>
       `);
+
       relatorio.document.close();
+    }
+
+    function obterTotalAmostrasTorqueUnico() {
+      const total = parseInt(el("tuAmostras").value, 10);
+      return Number.isInteger(total) && total > 0 ? total : 0;
     }
 
     function abrirTorqueUnico() {
@@ -2195,13 +1934,8 @@
       });
     }
 
-    function obterTotalAmostrasTorqueUnico() {
-      const total = parseInt(document.getElementById("tuAmostras").value, 10);
-      return Number.isInteger(total) && total > 0 ? total : 0;
-    }
-
     function criarLinhasTorqueUnico(total) {
-      const tbody = document.getElementById("tbody-torque-unico");
+      const tbody = el("tbody-torque-unico");
       if (!tbody) return;
       tbody.innerHTML = "";
       for (let i = 1; i <= total; i++) {
@@ -2213,27 +1947,24 @@
     }
 
     function calcularLimitesTorqueUnico() {
-      const torque = parseNumero(document.getElementById("tuTorqueNominal").value);
-      const tolerancia = parseNumero(document.getElementById("tuTolerancia").value);
+      const torque = parseNumero(el("tuTorqueNominal").value);
+      const tolerancia = parseNumero(el("tuTolerancia").value);
       const fator = tolerancia / 100;
       const limiteMin = torque ? torque * (1 - fator) : 0;
       const limiteMax = torque ? torque * (1 + fator) : 0;
-      document.getElementById("tuLimiteMin").value = limiteMin ? formatarNumero(limiteMin) : "";
-      document.getElementById("tuLimiteMax").value = limiteMax ? formatarNumero(limiteMax) : "";
+      el("tuLimiteMin").value = limiteMin ? formatarNumero(limiteMin) : "";
+      el("tuLimiteMax").value = limiteMax ? formatarNumero(limiteMax) : "";
     }
 
     function limparResultadosTorqueUnico() {
       ["tuMedia", "tuDp", "tuMin", "tuMax", "tuAmplitude", "tuScatter", "tuCm", "tuCmk"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = "-";
+        if (el(id)) el(id).textContent = "-";
       });
-      const status = document.getElementById("tuStatus");
-      if (status) {
-        status.textContent = "AGUARDANDO";
-        status.className = "status-badge status-neutro";
-      }
-      const motivo = document.getElementById("tuMotivo");
-      if (motivo) motivo.textContent = "Aguardando cálculo.";
+      const status = el("tuStatus");
+      status.textContent = "AGUARDANDO";
+      status.className = "status-badge status-neutro";
+      el("tuMotivo").textContent = "Aguardando cálculo.";
+
       if (graficoTorqueUnico) {
         graficoTorqueUnico.destroy();
         graficoTorqueUnico = null;
@@ -2245,49 +1976,70 @@
       limparResultadosTorqueUnico();
     }
 
+    function avaliarMotivosTorqueUnico(valores, est, tolerancia, limiteMin, limiteMax) {
+      const motivos = [];
+      const totalEsperado = obterTotalAmostrasTorqueUnico();
+
+      if (!valores.length) return "Nenhuma amostra válida foi preenchida para calcular o torque único.";
+
+      if (totalEsperado > 0 && valores.length < totalEsperado) {
+        motivos.push(`Existem amostras incompletas: preenchidas ${valores.length} de ${totalEsperado} leituras esperadas.`);
+      }
+
+      const foraLimites = contarForaLimites(valores, limiteMin, limiteMax);
+      if (foraLimites > 0) motivos.push(`${foraLimites} leitura(s) ficaram fora dos limites de tolerância calculados.`);
+      if (est.scatter > tolerancia) motivos.push(`O scatter calculado (${formatarNumero(est.scatter)}%) ficou acima da tolerância informada (${formatarNumero(tolerancia)}%).`);
+      if (est.cm < 1.67) motivos.push(`O Cm calculado (${formatarNumero(est.cm)}) ficou abaixo do mínimo interno WS de 1,67.`);
+      if (est.cmk < 1.67) motivos.push(`O Cmk calculado (${formatarNumero(est.cmk)}) ficou abaixo do mínimo interno WS de 1,67.`);
+
+      return motivos.length ? motivos.join(" ") : "Aprovado: scatter dentro da tolerância e índices Cm/Cmk iguais ou acima de 1,67.";
+    }
+
     function calcularTorqueUnico() {
       calcularLimitesTorqueUnico();
+
       const valores = lerValoresTabela("tbody-torque-unico");
-      const limiteMin = parseNumero(document.getElementById("tuLimiteMin").value);
-      const limiteMax = parseNumero(document.getElementById("tuLimiteMax").value);
-      const tolerancia = parseNumero(document.getElementById("tuTolerancia").value);
+      const limiteMin = parseNumero(el("tuLimiteMin").value);
+      const limiteMax = parseNumero(el("tuLimiteMax").value);
+      const tolerancia = parseNumero(el("tuTolerancia").value);
       const est = estatisticas(valores, limiteMin, limiteMax);
 
-      document.getElementById("tuMedia").textContent = formatarNumero(est.media);
-      document.getElementById("tuDp").textContent = formatarNumero(est.dp);
-      document.getElementById("tuMin").textContent = formatarNumero(est.min);
-      document.getElementById("tuMax").textContent = formatarNumero(est.max);
-      document.getElementById("tuAmplitude").textContent = formatarNumero(est.amplitude);
-      document.getElementById("tuScatter").textContent = `${formatarNumero(est.scatter)}%`;
-      document.getElementById("tuCm").textContent = formatarNumero(est.cm);
-      document.getElementById("tuCmk").textContent = formatarNumero(est.cmk);
+      el("tuMedia").textContent = formatarNumero(est.media);
+      el("tuDp").textContent = formatarNumero(est.dp);
+      el("tuMin").textContent = formatarNumero(est.min);
+      el("tuMax").textContent = formatarNumero(est.max);
+      el("tuAmplitude").textContent = formatarNumero(est.amplitude);
+      el("tuScatter").textContent = `${formatarNumero(est.scatter)}%`;
+      el("tuCm").textContent = formatarNumero(est.cm);
+      el("tuCmk").textContent = formatarNumero(est.cmk);
 
       const motivoResultado = avaliarMotivosTorqueUnico(valores, est, tolerancia, limiteMin, limiteMax);
       const aprovado = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 && motivoResultado.startsWith("Aprovado");
-      const status = document.getElementById("tuStatus");
+
+      const status = el("tuStatus");
       status.textContent = aprovado ? "APROVADO" : "REPROVADO";
       status.className = `status-badge ${aprovado ? "status-aprovado" : "status-reprovado"}`;
-      const motivo = document.getElementById("tuMotivo");
-      if (motivo) motivo.textContent = motivoResultado;
+      el("tuMotivo").textContent = motivoResultado;
 
-      atualizarGraficoTorqueUnico(valores, limiteMin, limiteMax, est);
+      atualizarGraficoTorqueUnico(valores, limiteMin, limiteMax);
     }
 
-    function atualizarGraficoTorqueUnico(valores, limiteMin, limiteMax, est) {
+    function atualizarGraficoTorqueUnico(valores, limiteMin, limiteMax) {
       if (graficoTorqueUnico) graficoTorqueUnico.destroy();
-      const total = Math.max(obterTotalAmostrasTorqueUnico(), valores.length);
+
+      const total = Math.max(obterTotalAmostrasTorqueUnico(), valores.length, 1);
       const labels = Array.from({ length: total }, (_, i) => i + 1);
-      const torqueNominal = parseNumero(document.getElementById("tuTorqueNominal").value);
-      const ctx = document.getElementById("graficoTorqueUnico");
-      graficoTorqueUnico = new Chart(ctx, {
+      const torqueNominal = parseNumero(el("tuTorqueNominal").value);
+
+      graficoTorqueUnico = new Chart(el("graficoTorqueUnico"), {
         type: "line",
         data: {
           labels,
           datasets: [
             criarSeriePontos("Medições", valores),
-            criarLinhaReferencia("Nominal", torqueNominal, labels.length),
-            criarLinhaReferencia("Limite mínimo", limiteMin, labels.length),
-            criarLinhaReferencia("Limite máximo", limiteMax, labels.length)
+            criarLinhaReferencia("Nominal", torqueNominal, total),
+            criarLinhaReferencia("Limite mínimo", limiteMin, total),
+            criarLinhaReferencia("Limite máximo", limiteMax, total)
           ]
         },
         options: obterOpcoesGraficoLimpo("Torque")
@@ -2296,34 +2048,20 @@
 
     function gerarRelatorioTorqueUnico() {
       calcularTorqueUnico();
+
       const valores = lerValoresTabela("tbody-torque-unico");
-      const limiteMin = parseNumero(document.getElementById("tuLimiteMin").value);
-      const limiteMax = parseNumero(document.getElementById("tuLimiteMax").value);
-      const tolerancia = parseNumero(document.getElementById("tuTolerancia").value);
+      const limiteMin = parseNumero(el("tuLimiteMin").value);
+      const limiteMax = parseNumero(el("tuLimiteMax").value);
+      const tolerancia = parseNumero(el("tuTolerancia").value);
       const est = estatisticas(valores, limiteMin, limiteMax);
-      const descricao = document.getElementById("tuDescricao").value || "Torque único";
-      const tipoJunta = document.getElementById("tuTipoJunta") ? document.getElementById("tuTipoJunta").value : "-";
-      const torque = document.getElementById("tuTorqueNominal").value || "-";
+      const descricao = el("tuDescricao").value || "Torque único";
+      const tipoJunta = el("tuTipoJunta").value || "-";
+      const torque = el("tuTorqueNominal").value || "-";
       const d = obterDadosFerramenta();
-      const tecnicoResponsavel = valorOuTraco("tecnicoResponsavel");
       const motivoResultado = avaliarMotivosTorqueUnico(valores, est, tolerancia, limiteMin, limiteMax);
       const status = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 && motivoResultado.startsWith("Aprovado") ? "APROVADO" : "REPROVADO";
-      const labels = Array.from({ length: Math.max(valores.length, 1) }, (_, i) => i + 1);
-      const porLinhaTU = 8;
-      const cabecalhoTU = Array.from({ length: porLinhaTU }, () => "<th>Amostra</th><th>Valor</th>").join("");
-      const linhas = (() => {
-        const grupos = [];
-        for (let i = 0; i < valores.length; i += porLinhaTU) grupos.push(valores.slice(i, i + porLinhaTU));
-        return grupos.map((grupo, bloco) => {
-          let tds = "";
-          for (let j = 0; j < porLinhaTU; j++) {
-            const indice = bloco * porLinhaTU + j;
-            const valor = grupo[j];
-            tds += Number.isFinite(valor) ? `<td>${indice + 1}</td><td>${formatarNumero(valor)}</td>` : "<td></td><td></td>";
-          }
-          return `<tr>${tds}</tr>`;
-        }).join("");
-      })();
+
+      const tabela = tabelaHtmlRelatorio("Amostras do torque único", valores);
 
       const relatorio = window.open("", "_blank");
       relatorio.document.write(`
@@ -2336,24 +2074,19 @@
           <style>
             @page { size: A4 portrait; margin: 6mm; }
             body { font-family: Arial, sans-serif; margin: 8px; color: #1f3f4d; font-size: 9.5px; line-height: 1.18; }
-            h1, h2 { color: #0f5f7d; margin: 0 0 4px; }
-            h1 { font-size: 17px; } h2 { font-size: 12px; }
+            h1, h2, h3 { color: #0f5f7d; margin: 0 0 4px; }
+            h1 { font-size: 17px; } h2 { font-size: 12px; } h3 { font-size: 10px; }
             .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; gap: 10px; }
             .topo-esq { display: flex; align-items: center; gap: 10px; }
             .topo-esq img { height: 30px; object-fit: contain; }
             .print-btn { padding: 7px 10px; border: none; border-radius: 7px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
             .bloco { border: 1px solid #c8dce5; border-radius: 7px; padding: 6px; margin-bottom: 5px; background: #fff; break-inside: avoid; }
             .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: 9.5px; }
-            .graficos-grid { display: grid; grid-template-columns: 1fr; gap: 5px; }
-            .graficos-grid .bloco { margin-bottom: 0; }
-            .grafico-card-rel { padding: 6px; }
-            .graficos-grid canvas { width: 100% !important; height: 175px !important; max-height: 175px !important; display: block; }
             .status { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: 800; color: white; background: ${status === "APROVADO" ? "#27ae60" : "#d93b3b"}; }
-            .nota { padding: 5px 6px; border-radius: 6px; background: #eef8fc; border: 1px solid #b9dceb; font-size: 8px; line-height: 1.2; }
             table { width: 100%; border-collapse: collapse; margin-top: 3px; table-layout: fixed; }
             th, td { border: 1px solid #d4e3ea; padding: 1px 2px; font-size: 6.8px; line-height: 1.05; text-align: center; }
             th { background: #eef7fb; }
-            canvas { background: #fff; border-radius: 8px; max-height: 185px !important; }
+            canvas { width: 100% !important; height: 175px !important; max-height: 175px !important; display: block; }
             @media print { .print-btn { display: none; } body { margin: 0; } }
           </style>
         </head>
@@ -2365,6 +2098,7 @@
             </div>
             <button class="print-btn" onclick="window.print()">Imprimir relatório</button>
           </div>
+
           <div class="bloco">
             <h2>Identificação do ensaio e rastreabilidade</h2>
             <div class="grid">
@@ -2379,23 +2113,16 @@
               <div><strong>Controlador modelo:</strong> ${d.controladorModelo}</div>
               <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
               <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-              <div><strong>Certificado de calibração:</strong> ${d.certificadoCalibracao}</div>
+              <div><strong>Certificado transdutor:</strong> ${d.certificadoCalibracao}</div>
               <div><strong>STA 6000:</strong> ${d.painel}</div>
-              <div><strong>Temperatura ambiente:</strong> ${d.temperaturaAmbiente} °C</div>
-              <div><strong>Umidade relativa:</strong> ${d.umidadeRelativa}%</div>
-              <div><strong>Sentido de aperto:</strong> ${d.sentidoAperto}</div>
+              <div><strong>Certificado STA 6000:</strong> ${d.certificadoSta}</div>
+              <div><strong>Técnico responsável:</strong> ${d.tecnicoResponsavel}</div>
             </div>
           </div>
-          <div class="bloco">
-            <h2>Critérios do método ISO 5393</h2>
-            <div class="nota">
-              Registro de rastreabilidade do equipamento, transdutor, calibração, condição de ensaio, tipo de junta, número de amostras, limites aplicados, scatter/repetibilidade e critério interno WS por Cm/Cmk.
-            </div>
-          </div>
+
           <div class="bloco">
             <h2>Parâmetros e resultado</h2>
             <div class="grid">
-              <div><strong>Técnico responsável:</strong> ${tecnicoResponsavel}</div>
               <div><strong>Tipo de junta:</strong> ${tipoJunta}</div>
               <div><strong>Torque nominal:</strong> ${torque}</div>
               <div><strong>Tolerância:</strong> ${formatarNumero(tolerancia)}%</div>
@@ -2413,64 +2140,37 @@
               <div style="grid-column:1/-1;"><strong>Motivo do resultado:</strong> ${motivoResultado}</div>
             </div>
           </div>
-          <div class="graficos-grid">
-            <div class="bloco grafico-card-rel"><h2>Gráfico limpo - Torque único</h2><canvas id="graficoTorqueUnicoRel" height="155"></canvas></div>
-          </div>
-          <div class="bloco">
-            <h2>Tabela de amostras</h2>
-            <table><thead><tr>${cabecalhoTU}</tr></thead><tbody>${linhas || '<tr><td colspan="16">Sem dados</td></tr>'}</tbody></table>
-          </div>
+
+          <div class="bloco"><h2>Gráfico limpo - Torque único</h2><canvas id="graficoTorqueUnicoRel"></canvas></div>
+          ${tabela}
+
           <script>
             function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
-            function criarSeriePontos(label, data) {
-              return { label, data, showLine: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, pointStyle: "circle", tension: 0 };
-            }
-            function criarLinhaReferencia(label, valor, tamanho) {
-              return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false };
-            }
-            function obterOpcoesGraficoRelatorioTU() {
-              return {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: "nearest", intersect: false },
-                plugins: {
-                  legend: {
-                    display: true,
-                    position: "bottom",
-                    labels: { boxWidth: 10, boxHeight: 10, padding: 10, font: { size: 9, weight: "600" }, usePointStyle: true }
-                  }
-                },
-                elements: { line: { tension: 0 }, point: { radius: 3 } },
-                scales: {
-                  x: { title: { display: true, text: "Amostra" }, grid: { display: false }, ticks: { font: { size: 8 } } },
-                  y: { title: { display: true, text: "Torque" }, grid: { color: "rgba(36,68,83,0.10)" }, ticks: { font: { size: 8 } } }
-                }
-              };
-            }
+            function criarSeriePontos(label, data) { return { label, data, showLine: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0 }; }
+            function criarLinhaReferencia(label, valor, tamanho) { return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false }; }
             const valoresTU = ${JSON.stringify(valores)};
             const totalTU = Math.max(valoresTU.length, 1);
             const labelsTU = Array.from({ length: totalTU }, (_, i) => i + 1);
-            const torqueNominalTU = ${parseNumero(document.getElementById("tuTorqueNominal").value)};
             new Chart(document.getElementById("graficoTorqueUnicoRel"), {
               type: "line",
               data: {
                 labels: labelsTU,
                 datasets: [
                   criarSeriePontos("Medições", valoresTU),
-                  criarLinhaReferencia("Nominal", torqueNominalTU, totalTU),
-                  criarLinhaReferencia("Limite mínimo", ${parseNumero(document.getElementById("tuLimiteMin").value)}, totalTU),
-                  criarLinhaReferencia("Limite máximo", ${parseNumero(document.getElementById("tuLimiteMax").value)}, totalTU)
+                  criarLinhaReferencia("Nominal", ${parseNumero(el("tuTorqueNominal").value)}, totalTU),
+                  criarLinhaReferencia("Limite mínimo", ${parseNumero(el("tuLimiteMin").value)}, totalTU),
+                  criarLinhaReferencia("Limite máximo", ${parseNumero(el("tuLimiteMax").value)}, totalTU)
                 ]
               },
-              options: obterOpcoesGraficoRelatorioTU()
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom" } } }
             });
           <\/script>
         </body>
         </html>
       `);
+
       relatorio.document.close();
     }
-
 
     function obterValoresInputsTabela(tbodyId) {
       return [...document.querySelectorAll(`#${tbodyId} input`)].map(input => input.value || "");
@@ -2483,178 +2183,14 @@
       });
     }
 
-    let popupResolver = null;
-
-    function abrirPopupSistema(opcoes = {}) {
-      const titulo = opcoes.titulo || "Aviso do sistema";
-      const subtitulo = opcoes.subtitulo || "Atlas Copco WS";
-      const mensagem = opcoes.mensagem || "";
-      const mostrarCancelar = !!opcoes.mostrarCancelar;
-      const textoConfirmar = opcoes.textoConfirmar || "OK";
-      const textoCancelar = opcoes.textoCancelar || "Cancelar";
-
-      const overlay = document.getElementById("popupOverlay");
-      const title = document.getElementById("popupTitle");
-      const subtitle = document.getElementById("popupSubtitle");
-      const message = document.getElementById("popupMessage");
-      const confirmBtn = document.getElementById("popupConfirm");
-      const cancelBtn = document.getElementById("popupCancel");
-
-      if (!overlay || !title || !subtitle || !message || !confirmBtn || !cancelBtn) {
-        return Promise.resolve(confirm(mensagem.replace(/<[^>]+>/g, " ")));
-      }
-
-      title.textContent = titulo;
-      subtitle.textContent = subtitulo;
-      message.innerHTML = mensagem;
-      confirmBtn.textContent = textoConfirmar;
-      cancelBtn.textContent = textoCancelar;
-      cancelBtn.style.display = mostrarCancelar ? "inline-flex" : "none";
-
-      overlay.classList.add("show");
-      overlay.setAttribute("aria-hidden", "false");
-
-      return new Promise(resolve => {
-        popupResolver = resolve;
-      });
-    }
-
-    function fecharPopupSistema(resultado) {
-      const overlay = document.getElementById("popupOverlay");
-      if (overlay) {
-        overlay.classList.remove("show");
-        overlay.setAttribute("aria-hidden", "true");
-      }
-
-      if (popupResolver) {
-        popupResolver(resultado);
-        popupResolver = null;
-      }
-    }
-
-    function configurarPopupSistema() {
-      const confirmBtn = document.getElementById("popupConfirm");
-      const cancelBtn = document.getElementById("popupCancel");
-      const overlay = document.getElementById("popupOverlay");
-
-      if (confirmBtn) confirmBtn.onclick = () => fecharPopupSistema(true);
-      if (cancelBtn) cancelBtn.onclick = () => fecharPopupSistema(false);
-      if (overlay) {
-        overlay.onclick = (event) => {
-          if (event.target === overlay) fecharPopupSistema(false);
-        };
-      }
-    }
-
-    async function mostrarPopup(mensagem, titulo = "Aviso do sistema") {
-      configurarPopupSistema();
-      return abrirPopupSistema({
-        titulo,
-        subtitulo: "Atlas Copco WS",
-        mensagem,
-        mostrarCancelar: false,
-        textoConfirmar: "OK"
-      });
-    }
-
-    async function confirmarPopup(mensagem, titulo = "Confirmar ação") {
-      configurarPopupSistema();
-      return abrirPopupSistema({
-        titulo,
-        subtitulo: "Atlas Copco WS",
-        mensagem,
-        mostrarCancelar: true,
-        textoConfirmar: "Sim, limpar",
-        textoCancelar: "Cancelar"
-      });
-    }
-
-    async async function ensaioNovo() {
-      const confirmar = await confirmarPopup(
-        "Tem certeza que deseja iniciar um <strong>ensaio novo</strong>?<br><br>Todos os campos, tabelas, resultados e gráficos serão apagados.",
-        "Confirmar novo ensaio"
-      );
-
-      if (!confirmar) return;
-
-      document.querySelectorAll("input[id], select[id], textarea[id]").forEach(el => {
-        if (el.type === "file") {
-          el.value = "";
-          return;
-        }
-
-        if (el.id === "normaReferencia") {
-          el.value = "ISO 5393:2017";
-          return;
-        }
-
-        if (el.tagName === "SELECT") {
-          el.selectedIndex = 0;
-          return;
-        }
-
-        if (el.hasAttribute("readonly")) {
-          if (["tuLimiteMin", "tuLimiteMax", "maxExpMaior", "minExpMaior", "maxExpMenor", "minExpMenor"].includes(el.id)) {
-            el.value = "";
-          }
-          return;
-        }
-
-        if (el.type === "number") {
-          if (el.id === "amostrasManual" || el.id === "tuAmostras") {
-            el.value = "25";
-          } else {
-            el.value = "";
-          }
-          return;
-        }
-
-        el.value = "";
-      });
-
-      atualizarCampoCrowfoot();
-      calcularLimitesAutomaticos();
-      calcularLimitesTorqueUnico();
-
-      const totalPrincipal = obterTotalAmostras();
-      if (totalPrincipal > 0) criarLinhas(totalPrincipal);
-
-      const totalTorqueUnico = obterTotalAmostrasTorqueUnico();
-      if (totalTorqueUnico > 0) criarLinhasTorqueUnico(totalTorqueUnico);
-
-      limparResultados();
-      limparResultadosTorqueUnico();
-      atualizarResumoDados();
-
-      if (graficoMaior) {
-        graficoMaior.destroy();
-        graficoMaior = null;
-      }
-
-      if (graficoMenor) {
-        graficoMenor.destroy();
-        graficoMenor = null;
-      }
-
-      if (graficoTorqueUnico) {
-        graficoTorqueUnico.destroy();
-        graficoTorqueUnico = null;
-      }
-
-      mostrarPagina("pagina-dados");
-      await mostrarPopup(
-        "Ensaio novo iniciado com sucesso.<br><br>Todos os campos e tabelas foram limpos.",
-        "Processo concluído"
-      );
-    }
-
     function obterEstadoEnsaio() {
       const campos = {};
-      document.querySelectorAll("input[id], select[id], textarea[id]").forEach(el => {
-        if (el.type !== "file") campos[el.id] = el.value;
+      document.querySelectorAll("input[id], select[id], textarea[id]").forEach(campo => {
+        if (campo.type !== "file") campos[campo.id] = campo.value;
       });
+
       return {
-        versao: "capabilidade-ws-v2",
+        versao: "capabilidade-ws-corrigido",
         salvoEm: new Date().toISOString(),
         campos,
         tabelas: {
@@ -2669,7 +2205,7 @@
 
     function salvarEnsaio() {
       const estado = obterEstadoEnsaio();
-      const numero = (document.getElementById("numeroRelatorio").value || "sem_relatorio").replace(/[^a-zA-Z0-9_-]/g, "_");
+      const numero = (el("numeroRelatorio").value || "sem_relatorio").replace(/[^a-zA-Z0-9_-]/g, "_");
       const data = new Date().toISOString().slice(0, 10);
       const blob = new Blob([JSON.stringify(estado, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -2685,6 +2221,7 @@
     function carregarEnsaio(event) {
       const arquivo = event.target.files && event.target.files[0];
       if (!arquivo) return;
+
       const leitor = new FileReader();
       leitor.onload = () => {
         try {
@@ -2692,8 +2229,8 @@
           if (!estado || !estado.campos) throw new Error("Arquivo inválido");
 
           Object.entries(estado.campos).forEach(([id, valor]) => {
-            const el = document.getElementById(id);
-            if (el && el.type !== "file") el.value = valor;
+            const campo = el(id);
+            if (campo && campo.type !== "file") campo.value = valor;
           });
 
           const totalPrincipal = parseInt(estado.campos.amostrasManual, 10) || estado.tabelas?.minRigida?.length || 25;
@@ -2701,7 +2238,7 @@
           criarLinhas(totalPrincipal);
 
           const totalTU = parseInt(estado.campos.tuAmostras, 10) || estado.tabelas?.torqueUnico?.length || 25;
-          document.getElementById("tuAmostras").value = totalTU;
+          el("tuAmostras").value = totalTU;
           criarLinhasTorqueUnico(totalTU);
 
           preencherValoresInputsTabela("tbody-min-rigida", estado.tabelas?.minRigida || []);
@@ -2711,12 +2248,14 @@
           preencherValoresInputsTabela("tbody-torque-unico", estado.tabelas?.torqueUnico || []);
 
           atualizarCampoCrowfoot();
-          atualizarCampoAmostrasManual();
           calcularLimitesAutomaticos();
           calcularLimitesTorqueUnico();
           atualizarResumoDados();
-          calcularTudoSemValidacao();
-          calcularTorqueUnico();
+          aplicarVisualObrigatorios();
+
+          try { calcularTudoSemValidacao(); } catch {}
+          try { calcularTorqueUnico(); } catch {}
+
           mostrarPopup("Ensaio carregado com sucesso.<br><br>Você já pode continuar editando.", "Ensaio carregado");
         } catch (erro) {
           mostrarPopup("Não foi possível carregar este ensaio.<br><br>Verifique se o arquivo é um JSON salvo por este app.", "Falha ao carregar ensaio");
@@ -2727,6 +2266,65 @@
       leitor.readAsText(arquivo);
     }
 
+    async function ensaioNovo() {
+      const confirmar = await confirmarPopup(
+        "Tem certeza que deseja iniciar um <strong>ensaio novo</strong>?<br><br>Todos os campos, tabelas, resultados e gráficos serão apagados.",
+        "Confirmar novo ensaio"
+      );
+
+      if (!confirmar) return;
+
+      document.querySelectorAll("input[id], select[id], textarea[id]").forEach(campo => {
+        if (campo.type === "file") {
+          campo.value = "";
+          return;
+        }
+
+        if (campo.id === "normaReferencia") {
+          campo.value = "ISO 5393:2017";
+          return;
+        }
+
+        if (campo.tagName === "SELECT") {
+          campo.selectedIndex = 0;
+          return;
+        }
+
+        if (campo.hasAttribute("readonly")) {
+          if (["tuLimiteMin", "tuLimiteMax", "maxExpMaior", "minExpMaior", "maxExpMenor", "minExpMenor"].includes(campo.id)) {
+            campo.value = "";
+          }
+          return;
+        }
+
+        if (campo.type === "number") {
+          if (campo.id === "amostrasManual" || campo.id === "tuAmostras") campo.value = "25";
+          else campo.value = "";
+          return;
+        }
+
+        campo.value = "";
+      });
+
+      atualizarCampoCrowfoot();
+      calcularLimitesAutomaticos();
+      calcularLimitesTorqueUnico();
+
+      criarLinhas(obterTotalAmostras() || 25);
+      criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25);
+
+      limparResultados();
+      limparResultadosTorqueUnico();
+      atualizarResumoDados();
+      aplicarVisualObrigatorios();
+
+      mostrarPagina("pagina-dados");
+
+      await mostrarPopup(
+        "Ensaio novo iniciado com sucesso.<br><br>Todos os campos e tabelas foram limpos.",
+        "Processo concluído"
+      );
+    }
 
     inputAmostrasManual.addEventListener("input", () => {
       const total = obterTotalAmostras();
@@ -2737,6 +2335,7 @@
       }
       atualizarResumoDados();
       calcularLimitesAutomaticos();
+      aplicarVisualObrigatorios();
     });
 
     tipoAplicacao.addEventListener("change", () => {
@@ -2746,59 +2345,50 @@
 
     [
       "numeroRelatorio", "dataEnsaio", "localEnsaio", "clienteProjeto", "crowfoot",
-      "apertadeiraModelo", "serialApertadeira", "controladorModelo", "serialControlador", "transdutor",
-      "certificadoCalibracao", "painel",
+      "apertadeiraModelo", "serialApertadeira", "controladorModelo", "serialControlador",
+      "transdutor", "certificadoCalibracao", "certificadoSta", "painel",
       "tecnicoResponsavel", "temperaturaAmbiente", "umidadeRelativa", "sentidoAperto",
-      "observacoesEnsaio", "porcentagem",
-      "torqueMaiorBase", "torqueMenorBase"
+      "observacoesEnsaio", "porcentagem", "torqueMaiorBase", "torqueMenorBase"
     ].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener("input", atualizarResumoDados);
-      if (el && el.tagName === "SELECT") el.addEventListener("change", atualizarResumoDados);
+      const campo = el(id);
+      if (campo) campo.addEventListener("input", atualizarResumoDados);
+      if (campo && campo.tagName === "SELECT") campo.addEventListener("change", atualizarResumoDados);
     });
 
-    document.getElementById("porcentagem").addEventListener("input", calcularLimitesAutomaticos);
-    document.getElementById("torqueMaiorBase").addEventListener("input", calcularLimitesAutomaticos);
-    document.getElementById("torqueMenorBase").addEventListener("input", calcularLimitesAutomaticos);
+    ["porcentagem", "torqueMaiorBase", "torqueMenorBase"].forEach(id => {
+      const campo = el(id);
+      if (campo) campo.addEventListener("input", calcularLimitesAutomaticos);
+    });
 
     ["tuTorqueNominal", "tuTolerancia"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.addEventListener("input", calcularLimitesTorqueUnico);
+      const campo = el(id);
+      if (campo) campo.addEventListener("input", calcularLimitesTorqueUnico);
     });
 
-    const tuAmostrasEl = document.getElementById("tuAmostras");
+    const tuAmostrasEl = el("tuAmostras");
     if (tuAmostrasEl) {
       tuAmostrasEl.addEventListener("input", () => {
         const total = obterTotalAmostrasTorqueUnico();
         if (total > 0) criarLinhasTorqueUnico(total);
-        else document.getElementById("tbody-torque-unico").innerHTML = "";
+        else el("tbody-torque-unico").innerHTML = "";
       });
     }
 
-    document.getElementById("dataEnsaio").value = new Date().toISOString().split("T")[0];
-    atualizarCampoCrowfoot();
-    atualizarCampoAmostrasManual();
-    criarLinhas(obterTotalAmostras() || 25);
-    atualizarResumoDados();
-    limparResultados();
-    calcularLimitesAutomaticos();
-    criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25);
-    calcularLimitesTorqueUnico();
+    document.addEventListener("DOMContentLoaded", () => {
+      montarMetricas("resultadoSuperior", metricasSuperior);
+      montarMetricas("resultadoInferior", metricasInferior);
+
+      el("dataEnsaio").value = new Date().toISOString().split("T")[0];
+
+      atualizarCampoCrowfoot();
+      criarLinhas(obterTotalAmostras() || 25);
+      atualizarResumoDados();
+      limparResultados();
+      calcularLimitesAutomaticos();
+      criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25);
+      calcularLimitesTorqueUnico();
+      aplicarVisualObrigatorios();
+    });
   </script>
-
-  <div id="popupOverlay" class="popup-overlay" aria-hidden="true">
-    <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
-      <div class="popup-header">
-        <h3 id="popupTitle">Aviso do sistema</h3>
-        <p id="popupSubtitle">Atlas Copco WS</p>
-      </div>
-      <div class="popup-body" id="popupMessage">Mensagem</div>
-      <div class="popup-actions">
-        <button type="button" id="popupCancel" class="popup-btn secondary">Cancelar</button>
-        <button type="button" id="popupConfirm" class="popup-btn primary">OK</button>
-      </div>
-    </div>
-  </div>
-
 </body>
 </html>
