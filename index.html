@@ -106,6 +106,34 @@
     .card-header { padding: 16px 18px 14px; border-bottom: 1px solid #d5e3ea; }
     .card-header h2 { margin: 0; color: var(--azul-escuro); font-size: 18px; }
     .card-header p { margin: 4px 0 0; color: var(--texto-suave); font-size: 13px; }
+
+    .card-header-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .aviso-obrigatorio {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #fff0dc 0%, #ffd9a8 100%);
+      border: 1px solid #fb923c;
+      color: #9a3412;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+      box-shadow: 0 8px 18px rgba(249, 115, 22, 0.18);
+      white-space: nowrap;
+    }
+
+    .aviso-obrigatorio strong {
+      color: #c2410c;
+    }
     .card-body { padding: 16px 18px 18px; }
 
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
@@ -476,7 +504,10 @@
 
         <section class="content-card">
           <div class="card-header">
-            <h2>Dados do ensaio</h2>
+            <div class="card-header-title">
+              <h2>Dados do ensaio</h2>
+              <span class="aviso-obrigatorio">⚠ <strong>Campos em laranja</strong> têm preenchimento obrigatório</span>
+            </div>
             <p>Cadastro da ferramenta, condição de ensaio e parâmetros antes de abrir as tabelas.</p>
           </div>
 
