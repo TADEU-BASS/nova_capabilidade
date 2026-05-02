@@ -36,7 +36,7 @@
       padding: 16px 14px 20px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start; gap: 20px;
       box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
     }
 
@@ -84,7 +84,7 @@
       padding: 18px 18px 14px;
       margin-bottom: 18px;
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start; gap: 20px;
       align-items: flex-start;
       gap: 12px;
     }
@@ -110,7 +110,7 @@
     .card-header-title {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start; gap: 20px;
       gap: 14px;
       flex-wrap: wrap;
     }
@@ -179,6 +179,38 @@
       box-shadow: 0 0 0 3px rgba(45,174,220,.16);
     }
 
+    select.campo-obrigatorio, input.campo-obrigatorio {
+      appearance: none;
+    }
+
+    .field.campo-obrigatorio-wrap {
+      position: relative;
+    }
+
+    .field.campo-obrigatorio-wrap label::before {
+      content: "* ";
+      color: #ea580c;
+      font-weight: 900;
+      font-size: 15px;
+    }
+
+    .field.campo-obrigatorio-wrap::after {
+      content: "⚠";
+      position: absolute;
+      right: 14px;
+      bottom: 11px;
+      color: #c2410c;
+      font-size: 14px;
+      font-weight: 900;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .field.campo-obrigatorio-wrap input,
+    .field.campo-obrigatorio-wrap select {
+      padding-right: 38px !important;
+    }
+
     .campo-obrigatorio {
       background: #ffd9a8 !important;
       border-color: #fb923c !important;
@@ -212,7 +244,7 @@
     }
     .samples-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start; gap: 20px;
       align-items: center;
       gap: 12px;
       margin-bottom: 14px;
@@ -1168,6 +1200,10 @@
         campo.classList.remove("campo-obrigatorio-preenchido");
       });
 
+      document.querySelectorAll(".campo-obrigatorio-wrap").forEach(field => {
+        field.classList.remove("campo-obrigatorio-wrap");
+      });
+
       const todosObrigatorios = [
         ...idsCamposObrigatoriosDados(),
         ...idsCamposObrigatoriosTorqueUnico()
@@ -1176,6 +1212,10 @@
       todosObrigatorios.forEach(id => {
         const campo = el(id);
         if (!campo) return;
+
+        const field = campo.closest(".field");
+        if (field) field.classList.add("campo-obrigatorio-wrap");
+
         campo.classList.add("campo-obrigatorio");
 
         if (String(campo.value || "").trim()) {
@@ -1774,7 +1814,7 @@
             .cabecalho-linhas { display: grid; grid-template-columns: 1fr; gap: 3px; font-size: 9px; }
             .cabecalho-wide { grid-column: 1 / -1; }
             .resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: 9.5px; }
-            .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; gap: 8px; }
+            .topo { display: flex; justify-content: flex-start; gap: 20px; align-items: center; margin-bottom: 5px; gap: 8px; }
             .topo-esq { display: flex; align-items: center; gap: 8px; }
             .topo-esq img { height: 30px; object-fit: contain; }
             .print-btn { padding: 7px 10px; border: none; border-radius: 7px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
@@ -2193,7 +2233,7 @@
             body { font-family: Arial, sans-serif; margin: 8px; color: #1f3f4d; font-size: 9.5px; line-height: 1.18; }
             h1, h2, h3 { color: #0f5f7d; margin: 0 0 4px; }
             h1 { font-size: 17px; } h2 { font-size: 12px; } h3 { font-size: 10px; }
-            .topo { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; gap: 10px; }
+            .topo { display: flex; justify-content: flex-start; gap: 20px; align-items: center; margin-bottom: 5px; gap: 10px; }
             .topo-esq { display: flex; align-items: center; gap: 10px; }
             .topo-esq img { height: 30px; object-fit: contain; }
             .print-btn { padding: 7px 10px; border: none; border-radius: 7px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
