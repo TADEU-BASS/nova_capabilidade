@@ -187,6 +187,7 @@
           <button class="menu-btn secondary" type="button" onclick="document.getElementById('arquivoEnsaio').click()">Carregar ensaio</button>
           <button class="menu-btn secondary" type="button" onclick="abrirManualPdf()">Manual PDF</button>
           <input type="file" id="arquivoEnsaio" accept=".json,application/json" style="display:none" onchange="carregarEnsaio(event)">
+          <button class="menu-btn secondary" type="button" onclick="ensaioNovo()">Ensaio novo</button>
         </div>
       </div>
 
@@ -1943,6 +1944,84 @@
       inputs.forEach((input, i) => {
         input.value = valores && valores[i] !== undefined ? valores[i] : "";
       });
+    }
+
+
+    function ensaioNovo() {
+      const confirmar = confirm("Deseja iniciar um ensaio novo? Todos os campos, tabelas, resultados e gráficos serão limpos.");
+      if (!confirmar) return;
+
+      document.querySelectorAll("input[id], select[id], textarea[id]").forEach(el => {
+        if (el.type === "file") {
+          el.value = "";
+          return;
+        }
+
+        if (el.id === "normaReferencia") {
+          el.value = "ISO 5393:2017";
+          return;
+        }
+
+        if (el.id === "dataEnsaio") {
+          el.value = "";
+          return;
+        }
+
+        if (el.tagName === "SELECT") {
+          el.selectedIndex = 0;
+          return;
+        }
+
+        if (el.hasAttribute("readonly")) {
+          if (["tuLimiteMin", "tuLimiteMax", "maxExpMaior", "minExpMaior", "maxExpMenor", "minExpMenor"].includes(el.id)) {
+            el.value = "";
+          }
+          return;
+        }
+
+        if (el.type === "number") {
+          if (el.id === "amostrasManual" || el.id === "tuAmostras") {
+            el.value = "25";
+          } else {
+            el.value = "";
+          }
+          return;
+        }
+
+        el.value = "";
+      });
+
+      atualizarCampoCrowfoot();
+      calcularLimitesAutomaticos();
+      calcularLimitesTorqueUnico();
+
+      const totalPrincipal = obterTotalAmostras();
+      if (totalPrincipal > 0) criarLinhas(totalPrincipal);
+
+      const totalTorqueUnico = obterTotalAmostrasTorqueUnico();
+      if (totalTorqueUnico > 0) criarLinhasTorqueUnico(totalTorqueUnico);
+
+      limparResultados();
+      limparResultadosTorqueUnico();
+      atualizarResumoDados();
+
+      if (graficoMaior) {
+        graficoMaior.destroy();
+        graficoMaior = null;
+      }
+
+      if (graficoMenor) {
+        graficoMenor.destroy();
+        graficoMenor = null;
+      }
+
+      if (graficoTorqueUnico) {
+        graficoTorqueUnico.destroy();
+        graficoTorqueUnico = null;
+      }
+
+      mostrarPagina("pagina-dados");
+      alert("Ensaio novo iniciado. Todos os campos e tabelas foram limpos.");
     }
 
     function obterEstadoEnsaio() {
