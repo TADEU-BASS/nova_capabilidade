@@ -85,6 +85,25 @@
     }
     .sidebar-footer-highlight strong { font-size: 13px; color: #ffffff; letter-spacing: 0.2px; }
     .sidebar-footer-highlight span { font-size: 11px; color: #dff5fb; }
+    .sidebar-footer-highlight .assinatura-linha {
+      display: block;
+      font-size: 13px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .sidebar-footer-highlight .assinatura-nome {
+      display: block;
+      margin-top: 4px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.35;
+      text-align: center;
+    }
+
 
     .main { flex: 1 1 auto; min-width: 0; padding: 24px 18px; }
     .page { display: none; }
@@ -231,9 +250,16 @@
       background: #ffd9a8 !important;
       border-color: #fb923c !important;
     }
+
+    select.campo-obrigatorio,
+    input.campo-obrigatorio,
+    textarea.campo-obrigatorio {
+      background-color: #ffd9a8 !important;
+      border-color: #fb923c !important;
+    }
     .campo-obrigatorio-preenchido {
-      background: #ffffff !important;
-      border-color: #ffffff !important;
+      background: #ffd9a8 !important;
+      border-color: #fb923c !important;
     }
     .campo-obrigatorio-erro {
       background: #ffe0bf !important;
@@ -673,8 +699,8 @@
           <button class="menu-btn secondary" type="button" onclick="ensaioNovo()">Ensaio novo</button>
 
           <div class="sidebar-footer sidebar-footer-highlight">
-            <strong>Criado e desenvolvido por<br>Marcos Tadeu Silva</strong>
-            <span>Destino padrão: Capabilidade_WS</span>
+            <div class="assinatura-linha">Criado e desenvolvido por</div>
+            <div class="assinatura-nome">Marcos Tadeu Silva</div>
             <span>Interface corporativa Atlas Copco.</span>
           </div>
         </div>
@@ -2300,7 +2326,7 @@
         "Carregar ensaio": "Load test",
         "Ensaio novo": "New test",
         "Criado e desenvolvido por": "Created and developed by",
-        "Destino padrão: Capabilidade_WS": "Default destination: Capabilidade_WS",
+        "": "Default destination: Capabilidade_WS",
         "Interface corporativa Atlas Copco.": "Atlas Copco corporate interface.",
         "Ensaio de ferramentas - ISO 5393": "Tool test - ISO 5393",
         "Preencha os dados do ensaio e da ferramenta. As tabelas ficam em outra folha.": "Fill in the test and tool data. Tables are on another page.",
@@ -2397,7 +2423,7 @@
         "Carregar ensaio": "Cargar ensayo",
         "Ensaio novo": "Ensayo nuevo",
         "Criado e desenvolvido por": "Creado y desarrollado por",
-        "Destino padrão: Capabilidade_WS": "Destino estándar: Capabilidade_WS",
+        "": "Destino estándar: Capabilidade_WS",
         "Interface corporativa Atlas Copco.": "Interfaz corporativa Atlas Copco.",
         "Ensaio de ferramentas - ISO 5393": "Ensayo de herramientas - ISO 5393",
         "Preencha os dados do ensaio e da ferramenta. As tabelas ficam em outra folha.": "Complete los datos del ensayo y de la herramienta. Las tablas están en otra página.",
@@ -2487,7 +2513,7 @@
     };
 
     function prepararTextosOriginais() {
-      const elementos = document.querySelectorAll("button, label, h1, h2, h3, p, span, strong, option");
+      const elementos = document.querySelectorAll("button, label, h1, h2, h3, p, span, strong, option, .assinatura-linha");
       elementos.forEach(item => {
         if (!item.dataset.ptOriginal) {
           const texto = item.textContent.trim();
@@ -2498,7 +2524,7 @@
 
     function traduzirElementos(idioma) {
       const mapa = traducoesSistema[idioma] || {};
-      const elementos = document.querySelectorAll("button, label, h1, h2, h3, p, span, strong, option");
+      const elementos = document.querySelectorAll("button, label, h1, h2, h3, p, span, strong, option, .assinatura-linha");
       elementos.forEach(item => {
         const original = item.dataset.ptOriginal;
         if (!original) return;
