@@ -1012,6 +1012,30 @@
                   <canvas id="graficoMenor"></canvas>
                 </div>
               </div>
+
+              <div class="samples-header" style="margin-top:18px;">
+                <h3>Histogramas por tipo de junta</h3>
+                <div class="small-note">Distribuição das leituras por torque e tipo de junta.</div>
+              </div>
+
+              <div class="grafico-grid">
+                <div class="grafico-card">
+                  <h4>Histograma — Torque superior / Junta rígida</h4>
+                  <canvas id="histMaxRigida"></canvas>
+                </div>
+                <div class="grafico-card">
+                  <h4>Histograma — Torque superior / Junta flexível</h4>
+                  <canvas id="histMaxFlexivel"></canvas>
+                </div>
+                <div class="grafico-card">
+                  <h4>Histograma — Torque inferior / Junta rígida</h4>
+                  <canvas id="histMinRigida"></canvas>
+                </div>
+                <div class="grafico-card">
+                  <h4>Histograma — Torque inferior / Junta flexível</h4>
+                  <canvas id="histMinFlexivel"></canvas>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -1308,6 +1332,10 @@
 
     let graficoMaior = null;
     let graficoMenor = null;
+    let histMaxRigida = null;
+    let histMaxFlexivel = null;
+    let histMinRigida = null;
+    let histMinFlexivel = null;
     let graficoTorqueUnico = null;
     let popupResolver = null;
 
@@ -1814,8 +1842,17 @@
     function destruirGraficos() {
       if (graficoMaior) graficoMaior.destroy();
       if (graficoMenor) graficoMenor.destroy();
+      if (histMaxRigida) histMaxRigida.destroy();
+      if (histMaxFlexivel) histMaxFlexivel.destroy();
+      if (histMinRigida) histMinRigida.destroy();
+      if (histMinFlexivel) histMinFlexivel.destroy();
+
       graficoMaior = null;
       graficoMenor = null;
+      histMaxRigida = null;
+      histMaxFlexivel = null;
+      histMinRigida = null;
+      histMinFlexivel = null;
     }
 
     function contarForaLimites(lista, limiteMin, limiteMax) {
@@ -1997,6 +2034,90 @@
       };
     }
 
+    function calcularHistograma(valores, quantidadeBins = 8) {
+      const numeros = (valores || []).filter(v => Number.isFinite(v));
+      if (!numeros.length) return { labels: [], frequencias: [] };
+
+      const minimo = Math.min(...numeros);
+      const maximo = Math.max(...numeros);
+
+      if (minimo === maximo) {
+        return {
+          labels: [formatarNumero(minimo)],
+          frequencias: [numeros.length]
+        };
+      }
+
+      const bins = Math.min(Math.max(5, quantidadeBins), 12);
+      const largura = (maximo - minimo) / bins;
+      const labels = [];
+      const frequencias = new Array(bins).fill(0);
+
+      for (let i = 0; i < bins; i++) {
+        const inicio = minimo + (largura * i);
+        const fim = i === bins - 1 ? maximo : inicio + largura;
+        labels.push(`${formatarNumero(inicio)} até ${formatarNumero(fim)}`);
+      }
+
+      numeros.forEach(valor => {
+        let indice = Math.floor((valor - minimo) / largura);
+        if (indice < 0) indice = 0;
+        if (indice >= bins) indice = bins - 1;
+        frequencias[indice]++;
+      });
+
+      return { labels, frequencias };
+    }
+
+    function obterOpcoesHistograma(tituloEixo = "Frequência") {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return `Frequência: ${context.parsed.y}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: "Faixas de torque" },
+            ticks: { maxRotation: 45, minRotation: 0, font: { size: 10 } },
+            grid: { display: false }
+          },
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: tituloEixo },
+            ticks: { precision: 0 }
+          }
+        }
+      };
+    }
+
+    function criarHistograma(canvasId, valores, tituloDataset) {
+      const canvas = el(canvasId);
+      if (!canvas) return null;
+
+      const hist = calcularHistograma(valores);
+
+      return new Chart(canvas, {
+        type: "bar",
+        data: {
+          labels: hist.labels,
+          datasets: [{
+            label: tituloDataset,
+            data: hist.frequencias,
+            borderWidth: 1
+          }]
+        },
+        options: obterOpcoesHistograma()
+      });
+    }
+
     function atualizarGraficos(dados) {
       destruirGraficos();
 
@@ -2046,6 +2167,11 @@
           options: obterOpcoesGraficoLimpo("Torque inferior")
         });
       }
+
+      histMaxRigida = criarHistograma("histMaxRigida", dados.maxRigida, "Torque superior / Junta rígida");
+      histMaxFlexivel = criarHistograma("histMaxFlexivel", dados.maxFlexivel, "Torque superior / Junta flexível");
+      histMinRigida = criarHistograma("histMinRigida", dados.minRigida, "Torque inferior / Junta rígida");
+      histMinFlexivel = criarHistograma("histMinFlexivel", dados.minFlexivel, "Torque inferior / Junta flexível");
     }
 
     function limparTabelas() {
