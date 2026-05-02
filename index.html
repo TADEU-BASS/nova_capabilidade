@@ -3096,6 +3096,9 @@
       const motivoResultado = avaliarMotivosTorqueUnico(valores, est, tolerancia, limiteMin, limiteMax);
       const status = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 && motivoResultado.startsWith("Aprovado") ? "APROVADO" : "REPROVADO";
 
+      const totalTU = Math.max(valores.length, 1);
+      const labelsTU = Array.from({ length: totalTU }, (_, i) => i + 1);
+
       const tabela = tabelaHtmlRelatorio("Amostras do torque único", valores);
 
       const relatorio = window.open("", "_blank");
@@ -3109,60 +3112,253 @@
           <style>
             @page { size: A4 portrait; margin: 6mm; }
             body { font-family: Arial, sans-serif; margin: 8px; color: #1f3f4d; font-size: 9.5px; line-height: 1.18; }
-            h1, h2, h3 { color: #0f5f7d; margin: 0 0 4px; }
-            h1 { font-size: 17px; } h2 { font-size: 12px; } h3 { font-size: 10px; }
-            .topo { display: flex; justify-content: flex-start; gap: 20px; align-items: center; margin-bottom: 5px; gap: 10px; }
-            .topo-esq { display: flex; align-items: center; gap: 10px; }
-            .topo-esq img { height: 30px; object-fit: contain; }
-            .print-btn { padding: 7px 10px; border: none; border-radius: 7px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
-            .bloco { border: 1px solid #c8dce5; border-radius: 7px; padding: 6px; margin-bottom: 5px; background: #fff; break-inside: avoid; }
-            .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: 9.5px; }
-            .status { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: 800; color: white; background: ${status === "APROVADO" ? "#27ae60" : "#d93b3b"}; }
-            table { width: 100%; border-collapse: collapse; margin-top: 3px; table-layout: fixed; }
-            th, td { border: 1px solid #d4e3ea; padding: 1px 2px; font-size: 6.8px; line-height: 1.05; text-align: center; }
-            th { background: #eef7fb; }
-            canvas { width: 100% !important; height: 175px !important; max-height: 175px !important; display: block; }
-            @media print { .print-btn { display: none; } body { margin: 0; } }
+            h1, h2, h3 { color: #0f5f7d; margin: 0 0 3px; line-height: 1.05; }
+            h1 { font-size: 17px; } 
+            h2 { font-size: 12px; } 
+            h3 { font-size: 10px; }
+
+            .cabecalho, .bloco { 
+              border: 1px solid #c8dce5; 
+              border-radius: 6px; 
+              padding: 5px; 
+              margin-bottom: 4px; 
+              background: #fff; 
+              break-inside: avoid; 
+            }
+
+            .cabecalho { background: #f5fbfe; }
+
+            .cabecalho-grid { 
+              display: grid; 
+              grid-template-columns: 1fr 1fr; 
+              gap: 6px; 
+            }
+
+            .cabecalho-card { 
+              border: 1px solid #d6e6ec; 
+              border-radius: 8px; 
+              background: #ffffff; 
+              padding: 6px; 
+            }
+
+            .cabecalho-card h3 { 
+              margin-bottom: 5px; 
+              padding-bottom: 3px; 
+              border-bottom: 1px solid #dcebf1; 
+            }
+
+            .cabecalho-linhas { 
+              display: grid; 
+              grid-template-columns: 1fr; 
+              gap: 3px; 
+              font-size: 9px; 
+            }
+
+            .cabecalho-wide { grid-column: 1 / -1; }
+
+            .resumo { 
+              display: grid; 
+              grid-template-columns: repeat(3, 1fr); 
+              gap: 4px 10px; 
+              font-size: 9.5px; 
+            }
+
+            .topo { 
+              display: flex; 
+              justify-content: space-between; 
+              align-items: center; 
+              margin-bottom: 5px; 
+              gap: 8px; 
+            }
+
+            .topo-esq { 
+              display: flex; 
+              align-items: center; 
+              gap: 8px; 
+            }
+
+            .topo-esq img { 
+              height: 30px; 
+              object-fit: contain; 
+            }
+
+            .print-btn { 
+              padding: 7px 10px; 
+              border: none; 
+              border-radius: 7px; 
+              cursor: pointer; 
+              font-weight: bold; 
+              background: #1ea4d7; 
+              color: white; 
+            }
+
+            .status-relatorio { 
+              display: inline-block; 
+              padding: 4px 8px; 
+              border-radius: 6px; 
+              font-weight: 800; 
+              color: white; 
+              font-size: 8.5px; 
+            }
+
+            .aprovado { background: #27ae60; } 
+            .reprovado { background: #d93b3b; } 
+            .aguardando { background: #90a4ae; }
+
+            .nota { 
+              padding: 5px 6px; 
+              border-radius: 6px; 
+              background: #eef8fc; 
+              border: 1px solid #b9dceb; 
+              font-size: 8px; 
+              line-height: 1.2; 
+            }
+
+            .assinatura { 
+              margin-top: 4px; 
+              padding-top: 3px; 
+            }
+
+            .cargo { 
+              font-size: 8px; 
+              color: #5d7480; 
+            }
+
+            .tabela-medicoes { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-top: 3px; 
+              table-layout: fixed; 
+            }
+
+            .tabela-medicoes th, .tabela-medicoes td { 
+              border: 1px solid #d4e3ea; 
+              padding: 1px 2px; 
+              font-size: 6.6px; 
+              line-height: 1.05; 
+              text-align: center; 
+              word-break: break-word; 
+            }
+
+            .tabela-medicoes th { 
+              background: #eef7fb; 
+              font-weight: 700; 
+            }
+
+            .graficos-grid { 
+              display: grid; 
+              grid-template-columns: 1fr 1fr; 
+              gap: 6px; 
+            }
+
+            .graficos-grid .bloco { 
+              margin-bottom: 0; 
+            }
+
+            .graficos-grid canvas { 
+              width: 100% !important; 
+              height: 170px !important; 
+              max-height: 170px !important; 
+              display: block; 
+              background: #fff; 
+              border-radius: 8px; 
+            }
+
+            @media (max-width: 900px) { 
+              .cabecalho-grid, .graficos-grid { grid-template-columns: 1fr; } 
+            }
+
+            @media print { 
+              .print-btn { display: none; } 
+              body { margin: 0; } 
+            }
           </style>
         </head>
+
         <body>
           <div class="topo">
             <div class="topo-esq">
               <img src="logo-atlas-copco.png" alt="Atlas Copco">
-              <div><h1>Relatório de Capabilidade - Torque Único</h1><div>${descricao}</div></div>
+              <div>
+                <h1>Relatório ISO 5393 / Capabilidade - Torque Único</h1>
+                <div>Número do relatório: ${d.numeroRelatorio}</div>
+              </div>
             </div>
             <button class="print-btn" onclick="window.print()">Imprimir relatório</button>
           </div>
 
-          <div class="bloco">
-            <h2>Identificação do ensaio e rastreabilidade</h2>
-            <div class="grid">
-              <div><strong>Número do relatório:</strong> ${d.numeroRelatorio}</div>
-              <div><strong>Norma de referência:</strong> ${d.normaReferencia}</div>
-              <div><strong>Data do ensaio:</strong> ${d.dataEnsaio}</div>
-              <div><strong>Local do ensaio:</strong> ${d.localEnsaio}</div>
-              <div><strong>Cliente / projeto / linha:</strong> ${d.clienteProjeto}</div>
-              <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
-              <div><strong>Apertadeira modelo:</strong> ${d.apertadeiraModelo}</div>
-              <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
-              <div><strong>Controlador modelo:</strong> ${d.controladorModelo}</div>
-              <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
-              <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-              <div><strong>Certificado transdutor:</strong> ${d.certificadoCalibracao}</div>
-              <div><strong>STA 6000:</strong> ${d.painel}</div>
-              <div><strong>Certificado STA 6000:</strong> ${d.certificadoSta}</div>
-              <div><strong>Técnico responsável:</strong> ${d.tecnicoResponsavel}</div>
+          <div class="cabecalho">
+            <div class="cabecalho-grid">
+              <div class="cabecalho-card">
+                <h3>Identificação do ensaio</h3>
+                <div class="cabecalho-linhas">
+                  <div><strong>Número do relatório:</strong> ${d.numeroRelatorio}</div>
+                  <div><strong>Norma de referência:</strong> ${d.normaReferencia}</div>
+                  <div><strong>Data do ensaio:</strong> ${d.dataEnsaio}</div>
+                  <div><strong>Local do ensaio:</strong> ${d.localEnsaio}</div>
+                  <div><strong>Cliente / projeto / linha:</strong> ${d.clienteProjeto}</div>
+                  <div><strong>Técnico responsável:</strong> ${d.tecnicoResponsavel}</div>
+                  <div><strong>Total de amostras:</strong> ${valores.length}</div>
+                </div>
+              </div>
+
+              <div class="cabecalho-card">
+                <h3>Ferramenta / aplicação</h3>
+                <div class="cabecalho-linhas">
+                  <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
+                  <div><strong>Crowfoot:</strong> ${d.crowfoot}</div>
+                  <div><strong>Apertadeira modelo:</strong> ${d.apertadeiraModelo}</div>
+                  <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
+                  <div><strong>Controlador modelo:</strong> ${d.controladorModelo}</div>
+                  <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
+                </div>
+              </div>
+
+              <div class="cabecalho-card">
+                <h3>Medição / rastreabilidade</h3>
+                <div class="cabecalho-linhas">
+                  <div><strong>Transdutor:</strong> ${d.transdutor}</div>
+                  <div><strong>Certificado transdutor:</strong> ${d.certificadoCalibracao}</div>
+                  <div><strong>STA 6000:</strong> ${d.painel}</div>
+                  <div><strong>Certificado STA 6000:</strong> ${d.certificadoSta}</div>
+                  <div><strong>Sentido de aperto:</strong> ${d.sentidoAperto}</div>
+                  <div><strong>Temperatura ambiente:</strong> ${d.temperaturaAmbiente} °C</div>
+                  <div><strong>Umidade relativa:</strong> ${d.umidadeRelativa}%</div>
+                </div>
+              </div>
+
+              <div class="cabecalho-card">
+                <h3>Parâmetros do torque único</h3>
+                <div class="cabecalho-linhas">
+                  <div><strong>Descrição / ponto:</strong> ${descricao}</div>
+                  <div><strong>Tipo de junta:</strong> ${tipoJunta}</div>
+                  <div><strong>Torque nominal:</strong> ${torque}</div>
+                  <div><strong>Tolerância:</strong> ${formatarNumero(tolerancia)}%</div>
+                  <div><strong>Limite mínimo:</strong> ${formatarNumero(limiteMin)}</div>
+                  <div><strong>Limite máximo:</strong> ${formatarNumero(limiteMax)}</div>
+                </div>
+              </div>
+
+              <div class="cabecalho-card cabecalho-wide">
+                <h3>Observações do ensaio</h3>
+                <div class="cabecalho-linhas">
+                  <div>${d.observacoesEnsaio}</div>
+                </div>
+              </div>
             </div>
           </div>
 
           <div class="bloco">
-            <h2>Parâmetros e resultado</h2>
-            <div class="grid">
-              <div><strong>Tipo de junta:</strong> ${tipoJunta}</div>
-              <div><strong>Torque nominal:</strong> ${torque}</div>
-              <div><strong>Tolerância:</strong> ${formatarNumero(tolerancia)}%</div>
-              <div><strong>Limite mínimo:</strong> ${formatarNumero(limiteMin)}</div>
-              <div><strong>Limite máximo:</strong> ${formatarNumero(limiteMax)}</div>
+            <h2>Leitura ISO 5393</h2>
+            <div class="nota">
+              Este relatório registra a condição de ensaio, a rastreabilidade, o tipo de junta, o número de amostras, os limites aplicados e a repetibilidade/scatter do torque único.
+              Os índices Cm e Cmk permanecem como critério complementar interno WS.
+            </div>
+          </div>
+
+          <div class="bloco">
+            <h2>Resultado do Torque Único</h2>
+            <div class="resumo">
               <div><strong>Média:</strong> ${formatarNumero(est.media)}</div>
               <div><strong>Desvio padrão:</strong> ${formatarNumero(est.dp)}</div>
               <div><strong>Mínimo:</strong> ${formatarNumero(est.min)}</div>
@@ -3171,22 +3367,73 @@
               <div><strong>Scatter:</strong> ${formatarNumero(est.scatter)}%</div>
               <div><strong>Cm:</strong> ${formatarNumero(est.cm)}</div>
               <div><strong>Cmk:</strong> ${formatarNumero(est.cmk)}</div>
-              <div style="grid-column:1/-1;"><strong>Status:</strong> <span class="status">${status}</span></div>
+              <div><strong>Status interno WS:</strong> <span class="status-relatorio ${status === "APROVADO" ? "aprovado" : "reprovado"}">${status}</span></div>
               <div style="grid-column:1/-1;"><strong>Motivo do resultado:</strong> ${motivoResultado}</div>
             </div>
           </div>
 
-          <div class="bloco"><h2>Gráfico limpo - Torque único</h2><canvas id="graficoTorqueUnicoRel"></canvas></div>
-          <div class="bloco"><h2>Histograma - Torque único</h2><canvas id="histTorqueUnicoRel"></canvas></div>
+          <div class="graficos-grid">
+            <div class="bloco">
+              <h2>Gráfico limpo - Torque único</h2>
+              <canvas id="graficoTorqueUnicoRel"></canvas>
+            </div>
+            <div class="bloco">
+              <h2>Histograma - Torque único</h2>
+              <canvas id="histTorqueUnicoRel"></canvas>
+            </div>
+          </div>
+
           ${tabela}
+
+          <div class="bloco assinatura">
+            <strong>${d.tecnicoResponsavel}</strong>
+            <div class="cargo">Técnico responsável</div>
+          </div>
 
           <script>
             function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
-            function criarSeriePontos(label, data) { return { label, data, showLine: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0 }; }
-            function criarLinhaReferencia(label, valor, tamanho) { return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false }; }
+            function criarSeriePontos(label, data) {
+              return { label, data, showLine: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0 };
+            }
+            function criarLinhaReferencia(label, valor, tamanho) {
+              return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false };
+            }
+            function formatarNumeroRel(valor) {
+              if (!Number.isFinite(valor)) return "-";
+              return valor.toFixed(2).replace(".", ",");
+            }
+            function calcularHistogramaRel(valores, quantidadeBins = 14) {
+              const numeros = (valores || []).filter(v => Number.isFinite(v));
+              if (!numeros.length) return { labels: [], frequencias: [] };
+              const minimo = Math.min(...numeros);
+              const maximo = Math.max(...numeros);
+              if (minimo === maximo) return { labels: [formatarNumeroRel(minimo)], frequencias: [numeros.length] };
+
+              const bins = Math.min(Math.max(8, quantidadeBins), 18);
+              const largura = (maximo - minimo) / bins;
+              const labels = [];
+              const frequencias = new Array(bins).fill(0);
+
+              for (let i = 0; i < bins; i++) {
+                const inicio = minimo + (largura * i);
+                const fim = i === bins - 1 ? maximo : inicio + largura;
+                labels.push(formatarNumeroRel(inicio) + " até " + formatarNumeroRel(fim));
+              }
+
+              numeros.forEach(valor => {
+                let indice = Math.floor((valor - minimo) / largura);
+                if (indice < 0) indice = 0;
+                if (indice >= bins) indice = bins - 1;
+                frequencias[indice]++;
+              });
+
+              return { labels, frequencias };
+            }
+
             const valoresTU = ${JSON.stringify(valores)};
             const totalTU = Math.max(valoresTU.length, 1);
             const labelsTU = Array.from({ length: totalTU }, (_, i) => i + 1);
+
             new Chart(document.getElementById("graficoTorqueUnicoRel"), {
               type: "line",
               data: {
@@ -3198,36 +3445,17 @@
                   criarLinhaReferencia("Limite máximo", ${parseNumero(el("tuLimiteMax").value)}, totalTU)
                 ]
               },
-              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom" } } }
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } },
+                scales: {
+                  x: { title: { display: true, text: "Amostra" }, ticks: { font: { size: 8 } } },
+                  y: { title: { display: true, text: "Torque" }, ticks: { font: { size: 8 } } }
+                }
+              }
             });
 
-            function formatarNumeroRel(valor) {
-              if (!Number.isFinite(valor)) return "-";
-              return valor.toFixed(2).replace(".", ",");
-            }
-            function calcularHistogramaRel(valores, quantidadeBins = 14) {
-              const numeros = (valores || []).filter(v => Number.isFinite(v));
-              if (!numeros.length) return { labels: [], frequencias: [] };
-              const minimo = Math.min(...numeros);
-              const maximo = Math.max(...numeros);
-              if (minimo === maximo) return { labels: [formatarNumeroRel(minimo)], frequencias: [numeros.length] };
-              const bins = Math.min(Math.max(8, quantidadeBins), 18);
-              const largura = (maximo - minimo) / bins;
-              const labels = [];
-              const frequencias = new Array(bins).fill(0);
-              for (let i = 0; i < bins; i++) {
-                const inicio = minimo + (largura * i);
-                const fim = i === bins - 1 ? maximo : inicio + largura;
-                labels.push(formatarNumeroRel(inicio) + " até " + formatarNumeroRel(fim));
-              }
-              numeros.forEach(valor => {
-                let indice = Math.floor((valor - minimo) / largura);
-                if (indice < 0) indice = 0;
-                if (indice >= bins) indice = bins - 1;
-                frequencias[indice]++;
-              });
-              return { labels, frequencias };
-            }
             const histTU = calcularHistogramaRel(valoresTU);
             new Chart(document.getElementById("histTorqueUnicoRel"), {
               data: {
@@ -3240,10 +3468,10 @@
               options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: true, position: "bottom" } },
+                plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } },
                 scales: {
                   x: { title: { display: true, text: "Faixas de torque" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } },
-                  y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0 } }
+                  y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0, font: { size: 8 } } }
                 }
               }
             });
