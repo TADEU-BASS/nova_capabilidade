@@ -241,6 +241,10 @@
       z-index: 2;
     }
 
+    .field.campo-obrigatorio-wrap.preenchido::after {
+      display: none;
+    }
+
     .field.campo-obrigatorio-wrap input,
     .field.campo-obrigatorio-wrap select {
       padding-right: 38px !important;
@@ -251,15 +255,15 @@
       border-color: #fb923c !important;
     }
 
-    select.campo-obrigatorio,
-    input.campo-obrigatorio,
-    textarea.campo-obrigatorio {
+    select.campo-obrigatorio:not(.campo-obrigatorio-preenchido),
+    input.campo-obrigatorio:not(.campo-obrigatorio-preenchido),
+    textarea.campo-obrigatorio:not(.campo-obrigatorio-preenchido) {
       background-color: #ffd9a8 !important;
       border-color: #fb923c !important;
     }
     .campo-obrigatorio-preenchido {
-      background: #ffd9a8 !important;
-      border-color: #fb923c !important;
+      background: #ffffff !important;
+      border-color: #ffffff !important;
     }
     .campo-obrigatorio-erro {
       background: #ffe0bf !important;
@@ -1507,6 +1511,7 @@
 
       document.querySelectorAll(".campo-obrigatorio-wrap").forEach(field => {
         field.classList.remove("campo-obrigatorio-wrap");
+        field.classList.remove("preenchido");
       });
 
       const todosObrigatorios = [
@@ -1526,6 +1531,9 @@
         if (String(campo.value || "").trim()) {
           campo.classList.add("campo-obrigatorio-preenchido");
           campo.classList.remove("campo-obrigatorio-erro");
+          if (field) field.classList.add("preenchido");
+        } else {
+          if (field) field.classList.remove("preenchido");
         }
 
         if (!campo.dataset.obrigatorioListener) {
