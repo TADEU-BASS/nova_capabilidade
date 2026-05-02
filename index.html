@@ -1137,6 +1137,11 @@
                 <h4>Torque único</h4>
                 <canvas id="graficoTorqueUnico"></canvas>
               </div>
+
+              <div class="grafico-card" style="margin-top:16px;">
+                <h4>Histograma — Torque único</h4>
+                <canvas id="histTorqueUnico"></canvas>
+              </div>
             </div>
           </div>
         </section>
@@ -1337,6 +1342,7 @@
     let histMinRigida = null;
     let histMinFlexivel = null;
     let graficoTorqueUnico = null;
+    let histTorqueUnico = null;
     let popupResolver = null;
 
     const metricasSuperior = [
@@ -2421,6 +2427,13 @@
             <div class="bloco"><h2>Gráfico limpo - Torque inferior</h2><canvas id="graficoMenorRel"></canvas></div>
           </div>
 
+          <div class="graficos-grid">
+            <div class="bloco"><h2>Histograma - Torque superior / Junta rígida</h2><canvas id="histMaxRigidaRel"></canvas></div>
+            <div class="bloco"><h2>Histograma - Torque superior / Junta flexível</h2><canvas id="histMaxFlexivelRel"></canvas></div>
+            <div class="bloco"><h2>Histograma - Torque inferior / Junta rígida</h2><canvas id="histMinRigidaRel"></canvas></div>
+            <div class="bloco"><h2>Histograma - Torque inferior / Junta flexível</h2><canvas id="histMinFlexivelRel"></canvas></div>
+          </div>
+
           ${tabelaHtmlRelatorio("Torque inferior — Junta rígida", minRigida)}
           ${tabelaHtmlRelatorio("Torque inferior — Junta flexível", minFlexivel)}
           ${tabelaHtmlRelatorio("Torque superior — Junta rígida", maxRigida)}
@@ -2437,6 +2450,54 @@
             function criarLinhaReferencia(label, valor, tamanho) { return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false }; }
             function opcoes(titulo) {
               return { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Amostra" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: titulo }, ticks: { font: { size: 8 } } } } };
+            }
+            function formatarNumeroRel(valor) {
+              if (!Number.isFinite(valor)) return "-";
+              return valor.toFixed(2).replace(".", ",");
+            }
+            function calcularHistogramaRel(valores, quantidadeBins = 14) {
+              const numeros = (valores || []).filter(v => Number.isFinite(v));
+              if (!numeros.length) return { labels: [], frequencias: [] };
+              const minimo = Math.min(...numeros);
+              const maximo = Math.max(...numeros);
+              if (minimo === maximo) return { labels: [formatarNumeroRel(minimo)], frequencias: [numeros.length] };
+              const bins = Math.min(Math.max(8, quantidadeBins), 18);
+              const largura = (maximo - minimo) / bins;
+              const labels = [];
+              const frequencias = new Array(bins).fill(0);
+              for (let i = 0; i < bins; i++) {
+                const inicio = minimo + (largura * i);
+                const fim = i === bins - 1 ? maximo : inicio + largura;
+                labels.push(`${formatarNumeroRel(inicio)} até ${formatarNumeroRel(fim)}`);
+              }
+              numeros.forEach(valor => {
+                let indice = Math.floor((valor - minimo) / largura);
+                if (indice < 0) indice = 0;
+                if (indice >= bins) indice = bins - 1;
+                frequencias[indice]++;
+              });
+              return { labels, frequencias };
+            }
+            function criarHistogramaRel(canvasId, valores, titulo) {
+              const hist = calcularHistogramaRel(valores);
+              new Chart(document.getElementById(canvasId), {
+                data: {
+                  labels: hist.labels,
+                  datasets: [
+                    { type: "bar", label: titulo, data: hist.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 },
+                    { type: "line", label: "Linha de tendência", data: hist.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }
+                  ]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } },
+                  scales: {
+                    x: { title: { display: true, text: "Faixas de torque" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } },
+                    y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0, font: { size: 8 } } }
+                  }
+                }
+              });
             }
             const labelsRel = ${JSON.stringify(labels)};
             const maxRigida = ${JSON.stringify(maxRigida)};
@@ -2466,6 +2527,11 @@
               ] },
               options: opcoes("Torque inferior")
             });
+
+            criarHistogramaRel("histMaxRigidaRel", maxRigida, "Torque superior / Junta rígida");
+            criarHistogramaRel("histMaxFlexivelRel", maxFlexivel, "Torque superior / Junta flexível");
+            criarHistogramaRel("histMinRigidaRel", minRigida, "Torque inferior / Junta rígida");
+            criarHistogramaRel("histMinFlexivelRel", minFlexivel, "Torque inferior / Junta flexível");
           <\/script>
         </body>
         </html>
@@ -2857,6 +2923,11 @@
         graficoTorqueUnico.destroy();
         graficoTorqueUnico = null;
       }
+
+      if (histTorqueUnico) {
+        histTorqueUnico.destroy();
+        histTorqueUnico = null;
+      }
     }
 
     function limparTorqueUnico() {
@@ -3000,6 +3071,9 @@
         },
         options: obterOpcoesGraficoLimpo("Torque")
       });
+
+      if (histTorqueUnico) histTorqueUnico.destroy();
+      histTorqueUnico = criarHistograma("histTorqueUnico", valores, "Torque único");
     }
 
     function gerarRelatorioTorqueUnico() {
@@ -3098,6 +3172,7 @@
           </div>
 
           <div class="bloco"><h2>Gráfico limpo - Torque único</h2><canvas id="graficoTorqueUnicoRel"></canvas></div>
+          <div class="bloco"><h2>Histograma - Torque único</h2><canvas id="histTorqueUnicoRel"></canvas></div>
           ${tabela}
 
           <script>
@@ -3119,6 +3194,53 @@
                 ]
               },
               options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom" } } }
+            });
+
+            function formatarNumeroRel(valor) {
+              if (!Number.isFinite(valor)) return "-";
+              return valor.toFixed(2).replace(".", ",");
+            }
+            function calcularHistogramaRel(valores, quantidadeBins = 14) {
+              const numeros = (valores || []).filter(v => Number.isFinite(v));
+              if (!numeros.length) return { labels: [], frequencias: [] };
+              const minimo = Math.min(...numeros);
+              const maximo = Math.max(...numeros);
+              if (minimo === maximo) return { labels: [formatarNumeroRel(minimo)], frequencias: [numeros.length] };
+              const bins = Math.min(Math.max(8, quantidadeBins), 18);
+              const largura = (maximo - minimo) / bins;
+              const labels = [];
+              const frequencias = new Array(bins).fill(0);
+              for (let i = 0; i < bins; i++) {
+                const inicio = minimo + (largura * i);
+                const fim = i === bins - 1 ? maximo : inicio + largura;
+                labels.push(`${formatarNumeroRel(inicio)} até ${formatarNumeroRel(fim)}`);
+              }
+              numeros.forEach(valor => {
+                let indice = Math.floor((valor - minimo) / largura);
+                if (indice < 0) indice = 0;
+                if (indice >= bins) indice = bins - 1;
+                frequencias[indice]++;
+              });
+              return { labels, frequencias };
+            }
+            const histTU = calcularHistogramaRel(valoresTU);
+            new Chart(document.getElementById("histTorqueUnicoRel"), {
+              data: {
+                labels: histTU.labels,
+                datasets: [
+                  { type: "bar", label: "Torque único", data: histTU.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 },
+                  { type: "line", label: "Linha de tendência", data: histTU.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }
+                ]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: true, position: "bottom" } },
+                scales: {
+                  x: { title: { display: true, text: "Faixas de torque" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } },
+                  y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0 } }
+                }
+              }
             });
           <\/script>
         </body>
