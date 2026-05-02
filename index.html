@@ -108,6 +108,7 @@
     .status-aprovado { background: #27ae60; color: #fff; }
     .status-reprovado { background: #d93b3b; color: #fff; }
     .status-neutro { background: #cfd8dc; color: #35505c; }
+    .motivo-texto { display: block; font-size: 13px !important; font-weight: 700 !important; line-height: 1.45; color: #244453 !important; white-space: normal; }
     .action-btn { min-width: 140px; height: 38px; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: .2s; background: linear-gradient(180deg, #25a8db 0%, #1592c0 100%); color: white; }
     .action-btn.primary, .action-btn.secondary { background: linear-gradient(180deg, #25a8db 0%, #1592c0 100%); color: white; }
     .action-btn.danger { background: linear-gradient(180deg, #ef5350 0%, #d93b3b 100%); color: white; }
@@ -371,6 +372,7 @@
                 <div class="resultado-item"><strong>% final encontrada</strong><span id="pct-final">-</span></div>
                 <div class="resultado-item"><strong>Avaliação ISO 5393</strong><span id="status-iso" class="status-badge status-neutro">ENSAIO REGISTRADO</span></div>
                 <div class="resultado-item" style="grid-column: 1 / -1;"><strong>Status interno WS</strong><span id="status-geral" class="status-badge status-neutro">AGUARDANDO</span></div>
+                <div class="resultado-item" style="grid-column: 1 / -1;"><strong>Motivo do resultado</strong><span id="motivo-geral" class="motivo-texto">Aguardando cálculo.</span></div>
               </div>
             </div>
 
@@ -501,6 +503,7 @@
                 <div class="resultado-item"><strong>Cm</strong><span id="tuCm">-</span></div>
                 <div class="resultado-item"><strong>Cmk</strong><span id="tuCmk">-</span></div>
                 <div class="resultado-item" style="grid-column: 1 / -1;"><strong>Status interno WS</strong><span id="tuStatus" class="status-badge status-neutro">AGUARDANDO</span></div>
+                <div class="resultado-item" style="grid-column: 1 / -1;"><strong>Motivo do resultado</strong><span id="tuMotivo" class="motivo-texto">Aguardando cálculo.</span></div>
               </div>
             </div>
 
@@ -545,6 +548,7 @@
     const resumoDados = document.getElementById("resumoDados");
     const statusGeralEl = document.getElementById("status-geral");
     const statusIsoEl = document.getElementById("status-iso");
+    const motivoGeralEl = document.getElementById("motivo-geral");
 
     const tabelas = {
       minRigida: document.getElementById("tbody-min-rigida"),
@@ -759,6 +763,81 @@
       atualizarResumoDados();
     }
 
+
+    function contarForaLimites(lista, limiteMin, limiteMax) {
+      return (lista || []).filter(valor => Number.isFinite(valor) && (valor < limiteMin || valor > limiteMax)).length;
+    }
+
+    function avaliarMotivosGeral(dados) {
+      const motivos = [];
+      const totalEsperado = obterTotalAmostras();
+      const tabelasValidas = [dados.maxRigida, dados.maxFlexivel, dados.minRigida, dados.minFlexivel];
+      const totalPreenchido = tabelasValidas.reduce((soma, lista) => soma + lista.length, 0);
+      const totalNecessario = totalEsperado * 4;
+
+      if (!totalEsperado || totalPreenchido === 0) {
+        return "Nenhuma amostra válida foi preenchida para calcular o ensaio.";
+      }
+
+      if (totalNecessario > 0 && totalPreenchido < totalNecessario) {
+        motivos.push(`Existem amostras incompletas: preenchidas ${totalPreenchido} de ${totalNecessario} leituras esperadas.`);
+      }
+
+      const foraSuperior = contarForaLimites(dados.maxRigida, dados.limites.minExpMaior, dados.limites.maxExpMaior) + contarForaLimites(dados.maxFlexivel, dados.limites.minExpMaior, dados.limites.maxExpMaior);
+      const foraInferior = contarForaLimites(dados.minRigida, dados.limites.minExpMenor, dados.limites.maxExpMenor) + contarForaLimites(dados.minFlexivel, dados.limites.minExpMenor, dados.limites.maxExpMenor);
+      const totalFora = foraSuperior + foraInferior;
+
+      if (totalFora > 0) {
+        motivos.push(`${totalFora} leitura(s) ficaram fora dos limites de tolerância calculados.`);
+      }
+
+      if (dados.pctFinal > dados.tolerancia) {
+        motivos.push(`A % final encontrada (${formatarNumero(dados.pctFinal)}%) ficou acima da tolerância informada (${formatarNumero(dados.tolerancia)}%).`);
+      }
+
+      if (dados.cmMinimo < 1.67) {
+        motivos.push(`O menor Cm encontrado (${formatarNumero(dados.cmMinimo)}) ficou abaixo do mínimo interno WS de 1,67.`);
+      }
+
+      if (dados.cmkMinimo < 1.67) {
+        motivos.push(`O menor Cmk encontrado (${formatarNumero(dados.cmkMinimo)}) ficou abaixo do mínimo interno WS de 1,67.`);
+      }
+
+      return motivos.length ? motivos.join(" ") : "Aprovado: scatter dentro da tolerância e índices Cm/Cmk iguais ou acima de 1,67.";
+    }
+
+    function avaliarMotivosTorqueUnico(valores, est, tolerancia, limiteMin, limiteMax) {
+      const motivos = [];
+      const totalEsperado = obterTotalAmostrasTorqueUnico();
+
+      if (!valores.length) {
+        return "Nenhuma amostra válida foi preenchida para calcular o torque único.";
+      }
+
+      if (totalEsperado > 0 && valores.length < totalEsperado) {
+        motivos.push(`Existem amostras incompletas: preenchidas ${valores.length} de ${totalEsperado} leituras esperadas.`);
+      }
+
+      const foraLimites = contarForaLimites(valores, limiteMin, limiteMax);
+      if (foraLimites > 0) {
+        motivos.push(`${foraLimites} leitura(s) ficaram fora dos limites de tolerância calculados.`);
+      }
+
+      if (est.scatter > tolerancia) {
+        motivos.push(`O scatter calculado (${formatarNumero(est.scatter)}%) ficou acima da tolerância informada (${formatarNumero(tolerancia)}%).`);
+      }
+
+      if (est.cm < 1.67) {
+        motivos.push(`O Cm calculado (${formatarNumero(est.cm)}) ficou abaixo do mínimo interno WS de 1,67.`);
+      }
+
+      if (est.cmk < 1.67) {
+        motivos.push(`O Cmk calculado (${formatarNumero(est.cmk)}) ficou abaixo do mínimo interno WS de 1,67.`);
+      }
+
+      return motivos.length ? motivos.join(" ") : "Aprovado: scatter dentro da tolerância e índices Cm/Cmk iguais ou acima de 1,67.";
+    }
+
     function limparResultados() {
       Object.values(ids).forEach(el => el.textContent = "-");
       document.getElementById("pct-final").textContent = "-";
@@ -766,6 +845,7 @@
       statusGeralEl.className = "status-badge status-neutro";
       statusIsoEl.textContent = "ENSAIO REGISTRADO";
       statusIsoEl.className = "status-badge status-neutro";
+      if (motivoGeralEl) motivoGeralEl.textContent = "Aguardando cálculo.";
       destruirGraficos();
     }
 
@@ -910,9 +990,14 @@
       statusIsoEl.textContent = "ENSAIO REGISTRADO";
       statusIsoEl.className = "status-badge status-neutro";
 
-      const aprovado = pctFinal <= tolerancia && cmMinimo >= 1.67 && cmkMinimo >= 1.67;
+      const motivoResultado = avaliarMotivosGeral({
+        maxRigida, maxFlexivel, minRigida, minFlexivel,
+        limites, pctFinal, tolerancia, cmMinimo, cmkMinimo
+      });
+      const aprovado = pctFinal <= tolerancia && cmMinimo >= 1.67 && cmkMinimo >= 1.67 && motivoResultado.startsWith("Aprovado");
       statusGeralEl.textContent = aprovado ? "APROVADO" : "REPROVADO";
       statusGeralEl.className = `status-badge ${aprovado ? "status-aprovado" : "status-reprovado"}`;
+      if (motivoGeralEl) motivoGeralEl.textContent = motivoResultado;
 
       const dadosGraficos = {
         maxRigida, maxFlexivel, minRigida, minFlexivel,
@@ -1031,6 +1116,7 @@
     }
 
     function gerarRelatorio() {
+      calcularTudo();
       const maxRigida = lerValoresTabela("tbody-max-rigida");
       const maxFlexivel = lerValoresTabela("tbody-max-flexivel");
       const minRigida = lerValoresTabela("tbody-min-rigida");
@@ -1178,6 +1264,7 @@
             <div class="resumo">
               <div><strong>% final encontrada:</strong> ${document.getElementById("pct-final").textContent}</div>
               <div><strong>Status interno WS:</strong> <span class="status-relatorio ${statusGeralEl.textContent === "APROVADO" ? "aprovado" : statusGeralEl.textContent === "REPROVADO" ? "reprovado" : "aguardando"}">${statusGeralEl.textContent}</span></div>
+              <div style="grid-column:1 / -1;"><strong>Motivo do resultado:</strong> ${document.getElementById("motivo-geral").textContent}</div>
             </div>
           </div>
 
@@ -1361,6 +1448,8 @@
         status.textContent = "AGUARDANDO";
         status.className = "status-badge status-neutro";
       }
+      const motivo = document.getElementById("tuMotivo");
+      if (motivo) motivo.textContent = "Aguardando cálculo.";
       if (graficoTorqueUnico) {
         graficoTorqueUnico.destroy();
         graficoTorqueUnico = null;
@@ -1389,10 +1478,13 @@
       document.getElementById("tuCm").textContent = formatarNumero(est.cm);
       document.getElementById("tuCmk").textContent = formatarNumero(est.cmk);
 
-      const aprovado = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67;
+      const motivoResultado = avaliarMotivosTorqueUnico(valores, est, tolerancia, limiteMin, limiteMax);
+      const aprovado = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 && motivoResultado.startsWith("Aprovado");
       const status = document.getElementById("tuStatus");
       status.textContent = aprovado ? "APROVADO" : "REPROVADO";
       status.className = `status-badge ${aprovado ? "status-aprovado" : "status-reprovado"}`;
+      const motivo = document.getElementById("tuMotivo");
+      if (motivo) motivo.textContent = motivoResultado;
 
       atualizarGraficoTorqueUnico(valores, limiteMin, limiteMax, est);
     }
@@ -1438,7 +1530,8 @@
       const torque = document.getElementById("tuTorqueNominal").value || "-";
       const d = obterDadosFerramenta();
       const tecnicoResponsavel = valorOuTraco("tecnicoResponsavel");
-      const status = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 ? "APROVADO" : "REPROVADO";
+      const motivoResultado = avaliarMotivosTorqueUnico(valores, est, tolerancia, limiteMin, limiteMax);
+      const status = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 && motivoResultado.startsWith("Aprovado") ? "APROVADO" : "REPROVADO";
       const labels = Array.from({ length: Math.max(valores.length, 1) }, (_, i) => i + 1);
       const porLinhaTU = 8;
       const cabecalhoTU = Array.from({ length: porLinhaTU }, () => "<th>Amostra</th><th>Valor</th>").join("");
@@ -1540,6 +1633,7 @@
               <div><strong>Cm:</strong> ${formatarNumero(est.cm)}</div>
               <div><strong>Cmk:</strong> ${formatarNumero(est.cmk)}</div>
               <div style="grid-column:1/-1;"><strong>Status:</strong> <span class="status">${status}</span></div>
+              <div style="grid-column:1/-1;"><strong>Motivo do resultado:</strong> ${motivoResultado}</div>
             </div>
           </div>
           <div class="graficos-grid">
