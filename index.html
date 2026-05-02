@@ -84,18 +84,18 @@
     }
     .popup-overlay.show { display: flex; }
     .popup-box {
-      width: min(460px, 100%);
-      border-radius: 22px;
+      width: min(520px, 100%);
+      border-radius: 24px;
       overflow: hidden;
       background: #f7fbfd;
       box-shadow: 0 30px 70px rgba(9, 50, 67, 0.32);
-      border: 1px solid rgba(255,255,255,0.7);
+      border: 1px solid rgba(255,255,255,0.85);
       animation: popupShow .18s ease-out;
     }
     .popup-header {
       background: linear-gradient(180deg, #1ea4d7 0%, #0f6b86 100%);
       color: #ffffff;
-      padding: 16px 18px 14px;
+      padding: 18px 20px 16px;
     }
     .popup-header h3 {
       margin: 0;
@@ -109,17 +109,18 @@
       color: #e8f7fc;
     }
     .popup-body {
-      padding: 18px;
+      padding: 22px 20px 18px;
       color: #244453;
       font-size: 15px;
-      line-height: 1.55;
+      line-height: 1.6;
       background: linear-gradient(180deg, #ffffff 0%, #eef8fc 100%);
+      text-align: center;
     }
     .popup-actions {
       display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      padding: 0 18px 18px;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 20px 20px;
       background: linear-gradient(180deg, #ffffff 0%, #eef8fc 100%);
     }
     .popup-btn {
@@ -1741,21 +1742,6 @@
               options: obterOpcoesGraficoRelatorio("Torque inferior")
             });
           <\/script>
-
-  <div id="popupOverlay" class="popup-overlay" aria-hidden="true">
-    <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
-      <div class="popup-header">
-        <h3 id="popupTitle">Aviso do sistema</h3>
-        <p id="popupSubtitle">Atlas Copco WS</p>
-      </div>
-      <div class="popup-body" id="popupMessage">Mensagem</div>
-      <div class="popup-actions">
-        <button type="button" id="popupCancel" class="popup-btn secondary">Cancelar</button>
-        <button type="button" id="popupConfirm" class="popup-btn primary">OK</button>
-      </div>
-    </div>
-  </div>
-
 </body>
         </html>
       `);
@@ -2076,7 +2062,7 @@
       const cancelBtn = document.getElementById("popupCancel");
 
       if (!overlay || !title || !subtitle || !message || !confirmBtn || !cancelBtn) {
-        return Promise.resolve(window.confirm(mensagem.replace(/<[^>]+>/g, " ")));
+        return Promise.resolve(confirm(mensagem.replace(/<[^>]+>/g, " ")));
       }
 
       title.textContent = titulo;
@@ -2360,5 +2346,20 @@
     criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25);
     calcularLimitesTorqueUnico();
   </script>
+
+  <div id="popupOverlay" class="popup-overlay" aria-hidden="true">
+    <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+      <div class="popup-header">
+        <h3 id="popupTitle">Aviso do sistema</h3>
+        <p id="popupSubtitle">Atlas Copco WS</p>
+      </div>
+      <div class="popup-body" id="popupMessage">Mensagem</div>
+      <div class="popup-actions">
+        <button type="button" id="popupCancel" class="popup-btn secondary">Cancelar</button>
+        <button type="button" id="popupConfirm" class="popup-btn primary">OK</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
