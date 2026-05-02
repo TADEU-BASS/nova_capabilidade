@@ -49,6 +49,104 @@
     .menu-btn:hover, .action-btn:hover { transform: translateY(-1px); }
     .menu-select, .menu-input { padding: 0 12px; background: #f5fbfd; color: #18495d; border: 1px solid rgba(255,255,255,.25); outline: none; font-weight: 600; }
     .sidebar-footer { font-size: 12px; line-height: 1.5; color: #d9eef7; margin-top: 16px; }
+    .sidebar-footer-highlight {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.08) 100%);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      color: #ffffff;
+      text-align: center;
+    }
+    .sidebar-footer-highlight strong {
+      font-size: 13px;
+      color: #ffffff;
+      letter-spacing: 0.2px;
+    }
+    .sidebar-footer-highlight span {
+      font-size: 11px;
+      color: #dff5fb;
+    }
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 34, 46, 0.58);
+      backdrop-filter: blur(3px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 18px;
+    }
+    .popup-overlay.show { display: flex; }
+    .popup-box {
+      width: min(460px, 100%);
+      border-radius: 22px;
+      overflow: hidden;
+      background: #f7fbfd;
+      box-shadow: 0 30px 70px rgba(9, 50, 67, 0.32);
+      border: 1px solid rgba(255,255,255,0.7);
+      animation: popupShow .18s ease-out;
+    }
+    .popup-header {
+      background: linear-gradient(180deg, #1ea4d7 0%, #0f6b86 100%);
+      color: #ffffff;
+      padding: 16px 18px 14px;
+    }
+    .popup-header h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .popup-header p {
+      margin: 5px 0 0;
+      font-size: 13px;
+      color: #e8f7fc;
+    }
+    .popup-body {
+      padding: 18px;
+      color: #244453;
+      font-size: 15px;
+      line-height: 1.55;
+      background: linear-gradient(180deg, #ffffff 0%, #eef8fc 100%);
+    }
+    .popup-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 0 18px 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #eef8fc 100%);
+    }
+    .popup-btn {
+      min-width: 120px;
+      height: 42px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .popup-btn.primary {
+      color: #ffffff;
+      background: linear-gradient(180deg, #1ea4d7 0%, #0f6b86 100%);
+      box-shadow: 0 10px 22px rgba(15, 107, 134, 0.18);
+    }
+    .popup-btn.secondary {
+      color: #0f5f7d;
+      background: #ffffff;
+      border: 1px solid #b9dceb;
+    }
+    .popup-btn:hover { transform: translateY(-1px); }
+    @keyframes popupShow {
+      from { transform: translateY(8px) scale(.98); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
     .main { flex: 1 1 auto; min-width: 0; padding: 24px 18px; }
     .page { display: none; }
     .page.active { display: block; }
@@ -179,7 +277,6 @@
         <div class="side-card">
           <h3>ISO 5393 / Capabilidade</h3>
 
-
           <button class="menu-btn" type="button" onclick="mostrarPagina('pagina-dados')">Dados do Ensaio</button>
           <button class="menu-btn" type="button" onclick="abrirTabelas()">Abrir tabelas</button>
           <button class="menu-btn" type="button" onclick="abrirTorqueUnico()">Torque único</button>
@@ -188,13 +285,13 @@
           <button class="menu-btn secondary" type="button" onclick="abrirManualPdf()">Manual PDF</button>
           <input type="file" id="arquivoEnsaio" accept=".json,application/json" style="display:none" onchange="carregarEnsaio(event)">
           <button class="menu-btn secondary" type="button" onclick="ensaioNovo()">Ensaio novo</button>
-        </div>
-      </div>
 
-      <div class="sidebar-footer">
-        Destino padrão: Capabilidade_WS<br>
-        Interface corporativa Atlas Copco.<br>
-        Software criado por Marcos Tadeu Silva
+          <div class="sidebar-footer sidebar-footer-highlight">
+            <strong>Criado e desenvolvido por<br>Marcos Tadeu Silva</strong>
+            <span>Destino padrão: Capabilidade_WS</span>
+            <span>Interface corporativa Atlas Copco.</span>
+          </div>
+        </div>
       </div>
     </aside>
 
@@ -1262,7 +1359,7 @@
       try {
         await navigator.clipboard.writeText(valores.join("\n"));
       } catch {
-        alert("Não foi possível copiar automaticamente.");
+        await mostrarPopup("Não foi possível copiar automaticamente.", "Falha ao copiar");
       }
     }
 
@@ -1275,7 +1372,7 @@
           if (inputs[i]) inputs[i].value = linha;
         });
       } catch {
-        alert("Não foi possível ler a área de transferência.");
+        await mostrarPopup("Não foi possível ler a área de transferência.", "Falha ao colar");
       }
     }
 
@@ -1644,7 +1741,22 @@
               options: obterOpcoesGraficoRelatorio("Torque inferior")
             });
           <\/script>
-        </body>
+        
+  <div id="popupOverlay" class="popup-overlay" aria-hidden="true">
+    <div class="popup-box" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+      <div class="popup-header">
+        <h3 id="popupTitle">Aviso do sistema</h3>
+        <p id="popupSubtitle">Atlas Copco WS</p>
+      </div>
+      <div class="popup-body" id="popupMessage">Mensagem</div>
+      <div class="popup-actions">
+        <button type="button" id="popupCancel" class="popup-btn secondary" style="display:none">Cancelar</button>
+        <button type="button" id="popupConfirm" class="popup-btn primary">OK</button>
+      </div>
+    </div>
+  </div>
+
+</body>
         </html>
       `);
       relatorio.document.close();
@@ -1947,8 +2059,85 @@
     }
 
 
-    function ensaioNovo() {
-      const confirmar = confirm("Deseja iniciar um ensaio novo? Todos os campos, tabelas, resultados e gráficos serão limpos.");
+
+    let popupResolver = null;
+
+    function abrirPopup({ titulo = "Aviso do sistema", subtitulo = "Atlas Copco WS", mensagem = "", mostrarCancelar = false, textoConfirmar = "OK", textoCancelar = "Cancelar" }) {
+      const overlay = document.getElementById("popupOverlay");
+      const title = document.getElementById("popupTitle");
+      const subtitle = document.getElementById("popupSubtitle");
+      const message = document.getElementById("popupMessage");
+      const confirmBtn = document.getElementById("popupConfirm");
+      const cancelBtn = document.getElementById("popupCancel");
+
+      if (!overlay || !title || !subtitle || !message || !confirmBtn || !cancelBtn) return Promise.resolve(true);
+
+      title.textContent = titulo;
+      subtitle.textContent = subtitulo;
+      message.innerHTML = mensagem;
+      confirmBtn.textContent = textoConfirmar;
+      cancelBtn.textContent = textoCancelar;
+      cancelBtn.style.display = mostrarCancelar ? "inline-flex" : "none";
+
+      overlay.classList.add("show");
+      overlay.setAttribute("aria-hidden", "false");
+
+      return new Promise(resolve => {
+        popupResolver = resolve;
+      });
+    }
+
+    function fecharPopup(resultado) {
+      const overlay = document.getElementById("popupOverlay");
+      if (overlay) {
+        overlay.classList.remove("show");
+        overlay.setAttribute("aria-hidden", "true");
+      }
+      if (popupResolver) {
+        popupResolver(resultado);
+        popupResolver = null;
+      }
+    }
+
+    async function mostrarPopup(mensagem, titulo = "Aviso do sistema") {
+      return abrirPopup({
+        titulo,
+        subtitulo: "Atlas Copco WS",
+        mensagem,
+        mostrarCancelar: false,
+        textoConfirmar: "OK"
+      });
+    }
+
+    async function confirmarPopup(mensagem, titulo = "Confirmar ação") {
+      return abrirPopup({
+        titulo,
+        subtitulo: "Atlas Copco WS",
+        mensagem,
+        mostrarCancelar: true,
+        textoConfirmar: "Continuar",
+        textoCancelar: "Cancelar"
+      });
+    }
+
+    document.addEventListener("click", (event) => {
+      if (event.target && event.target.id === "popupConfirm") fecharPopup(true);
+      if (event.target && event.target.id === "popupCancel") fecharPopup(false);
+      if (event.target && event.target.id === "popupOverlay") fecharPopup(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      const overlay = document.getElementById("popupOverlay");
+      if (!overlay || !overlay.classList.contains("show")) return;
+      if (event.key === "Escape") fecharPopup(false);
+    });
+
+
+    async function ensaioNovo() {
+      const confirmar = await confirmarPopup(
+        "Deseja iniciar um <strong>ensaio novo</strong>?<br><br>Todos os campos, tabelas, resultados e gráficos serão limpos.",
+        "Novo ensaio"
+      );
       if (!confirmar) return;
 
       document.querySelectorAll("input[id], select[id], textarea[id]").forEach(el => {
@@ -2021,7 +2210,7 @@
       }
 
       mostrarPagina("pagina-dados");
-      alert("Ensaio novo iniciado. Todos os campos e tabelas foram limpos.");
+      await mostrarPopup("Ensaio novo iniciado com sucesso.<br><br>Todos os campos, tabelas, resultados e gráficos foram limpos.", "Processo concluído");
     }
 
     function obterEstadoEnsaio() {
@@ -2093,9 +2282,9 @@
           atualizarResumoDados();
           calcularTudo();
           calcularTorqueUnico();
-          alert("Ensaio carregado com sucesso. Você já pode continuar editando.");
+          mostrarPopup("Ensaio carregado com sucesso.<br><br>Você já pode continuar editando.", "Ensaio carregado");
         } catch (erro) {
-          alert("Não foi possível carregar este ensaio. Verifique se o arquivo é um JSON salvo por este app.");
+          mostrarPopup("Não foi possível carregar este ensaio.<br><br>Verifique se o arquivo é um JSON salvo por este app.", "Falha ao carregar ensaio");
         } finally {
           event.target.value = "";
         }
