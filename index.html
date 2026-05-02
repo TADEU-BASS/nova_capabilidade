@@ -266,6 +266,51 @@
       .main { padding: 0; }
       .content-card { box-shadow: none; border: none; background: white; }
     }
+  
+    .resultado-item span.status-badge,
+    span.status-badge {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-width: 180px !important;
+      height: 42px !important;
+      padding: 0 18px !important;
+      border-radius: 12px !important;
+      font-size: 15px !important;
+      font-weight: 900 !important;
+      letter-spacing: 0.5px !important;
+    }
+    .resultado-item span.status-badge.status-aprovado,
+    span.status-badge.status-aprovado {
+      background: #27ae60 !important;
+      color: #ffffff !important;
+      font-weight: 900 !important;
+      border: none !important;
+    }
+    .resultado-item span.status-badge.status-reprovado,
+    span.status-badge.status-reprovado {
+      background: #d93b3b !important;
+      color: #ffffff !important;
+      font-weight: 900 !important;
+      border: none !important;
+    }
+    .resultado-item span.status-badge.status-neutro,
+    span.status-badge.status-neutro {
+      background: #ffffff !important;
+      color: #111111 !important;
+      font-weight: 800 !important;
+      border: 1px solid #cfd8dc !important;
+    }
+    .campo-obrigatorio-erro {
+      border-color: #d93b3b !important;
+      box-shadow: 0 0 0 3px rgba(217, 59, 59, .22) !important;
+      background: #fff8f8 !important;
+    }
+    .tabela-obrigatoria-erro {
+      border-color: #d93b3b !important;
+      box-shadow: 0 0 0 3px rgba(217, 59, 59, .20) !important;
+    }
+
   </style>
 </head>
 <body>
@@ -1256,7 +1301,7 @@
       }
     }
 
-    function calcularTudo() {
+    function calcularTudoSemValidacao() {
       const maxRigida = lerValoresTabela("tbody-max-rigida");
       const maxFlexivel = lerValoresTabela("tbody-max-flexivel");
       const minRigida = lerValoresTabela("tbody-min-rigida");
@@ -1345,7 +1390,230 @@
       }
     }
 
+
+    let popupResolver = null;
+
+    function abrirPopupSistema(opcoes = {}) {
+      const titulo = opcoes.titulo || "Aviso do sistema";
+      const subtitulo = opcoes.subtitulo || "Atlas Copco WS";
+      const mensagem = opcoes.mensagem || "";
+      const mostrarCancelar = !!opcoes.mostrarCancelar;
+      const textoConfirmar = opcoes.textoConfirmar || "OK";
+      const textoCancelar = opcoes.textoCancelar || "Cancelar";
+
+      const overlay = document.getElementById("popupOverlay");
+      const title = document.getElementById("popupTitle");
+      const subtitle = document.getElementById("popupSubtitle");
+      const message = document.getElementById("popupMessage");
+      const confirmBtn = document.getElementById("popupConfirm");
+      const cancelBtn = document.getElementById("popupCancel");
+
+      if (!overlay || !title || !subtitle || !message || !confirmBtn || !cancelBtn) {
+        alert(mensagem.replace(/<[^>]+>/g, " "));
+        return Promise.resolve(true);
+      }
+
+      title.textContent = titulo;
+      subtitle.textContent = subtitulo;
+      message.innerHTML = mensagem;
+      confirmBtn.textContent = textoConfirmar;
+      cancelBtn.textContent = textoCancelar;
+      cancelBtn.style.display = mostrarCancelar ? "inline-flex" : "none";
+
+      confirmBtn.onclick = () => fecharPopupSistema(true);
+      cancelBtn.onclick = () => fecharPopupSistema(false);
+      overlay.onclick = (event) => {
+        if (event.target === overlay) fecharPopupSistema(false);
+      };
+
+      overlay.classList.add("show");
+      overlay.setAttribute("aria-hidden", "false");
+
+      return new Promise(resolve => {
+        popupResolver = resolve;
+      });
+    }
+
+    function fecharPopupSistema(resultado) {
+      const overlay = document.getElementById("popupOverlay");
+      if (overlay) {
+        overlay.classList.remove("show");
+        overlay.setAttribute("aria-hidden", "true");
+      }
+      if (popupResolver) {
+        popupResolver(resultado);
+        popupResolver = null;
+      }
+    }
+
+    async function mostrarPopup(mensagem, titulo = "Aviso do sistema") {
+      return abrirPopupSistema({
+        titulo,
+        subtitulo: "Atlas Copco WS",
+        mensagem,
+        mostrarCancelar: false,
+        textoConfirmar: "OK"
+      });
+    }
+
+    async function confirmarPopup(mensagem, titulo = "Confirmar ação") {
+      return abrirPopupSistema({
+        titulo,
+        subtitulo: "Atlas Copco WS",
+        mensagem,
+        mostrarCancelar: true,
+        textoConfirmar: "Sim, limpar",
+        textoCancelar: "Cancelar"
+      });
+    }
+
+    function limparErrosObrigatorios() {
+      document.querySelectorAll(".campo-obrigatorio-erro").forEach(el => el.classList.remove("campo-obrigatorio-erro"));
+      document.querySelectorAll(".tabela-obrigatoria-erro").forEach(el => el.classList.remove("tabela-obrigatoria-erro"));
+    }
+
+    function valorCampoObrigatorio(id) {
+      const el = document.getElementById(id);
+      return el ? String(el.value || "").trim() : "";
+    }
+
+    function marcarCampoObrigatorio(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add("campo-obrigatorio-erro");
+    }
+
+    function obterCampoCertificadoSTA() {
+      return document.getElementById("certificadoCalibracaoSTA") ||
+             document.getElementById("certificadoSTA") ||
+             document.getElementById("certificadoCalibracaoSta");
+    }
+
+    function validarCamposObrigatoriosDados() {
+      limparErrosObrigatorios();
+
+      const faltando = [];
+      const campos = [
+        ["tecnicoResponsavel", "Técnico responsável"],
+        ["apertadeiraModelo", "Apertadeira modelo"],
+        ["serialApertadeira", "Serial da apertadeira"],
+        ["controladorModelo", "Controlador modelo"],
+        ["serialControlador", "Serial do controlador"],
+        ["transdutor", "Transdutor"],
+        ["painel", "STA 6000"],
+        ["certificadoCalibracao", "Certificado de calibração do transdutor"],
+        ["torqueMaiorBase", "Torque superior"],
+        ["torqueMenorBase", "Torque inferior"],
+        ["porcentagem", "Tolerância"],
+        ["amostrasManual", "Quantidade de amostras"]
+      ];
+
+      campos.forEach(([id, nome]) => {
+        if (!valorCampoObrigatorio(id)) {
+          marcarCampoObrigatorio(id);
+          faltando.push(nome);
+        }
+      });
+
+      const certSTA = obterCampoCertificadoSTA();
+      if (certSTA && !String(certSTA.value || "").trim()) {
+        certSTA.classList.add("campo-obrigatorio-erro");
+        faltando.push("Certificado de calibração do STA 6000");
+      }
+
+      const tipoAplicacaoEl = document.getElementById("tipoAplicacao");
+      if (tipoAplicacaoEl && tipoAplicacaoEl.value === "Apertadeira + Crowfoot" && !valorCampoObrigatorio("crowfoot")) {
+        marcarCampoObrigatorio("crowfoot");
+        faltando.push("Identificação do Crowfoot");
+      }
+
+      const torqueSuperior = parseNumero(valorCampoObrigatorio("torqueMaiorBase"));
+      const torqueInferior = parseNumero(valorCampoObrigatorio("torqueMenorBase"));
+      const tolerancia = parseNumero(valorCampoObrigatorio("porcentagem"));
+      const amostras = parseInt(valorCampoObrigatorio("amostrasManual"), 10);
+
+      if (valorCampoObrigatorio("torqueMaiorBase") && torqueSuperior <= 0) {
+        marcarCampoObrigatorio("torqueMaiorBase");
+        faltando.push("Torque superior deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("torqueMenorBase") && torqueInferior <= 0) {
+        marcarCampoObrigatorio("torqueMenorBase");
+        faltando.push("Torque inferior deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("porcentagem") && tolerancia <= 0) {
+        marcarCampoObrigatorio("porcentagem");
+        faltando.push("Tolerância deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("amostrasManual") && (!Number.isInteger(amostras) || amostras <= 0)) {
+        marcarCampoObrigatorio("amostrasManual");
+        faltando.push("Quantidade de amostras deve ser maior que zero");
+      }
+
+      if (faltando.length) {
+        mostrarPagina("pagina-dados");
+        mostrarPopup(
+          "Antes de continuar, preencha os campos obrigatórios:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+          "Campos obrigatórios"
+        );
+        return false;
+      }
+
+      return true;
+    }
+
+    function validarTabelasObrigatorias() {
+      if (!validarCamposObrigatoriosDados()) return false;
+
+      const total = obterTotalAmostras();
+      const faltando = [];
+      const tabelasObrigatorias = [
+        ["tbody-min-rigida", "Torque inferior — Junta rígida"],
+        ["tbody-min-flexivel", "Torque inferior — Junta flexível"],
+        ["tbody-max-rigida", "Torque superior — Junta rígida"],
+        ["tbody-max-flexivel", "Torque superior — Junta flexível"]
+      ];
+
+      tabelasObrigatorias.forEach(([tbodyId, nome]) => {
+        const tbody = document.getElementById(tbodyId);
+        const inputs = tbody ? [...tbody.querySelectorAll("input")] : [];
+        const preenchidos = inputs.filter(input => String(input.value || "").trim() !== "").length;
+        const card = tbody ? tbody.closest(".table-card") : null;
+
+        if (!tbody || inputs.length < total || preenchidos < total) {
+          if (card) card.classList.add("tabela-obrigatoria-erro");
+          faltando.push(`${nome}: preencher ${total} amostras`);
+        }
+      });
+
+      if (faltando.length) {
+        mostrarPagina("pagina-tabelas");
+        mostrarPopup(
+          "Antes de calcular ou gerar o relatório, preencha todas as tabelas obrigatórias:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+          "Tabelas obrigatórias"
+        );
+        return false;
+      }
+
+      return true;
+    }
+
+
+
+    function calcularTudo() {
+      if (!validarTabelasObrigatorias()) return false;
+      calcularTudoSemValidacao();
+      return true;
+    }
+
     function abrirTabelas() {
+      if (!validarCamposObrigatoriosDados()) return;
+
+      calcularLimitesAutomaticos();
+      const total = obterTotalAmostras();
+      if (total > 0) criarLinhas(total);
+
       mostrarPagina("pagina-tabelas");
       atualizarResumoDados();
       requestAnimationFrame(() => {
@@ -1448,7 +1716,8 @@
     }
 
     function gerarRelatorio() {
-      calcularTudo();
+      if (!validarTabelasObrigatorias()) return;
+      calcularTudoSemValidacao();
       const maxRigida = lerValoresTabela("tbody-max-rigida");
       const maxFlexivel = lerValoresTabela("tbody-max-flexivel");
       const minRigida = lerValoresTabela("tbody-min-rigida");
@@ -2136,7 +2405,7 @@
       });
     }
 
-    async function ensaioNovo() {
+    async async function ensaioNovo() {
       const confirmar = await confirmarPopup(
         "Tem certeza que deseja iniciar um <strong>ensaio novo</strong>?<br><br>Todos os campos, tabelas, resultados e gráficos serão apagados.",
         "Confirmar novo ensaio"
@@ -2282,7 +2551,7 @@
           calcularLimitesAutomaticos();
           calcularLimitesTorqueUnico();
           atualizarResumoDados();
-          calcularTudo();
+          calcularTudoSemValidacao();
           calcularTorqueUnico();
           mostrarPopup("Ensaio carregado com sucesso.<br><br>Você já pode continuar editando.", "Ensaio carregado");
         } catch (erro) {
