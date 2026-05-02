@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ensaio ISO 5393 - Capabilidade WS</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">    setTimeout(aplicarVisualObrigatorios, 300);
+  </script>
   <style>
     :root {
       --azul-sidebar: #0f6b86;
@@ -305,6 +306,33 @@
       border-color: #d93b3b !important;
       box-shadow: 0 0 0 3px rgba(217, 59, 59, .22) !important;
       background: #fff8f8 !important;
+    }
+    .tabela-obrigatoria-erro {
+      border-color: #d93b3b !important;
+      box-shadow: 0 0 0 3px rgba(217, 59, 59, .20) !important;
+    }
+
+  
+    .campo-obrigatorio {
+      background: #fff2f2 !important;
+      border-color: #f3b7b7 !important;
+    }
+    .campo-obrigatorio::placeholder {
+      color: #9b6b6b;
+    }
+    .campo-obrigatorio:focus {
+      border-color: #d93b3b !important;
+      box-shadow: 0 0 0 3px rgba(217, 59, 59, .16) !important;
+      background: #ffffff !important;
+    }
+    .campo-obrigatorio-preenchido {
+      background: #ffffff !important;
+      border-color: #ffffff !important;
+    }
+    .campo-obrigatorio-erro {
+      background: #ffe3e3 !important;
+      border-color: #d93b3b !important;
+      box-shadow: 0 0 0 3px rgba(217, 59, 59, .24) !important;
     }
     .tabela-obrigatoria-erro {
       border-color: #d93b3b !important;
@@ -1467,15 +1495,6 @@
       });
     }
 
-    function limparErrosObrigatorios() {
-      document.querySelectorAll(".campo-obrigatorio-erro").forEach(el => el.classList.remove("campo-obrigatorio-erro"));
-      document.querySelectorAll(".tabela-obrigatoria-erro").forEach(el => el.classList.remove("tabela-obrigatoria-erro"));
-    }
-
-    function valorCampoObrigatorio(id) {
-      const el = document.getElementById(id);
-      return el ? String(el.value || "").trim() : "";
-    }
 
     function marcarCampoObrigatorio(id) {
       const el = document.getElementById(id);
@@ -1488,30 +1507,6 @@
              document.getElementById("certificadoCalibracaoSta");
     }
 
-    function validarCamposObrigatoriosDados() {
-      limparErrosObrigatorios();
-
-      const faltando = [];
-      const campos = [
-        ["tecnicoResponsavel", "Técnico responsável"],
-        ["apertadeiraModelo", "Apertadeira modelo"],
-        ["serialApertadeira", "Serial da apertadeira"],
-        ["controladorModelo", "Controlador modelo"],
-        ["serialControlador", "Serial do controlador"],
-        ["transdutor", "Transdutor"],
-        ["painel", "STA 6000"],
-        ["certificadoCalibracao", "Certificado de calibração do transdutor"],
-        ["torqueMaiorBase", "Torque superior"],
-        ["torqueMenorBase", "Torque inferior"],
-        ["porcentagem", "Tolerância"],
-        ["amostrasManual", "Quantidade de amostras"]
-      ];
-
-      campos.forEach(([id, nome]) => {
-        if (!valorCampoObrigatorio(id)) {
-          marcarCampoObrigatorio(id);
-          faltando.push(nome);
-        }
       });
 
       const certSTA = obterCampoCertificadoSTA();
@@ -1563,6 +1558,175 @@
       return true;
     }
 
+      });
+
+      if (faltando.length) {
+        mostrarPagina("pagina-tabelas");
+        mostrarPopup(
+          "Antes de calcular ou gerar o relatório, preencha todas as tabelas obrigatórias:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+          "Tabelas obrigatórias"
+        );
+        return false;
+      }
+
+      return true;
+    }
+
+
+
+    function calcularTudo() {
+      if (!validarTabelasObrigatorias()) return false;
+      calcularTudoSemValidacao();
+      return true;
+    }
+
+
+    function idsCamposObrigatoriosDados() {
+      const ids = [
+        "tecnicoResponsavel",
+        "apertadeiraModelo",
+        "serialApertadeira",
+        "controladorModelo",
+        "serialControlador",
+        "transdutor",
+        "painel",
+        "certificadoCalibracao",
+        "torqueMaiorBase",
+        "torqueMenorBase",
+        "porcentagem",
+        "amostrasManual"
+      ];
+
+      const certSTA = document.getElementById("certificadoCalibracaoSTA") ||
+                      document.getElementById("certificadoSTA") ||
+                      document.getElementById("certificadoCalibracaoSta");
+
+      if (certSTA && !ids.includes(certSTA.id)) ids.push(certSTA.id);
+
+      const tipoAplicacaoEl = document.getElementById("tipoAplicacao");
+      if (tipoAplicacaoEl && tipoAplicacaoEl.value === "Apertadeira + Crowfoot") {
+        ids.push("crowfoot");
+      }
+
+      return ids;
+    }
+
+    function aplicarVisualObrigatorios() {
+      idsCamposObrigatoriosDados().forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        el.classList.add("campo-obrigatorio");
+
+        if (String(el.value || "").trim()) {
+          el.classList.add("campo-obrigatorio-preenchido");
+          el.classList.remove("campo-obrigatorio-erro");
+        } else {
+          el.classList.remove("campo-obrigatorio-preenchido");
+        }
+
+        if (!el.dataset.obrigatorioListener) {
+          el.addEventListener("input", aplicarVisualObrigatorios);
+          el.addEventListener("change", aplicarVisualObrigatorios);
+          el.dataset.obrigatorioListener = "1";
+        }
+      });
+    }
+
+    function limparErrosObrigatorios() {
+      document.querySelectorAll(".campo-obrigatorio-erro").forEach(el => el.classList.remove("campo-obrigatorio-erro"));
+      document.querySelectorAll(".tabela-obrigatoria-erro").forEach(el => el.classList.remove("tabela-obrigatoria-erro"));
+    }
+
+    function valorCampoObrigatorio(id) {
+      const el = document.getElementById(id);
+      return el ? String(el.value || "").trim() : "";
+    }
+
+    function marcarErroCampo(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.classList.add("campo-obrigatorio");
+        el.classList.add("campo-obrigatorio-erro");
+      }
+    }
+
+    function nomeCampoObrigatorio(id) {
+      const nomes = {
+        tecnicoResponsavel: "Técnico responsável",
+        apertadeiraModelo: "Apertadeira modelo",
+        serialApertadeira: "Serial da apertadeira",
+        controladorModelo: "Controlador modelo",
+        serialControlador: "Serial do controlador",
+        transdutor: "Transdutor",
+        painel: "STA 6000",
+        certificadoCalibracao: "Certificado de calibração do transdutor",
+        certificadoCalibracaoSTA: "Certificado de calibração do STA 6000",
+        certificadoSTA: "Certificado de calibração do STA 6000",
+        certificadoCalibracaoSta: "Certificado de calibração do STA 6000",
+        torqueMaiorBase: "Torque superior",
+        torqueMenorBase: "Torque inferior",
+        porcentagem: "Tolerância",
+        amostrasManual: "Quantidade de amostras",
+        crowfoot: "Identificação do Crowfoot"
+      };
+      return nomes[id] || id;
+    }
+
+    function validarCamposObrigatoriosDados() {
+      limparErrosObrigatorios();
+      aplicarVisualObrigatorios();
+
+      const faltando = [];
+
+      idsCamposObrigatoriosDados().forEach(id => {
+        if (!valorCampoObrigatorio(id)) {
+          marcarErroCampo(id);
+          faltando.push(nomeCampoObrigatorio(id));
+        }
+      });
+
+      const torqueSuperior = parseNumero(valorCampoObrigatorio("torqueMaiorBase"));
+      const torqueInferior = parseNumero(valorCampoObrigatorio("torqueMenorBase"));
+      const tolerancia = parseNumero(valorCampoObrigatorio("porcentagem"));
+      const amostras = parseInt(valorCampoObrigatorio("amostrasManual"), 10);
+
+      if (valorCampoObrigatorio("torqueMaiorBase") && torqueSuperior <= 0) {
+        marcarErroCampo("torqueMaiorBase");
+        faltando.push("Torque superior deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("torqueMenorBase") && torqueInferior <= 0) {
+        marcarErroCampo("torqueMenorBase");
+        faltando.push("Torque inferior deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("porcentagem") && tolerancia <= 0) {
+        marcarErroCampo("porcentagem");
+        faltando.push("Tolerância deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("amostrasManual") && (!Number.isInteger(amostras) || amostras <= 0)) {
+        marcarErroCampo("amostrasManual");
+        faltando.push("Quantidade de amostras deve ser maior que zero");
+      }
+
+      if (faltando.length) {
+        mostrarPagina("pagina-dados");
+        if (typeof mostrarPopup === "function") {
+          mostrarPopup(
+            "Não foi possível ir para as tabelas.<br><br>Falta preencher campos obrigatórios:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+            "Campos obrigatórios"
+          );
+        } else {
+          alert("Não foi possível ir para as tabelas. Falta preencher campos obrigatórios:\\n\\n" + faltando.join("\\n"));
+        }
+        return false;
+      }
+
+      return true;
+    }
+
     function validarTabelasObrigatorias() {
       if (!validarCamposObrigatoriosDados()) return false;
 
@@ -1589,33 +1753,33 @@
 
       if (faltando.length) {
         mostrarPagina("pagina-tabelas");
-        mostrarPopup(
-          "Antes de calcular ou gerar o relatório, preencha todas as tabelas obrigatórias:<br><br><strong>" + faltando.join("<br>") + "</strong>",
-          "Tabelas obrigatórias"
-        );
+        if (typeof mostrarPopup === "function") {
+          mostrarPopup(
+            "Não foi possível calcular ou gerar o relatório.<br><br>Falta preencher as tabelas obrigatórias:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+            "Tabelas obrigatórias"
+          );
+        } else {
+          alert("Falta preencher as tabelas obrigatórias:\\n\\n" + faltando.join("\\n"));
+        }
         return false;
       }
 
       return true;
     }
 
-
-
-    function calcularTudo() {
-      if (!validarTabelasObrigatorias()) return false;
-      calcularTudoSemValidacao();
-      return true;
-    }
+    document.addEventListener("DOMContentLoaded", aplicarVisualObrigatorios);
 
     function abrirTabelas() {
       if (!validarCamposObrigatoriosDados()) return;
 
       calcularLimitesAutomaticos();
+
       const total = obterTotalAmostras();
       if (total > 0) criarLinhas(total);
 
       mostrarPagina("pagina-tabelas");
       atualizarResumoDados();
+
       requestAnimationFrame(() => {
         if (graficoMaior) graficoMaior.resize();
         if (graficoMenor) graficoMenor.resize();
