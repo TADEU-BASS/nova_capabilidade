@@ -152,21 +152,21 @@
     }
 
     .campo-obrigatorio {
-      background: #fff2f2 !important;
-      border-color: #f3b7b7 !important;
+      background: #ffd9a8 !important;
+      border-color: #fb923c !important;
     }
     .campo-obrigatorio-preenchido {
       background: #ffffff !important;
       border-color: #ffffff !important;
     }
     .campo-obrigatorio-erro {
-      background: #ffe3e3 !important;
-      border-color: #d93b3b !important;
-      box-shadow: 0 0 0 3px rgba(217, 59, 59, .24) !important;
+      background: #ffe0bf !important;
+      border-color: #f97316 !important;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, .24) !important;
     }
     .tabela-obrigatoria-erro {
-      border-color: #d93b3b !important;
-      box-shadow: 0 0 0 3px rgba(217, 59, 59, .20) !important;
+      border-color: #f97316 !important;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, .20) !important;
     }
 
     .samples-box, .resultado-box, .grafico-box {
@@ -1098,6 +1098,15 @@
       return ids;
     }
 
+    function idsCamposObrigatoriosTorqueUnico() {
+      return [
+        "tuTipoJunta",
+        "tuTorqueNominal",
+        "tuTolerancia",
+        "tuAmostras"
+      ];
+    }
+
     function nomeCampoObrigatorio(id) {
       const nomes = {
         tecnicoResponsavel: "Técnico responsável",
@@ -1113,7 +1122,11 @@
         torqueMenorBase: "Torque inferior",
         porcentagem: "Tolerância",
         amostrasManual: "Quantidade de amostras",
-        crowfoot: "Identificação do Crowfoot"
+        crowfoot: "Identificação do Crowfoot",
+        tuTipoJunta: "Tipo de junta",
+        tuTorqueNominal: "Torque nominal",
+        tuTolerancia: "Tolerância do torque único",
+        tuAmostras: "Quantidade de amostras do torque único"
       };
       return nomes[id] || id;
     }
@@ -1124,7 +1137,12 @@
         campo.classList.remove("campo-obrigatorio-preenchido");
       });
 
-      idsCamposObrigatoriosDados().forEach(id => {
+      const todosObrigatorios = [
+        ...idsCamposObrigatoriosDados(),
+        ...idsCamposObrigatoriosTorqueUnico()
+      ];
+
+      todosObrigatorios.forEach(id => {
         const campo = el(id);
         if (!campo) return;
         campo.classList.add("campo-obrigatorio");
@@ -1995,7 +2013,74 @@
       return motivos.length ? motivos.join(" ") : "Aprovado: scatter dentro da tolerância e índices Cm/Cmk iguais ou acima de 1,67.";
     }
 
-    function calcularTorqueUnico() {
+    function validarCamposObrigatoriosTorqueUnico() {
+      limparErrosObrigatorios();
+      aplicarVisualObrigatorios();
+
+      const faltando = [];
+
+      idsCamposObrigatoriosTorqueUnico().forEach(id => {
+        if (!valorCampoObrigatorio(id)) {
+          marcarErroCampo(id);
+          faltando.push(nomeCampoObrigatorio(id));
+        }
+      });
+
+      const torque = parseNumero(valorCampoObrigatorio("tuTorqueNominal"));
+      const tolerancia = parseNumero(valorCampoObrigatorio("tuTolerancia"));
+      const amostras = parseInt(valorCampoObrigatorio("tuAmostras"), 10);
+
+      if (valorCampoObrigatorio("tuTorqueNominal") && torque <= 0) {
+        marcarErroCampo("tuTorqueNominal");
+        faltando.push("Torque nominal deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("tuTolerancia") && tolerancia <= 0) {
+        marcarErroCampo("tuTolerancia");
+        faltando.push("Tolerância do torque único deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("tuAmostras") && (!Number.isInteger(amostras) || amostras <= 0)) {
+        marcarErroCampo("tuAmostras");
+        faltando.push("Quantidade de amostras do torque único deve ser maior que zero");
+      }
+
+      if (faltando.length) {
+        mostrarPagina("pagina-torque-unico");
+        mostrarPopup(
+          "Não foi possível calcular o torque único.<br><br>Falta preencher campos obrigatórios:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+          "Campos obrigatórios"
+        );
+        return false;
+      }
+
+      return true;
+    }
+
+    function validarTabelaTorqueUnicoObrigatoria() {
+      if (!validarCamposObrigatoriosTorqueUnico()) return false;
+
+      const total = obterTotalAmostrasTorqueUnico();
+      const tbody = el("tbody-torque-unico");
+      const inputs = tbody ? [...tbody.querySelectorAll("input")] : [];
+      const preenchidos = inputs.filter(input => String(input.value || "").trim() !== "").length;
+      const card = tbody ? tbody.closest(".table-card") : null;
+
+      if (!tbody || inputs.length < total || preenchidos < total) {
+        if (card) card.classList.add("tabela-obrigatoria-erro");
+        mostrarPagina("pagina-torque-unico");
+        mostrarPopup(
+          "Não foi possível calcular ou gerar o relatório.<br><br>Falta preencher a tabela obrigatória:<br><br><strong>Amostras do torque único: preencher " + total + " amostras</strong>",
+          "Tabela obrigatória"
+        );
+        return false;
+      }
+
+      return true;
+    }
+
+    function calcularTorqueUnico(validar = true) {
+      if (validar && !validarTabelaTorqueUnicoObrigatoria()) return false;
       calcularLimitesTorqueUnico();
 
       const valores = lerValoresTabela("tbody-torque-unico");
@@ -2022,6 +2107,7 @@
       el("tuMotivo").textContent = motivoResultado;
 
       atualizarGraficoTorqueUnico(valores, limiteMin, limiteMax);
+      return true;
     }
 
     function atualizarGraficoTorqueUnico(valores, limiteMin, limiteMax) {
@@ -2047,7 +2133,7 @@
     }
 
     function gerarRelatorioTorqueUnico() {
-      calcularTorqueUnico();
+      if (!calcularTorqueUnico(true)) return;
 
       const valores = lerValoresTabela("tbody-torque-unico");
       const limiteMin = parseNumero(el("tuLimiteMin").value);
@@ -2254,7 +2340,7 @@
           aplicarVisualObrigatorios();
 
           try { calcularTudoSemValidacao(); } catch {}
-          try { calcularTorqueUnico(); } catch {}
+          try { calcularTorqueUnico(false); } catch {}
 
           mostrarPopup("Ensaio carregado com sucesso.<br><br>Você já pode continuar editando.", "Ensaio carregado");
         } catch (erro) {
@@ -2362,8 +2448,16 @@
 
     ["tuTorqueNominal", "tuTolerancia"].forEach(id => {
       const campo = el(id);
-      if (campo) campo.addEventListener("input", calcularLimitesTorqueUnico);
+      if (campo) {
+        campo.addEventListener("input", calcularLimitesTorqueUnico);
+        campo.addEventListener("input", aplicarVisualObrigatorios);
+      }
     });
+
+    const tuTipoJuntaEl = el("tuTipoJunta");
+    if (tuTipoJuntaEl) {
+      tuTipoJuntaEl.addEventListener("change", aplicarVisualObrigatorios);
+    }
 
     const tuAmostrasEl = el("tuAmostras");
     if (tuAmostrasEl) {
@@ -2371,6 +2465,7 @@
         const total = obterTotalAmostrasTorqueUnico();
         if (total > 0) criarLinhasTorqueUnico(total);
         else el("tbody-torque-unico").innerHTML = "";
+        aplicarVisualObrigatorios();
       });
     }
 
