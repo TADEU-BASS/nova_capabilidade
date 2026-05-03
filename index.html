@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="${relLangHtml()}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1771,21 +1771,21 @@
       const d = obterDadosFerramenta();
       resumoDados.innerHTML = `
         <div><strong>Relatório:</strong> ${d.numeroRelatorio}</div>
-        <div><strong>Data do ensaio:</strong> ${d.dataEnsaio}</div>
+        <div><strong>${relT("Data do ensaio")}:</strong> ${d.dataEnsaio}</div>
         <div><strong>Cliente / projeto:</strong> ${d.clienteProjeto}</div>
-        <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
+        <div><strong>${relT("Aplicação")}:</strong> ${relT(d.tipoAplicacao)}</div>
         <div><strong>Apertadeira:</strong> ${d.apertadeiraModelo}</div>
-        <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
+        <div><strong>${relT("Serial apertadeira")}:</strong> ${d.serialApertadeira}</div>
         <div><strong>Controlador:</strong> ${d.controladorModelo}</div>
-        <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-        <div><strong>STA 6000:</strong> ${d.painel}</div>
-        <div><strong>Certificado STA 6000:</strong> ${d.certificadoSta}</div>
+        <div><strong>${relT("Transdutor")}:</strong> ${d.transdutor}</div>
+        <div><strong>${relT("STA 6000")}:</strong> ${d.painel}</div>
+        <div><strong>${relT("Certificado STA 6000")}:</strong> ${d.certificadoSta}</div>
         <div><strong>Junta rígida:</strong> Junta rígida - 30 Graus</div>
         <div><strong>Junta flexível:</strong> Junta flexível - 720 Graus</div>
         <div><strong>Torque superior:</strong> ${d.torqueMaiorBase}</div>
         <div><strong>Torque inferior:</strong> ${d.torqueMenorBase}</div>
-        <div><strong>Tolerância:</strong> ${d.porcentagem}%</div>
-        <div><strong>Total de amostras:</strong> ${d.amostras}</div>
+        <div><strong>${relT("Tolerância")}:</strong> ${d.porcentagem}%</div>
+        <div><strong>${relT("Total de amostras")}:</strong> ${d.amostras}</div>
       `;
 
       el("pct-inicial-view").textContent = d.porcentagem !== "-" ? `${d.porcentagem}%` : "-";
@@ -2034,7 +2034,7 @@
           }
         },
         scales: {
-          x: { title: { display: true, text: "Amostra" }, grid: { display: false } },
+          x: { title: { display: true, text: relT("Amostra") }, grid: { display: false } },
           y: { title: { display: true, text: tituloEixo }, grid: { color: "rgba(36,68,83,0.10)" } }
         }
       };
@@ -2091,7 +2091,7 @@
         },
         scales: {
           x: {
-            title: { display: true, text: "Faixas de torque" },
+            title: { display: true, text: relT("Faixas de torque") },
             ticks: { maxRotation: 45, minRotation: 0, font: { size: 10 } },
             grid: { display: false }
           },
@@ -2124,7 +2124,7 @@
             },
             {
               type: "line",
-              label: "Linha de tendência",
+              label: relT("Linha de tendência"),
               data: hist.frequencias,
               borderWidth: 2,
               pointRadius: 3,
@@ -2160,11 +2160,11 @@
           data: {
             labels,
             datasets: [
-              criarSeriePontos("Rígida", dados.maxRigida),
-              criarSeriePontos("Flexível", dados.maxFlexivel),
-              criarLinhaReferencia("Nominal", torqueSuperior, total),
-              criarLinhaReferencia("Limite mínimo", dados.limites.minExpMaior, total),
-              criarLinhaReferencia("Limite máximo", dados.limites.maxExpMaior, total)
+              criarSeriePontos(relT("Rígida"), dados.maxRigida),
+              criarSeriePontos(relT("Flexível"), dados.maxFlexivel),
+              criarLinhaReferencia(relT("Nominal"), torqueSuperior, total),
+              criarLinhaReferencia(relT("Limite mínimo"), dados.limites.minExpMaior, total),
+              criarLinhaReferencia(relT("Limite máximo"), dados.limites.maxExpMaior, total)
             ]
           },
           options: obterOpcoesGraficoLimpo("Torque superior")
@@ -2177,11 +2177,11 @@
           data: {
             labels,
             datasets: [
-              criarSeriePontos("Rígida", dados.minRigida),
-              criarSeriePontos("Flexível", dados.minFlexivel),
-              criarLinhaReferencia("Nominal", torqueInferior, total),
-              criarLinhaReferencia("Limite mínimo", dados.limites.minExpMenor, total),
-              criarLinhaReferencia("Limite máximo", dados.limites.maxExpMenor, total)
+              criarSeriePontos(relT("Rígida"), dados.minRigida),
+              criarSeriePontos(relT("Flexível"), dados.minFlexivel),
+              criarLinhaReferencia(relT("Nominal"), torqueInferior, total),
+              criarLinhaReferencia(relT("Limite mínimo"), dados.limites.minExpMenor, total),
+              criarLinhaReferencia(relT("Limite máximo"), dados.limites.maxExpMenor, total)
             ]
           },
           options: obterOpcoesGraficoLimpo("Torque inferior")
@@ -2224,11 +2224,222 @@
       }
     }
 
+
+
+    function relIdiomaAtual() {
+      return localStorage.getItem("idiomaCapabilidadeWS") || "pt";
+    }
+
+    function relLangHtml() {
+      const idioma = relIdiomaAtual();
+      if (idioma === "en") return "en";
+      if (idioma === "es") return "es";
+      return "pt-BR";
+    }
+
+    const traducoesRelatorioExtra = {
+      en: {
+        "Relatório ISO 5393": "ISO 5393 Report",
+        "Relatório Torque Único": "Single Torque Report",
+        "Relatório ISO 5393 / Capabilidade": "ISO 5393 / Capability Report",
+        "Relatório ISO 5393 / Capabilidade - Torque Único": "ISO 5393 / Capability Report - Single Torque",
+        "Número do relatório": "Report number",
+        "Imprimir relatório": "Print report",
+        "Total de amostras": "Total samples",
+        "Ferramenta / aplicação": "Tool / application",
+        "Medição / rastreabilidade": "Measurement / traceability",
+        "Certificado transdutor": "Transducer certificate",
+        "Certificado STA 6000": "STA 6000 certificate",
+        "Condições / parâmetros": "Conditions / parameters",
+        "Torque de teste superior": "Upper test torque",
+        "Torque de teste inferior": "Lower test torque",
+        "Máx. esperado torque superior": "Expected max. upper torque",
+        "Mín. esperado torque superior": "Expected min. upper torque",
+        "Máx. esperado torque inferior": "Expected max. lower torque",
+        "Mín. esperado torque inferior": "Expected min. lower torque",
+        "Observações do ensaio": "Test notes",
+        "Leitura ISO 5393": "ISO 5393 reading",
+        "Este relatório registra as condições do ensaio, a identificação da ferramenta, a junta utilizada e a repetibilidade/scatter dos resultados. Os índices Cm e Cmk permanecem como critério complementar interno WS.": "This report records the test conditions, tool identification, joint used and repeatability/scatter of the results. The Cm and Cmk indexes remain as an internal WS complementary criterion.",
+        "Este relatório registra a condição de ensaio, a rastreabilidade, o tipo de junta, o número de amostras, os limites aplicados e a repetibilidade/scatter do torque único. Os índices Cm e Cmk permanecem como critério complementar interno WS.": "This report records the test condition, traceability, joint type, number of samples, applied limits and repeatability/scatter of the single torque. The Cm and Cmk indexes remain as an internal WS complementary criterion.",
+        "Resultado Torque Superior": "Upper Torque Result",
+        "Resultado Torque Inferior": "Lower Torque Result",
+        "Resultado final": "Final result",
+        "% final encontrada": "Final percentage found",
+        "Motivo do resultado": "Result reason",
+        "Gráfico limpo - Torque superior": "Clean chart - Upper torque",
+        "Gráfico limpo - Torque inferior": "Clean chart - Lower torque",
+        "Histograma - Torque superior / Junta rígida": "Histogram - Upper torque / Hard joint",
+        "Histograma - Torque superior / Junta flexível": "Histogram - Upper torque / Soft joint",
+        "Histograma - Torque inferior / Junta rígida": "Histogram - Lower torque / Hard joint",
+        "Histograma - Torque inferior / Junta flexível": "Histogram - Lower torque / Soft joint",
+        "Torque inferior — Junta rígida": "Lower torque — Hard joint",
+        "Torque inferior — Junta flexível": "Lower torque — Soft joint",
+        "Torque superior — Junta rígida": "Upper torque — Hard joint",
+        "Torque superior — Junta flexível": "Upper torque — Soft joint",
+        "Junta rígida - 30 Graus": "Hard joint - 30 Degrees",
+        "Junta flexível - 720 Graus": "Soft joint - 720 Degrees",
+        "Técnico responsável": "Responsible technician",
+        "Amostra": "Sample",
+        "Valor": "Value",
+        "Sem dados": "No data",
+        "Linha de tendência": "Trend line",
+        "Faixas de torque": "Torque ranges",
+        "Frequência": "Frequency",
+        "Limite mínimo": "Minimum limit",
+        "Limite máximo": "Maximum limit",
+        "Nominal": "Nominal",
+        "Rígida": "Hard",
+        "Flexível": "Soft",
+        "Parâmetros do torque único": "Single torque parameters",
+        "Descrição / ponto": "Description / point",
+        "Tipo de junta": "Joint type",
+        "Torque nominal": "Nominal torque",
+        "Resultado do torque único": "Single torque result",
+        "Amostras do torque único": "Single torque samples",
+        "Gráfico limpo - Torque único": "Clean chart - Single torque",
+        "Histograma - Torque único": "Histogram - Single torque",
+        "Descrição": "Description",
+        "Desvio padrão": "Standard deviation",
+        "Mínimo": "Minimum",
+        "Máximo": "Maximum",
+        "Amplitude": "Range",
+        "Status interno WS": "Internal WS status",
+        "APROVADO": "APPROVED",
+        "REPROVADO": "REJECTED",
+        "AGUARDANDO": "WAITING",
+        "Apertadeira": "Nutrunner",
+        "Apertadeira + Crowfoot": "Nutrunner + Crowfoot",
+        "Horário": "Clockwise",
+        "Anti-horário": "Counterclockwise"
+      },
+      es: {
+        "Relatório ISO 5393": "Informe ISO 5393",
+        "Relatório Torque Único": "Informe de Torque Único",
+        "Relatório ISO 5393 / Capabilidade": "Informe ISO 5393 / Capabilidad",
+        "Relatório ISO 5393 / Capabilidade - Torque Único": "Informe ISO 5393 / Capabilidad - Torque Único",
+        "Número do relatório": "Número del informe",
+        "Imprimir relatório": "Imprimir informe",
+        "Total de amostras": "Total de muestras",
+        "Ferramenta / aplicação": "Herramienta / aplicación",
+        "Medição / rastreabilidade": "Medición / trazabilidad",
+        "Certificado transdutor": "Certificado del transductor",
+        "Certificado STA 6000": "Certificado STA 6000",
+        "Condições / parâmetros": "Condiciones / parámetros",
+        "Torque de teste superior": "Torque de prueba superior",
+        "Torque de teste inferior": "Torque de prueba inferior",
+        "Máx. esperado torque superior": "Máx. esperado torque superior",
+        "Mín. esperado torque superior": "Mín. esperado torque superior",
+        "Máx. esperado torque inferior": "Máx. esperado torque inferior",
+        "Mín. esperado torque inferior": "Mín. esperado torque inferior",
+        "Observações do ensaio": "Observaciones del ensayo",
+        "Leitura ISO 5393": "Lectura ISO 5393",
+        "Este relatório registra as condições do ensaio, a identificação da ferramenta, a junta utilizada e a repetibilidade/scatter dos resultados. Os índices Cm e Cmk permanecem como critério complementar interno WS.": "Este informe registra las condiciones del ensayo, la identificación de la herramienta, la junta utilizada y la repetibilidad/scatter de los resultados. Los índices Cm y Cmk permanecen como criterio complementario interno WS.",
+        "Este relatório registra a condição de ensaio, a rastreabilidade, o tipo de junta, o número de amostras, os limites aplicados e a repetibilidade/scatter do torque único. Os índices Cm e Cmk permanecem como critério complementar interno WS.": "Este informe registra la condición del ensayo, la trazabilidad, el tipo de junta, el número de muestras, los límites aplicados y la repetibilidad/scatter del torque único. Los índices Cm y Cmk permanecen como criterio complementario interno WS.",
+        "Resultado Torque Superior": "Resultado Torque Superior",
+        "Resultado Torque Inferior": "Resultado Torque Inferior",
+        "Resultado final": "Resultado final",
+        "% final encontrada": "% final encontrado",
+        "Motivo do resultado": "Motivo del resultado",
+        "Gráfico limpo - Torque superior": "Gráfico limpio - Torque superior",
+        "Gráfico limpo - Torque inferior": "Gráfico limpio - Torque inferior",
+        "Histograma - Torque superior / Junta rígida": "Histograma - Torque superior / Junta rígida",
+        "Histograma - Torque superior / Junta flexível": "Histograma - Torque superior / Junta flexible",
+        "Histograma - Torque inferior / Junta rígida": "Histograma - Torque inferior / Junta rígida",
+        "Histograma - Torque inferior / Junta flexível": "Histograma - Torque inferior / Junta flexible",
+        "Torque inferior — Junta rígida": "Torque inferior — Junta rígida",
+        "Torque inferior — Junta flexível": "Torque inferior — Junta flexible",
+        "Torque superior — Junta rígida": "Torque superior — Junta rígida",
+        "Torque superior — Junta flexível": "Torque superior — Junta flexible",
+        "Junta rígida - 30 Graus": "Junta rígida - 30 Grados",
+        "Junta flexível - 720 Graus": "Junta flexible - 720 Grados",
+        "Técnico responsável": "Técnico responsable",
+        "Amostra": "Muestra",
+        "Valor": "Valor",
+        "Sem dados": "Sin datos",
+        "Linha de tendência": "Línea de tendencia",
+        "Faixas de torque": "Rangos de torque",
+        "Frequência": "Frecuencia",
+        "Limite mínimo": "Límite mínimo",
+        "Limite máximo": "Límite máximo",
+        "Nominal": "Nominal",
+        "Rígida": "Rígida",
+        "Flexível": "Flexible",
+        "Parâmetros do torque único": "Parámetros del torque único",
+        "Descrição / ponto": "Descripción / punto",
+        "Tipo de junta": "Tipo de junta",
+        "Torque nominal": "Torque nominal",
+        "Resultado do torque único": "Resultado del torque único",
+        "Amostras do torque único": "Muestras del torque único",
+        "Gráfico limpo - Torque único": "Gráfico limpio - Torque único",
+        "Histograma - Torque único": "Histograma - Torque único",
+        "Descrição": "Descripción",
+        "Desvio padrão": "Desviación estándar",
+        "Mínimo": "Mínimo",
+        "Máximo": "Máximo",
+        "Amplitude": "Amplitud",
+        "Status interno WS": "Estado interno WS",
+        "APROVADO": "APROBADO",
+        "REPROVADO": "REPROBADO",
+        "AGUARDANDO": "ESPERANDO",
+        "Apertadeira": "Aprietatuercas",
+        "Apertadeira + Crowfoot": "Aprietatuercas + Crowfoot",
+        "Horário": "Horario",
+        "Anti-horário": "Antihorario"
+      }
+    };
+
+    function relT(texto) {
+      const idioma = relIdiomaAtual();
+      if (idioma === "pt") return texto;
+      const mapaSistema = (typeof traducoesSistema !== "undefined" && traducoesSistema[idioma]) ? traducoesSistema[idioma] : {};
+      const mapaRelatorio = traducoesRelatorioExtra[idioma] || {};
+      return mapaRelatorio[texto] || mapaSistema[texto] || texto;
+    }
+
+    function relTraduzirTexto(texto) {
+      const idioma = relIdiomaAtual();
+      if (idioma === "pt" || !texto) return texto;
+
+      if (texto === "Aprovado: scatter dentro da tolerância e índices Cm/Cmk iguais ou acima de 1,67.") {
+        return idioma === "en"
+          ? "Approved: scatter within tolerance and Cm/Cmk indexes equal to or above 1.67."
+          : "Aprobado: scatter dentro de la tolerancia e índices Cm/Cmk iguales o superiores a 1,67.";
+      }
+
+      let saida = texto;
+      const substituicoes = idioma === "en" ? [
+        [/Nenhuma amostra válida foi preenchida para calcular o ensaio\./g, "No valid sample was entered to calculate the test."],
+        [/Nenhuma amostra válida foi preenchida para calcular o torque único\./g, "No valid sample was entered to calculate the single torque."],
+        [/Existem amostras incompletas: preenchidas (\d+) de (\d+) leituras esperadas\./g, "There are incomplete samples: $1 of $2 expected readings were entered."],
+        [/(\d+) leitura\(s\) ficaram fora dos limites de tolerância calculados\./g, "$1 reading(s) were outside the calculated tolerance limits."],
+        [/A % final encontrada \(([^)]+)\) ficou acima da tolerância informada \(([^)]+)\)\./g, "The final percentage found ($1) was above the informed tolerance ($2)."],
+        [/O menor Cm encontrado \(([^)]+)\) ficou abaixo do mínimo interno WS de 1,67\./g, "The lowest Cm found ($1) was below the internal WS minimum of 1.67."],
+        [/O menor Cmk encontrado \(([^)]+)\) ficou abaixo do mínimo interno WS de 1,67\./g, "The lowest Cmk found ($1) was below the internal WS minimum of 1.67."],
+        [/O scatter calculado \(([^)]+)\) ficou acima da tolerância informada \(([^)]+)\)\./g, "The calculated scatter ($1) was above the informed tolerance ($2)."],
+        [/O Cm calculado \(([^)]+)\) ficou abaixo do mínimo interno WS de 1,67\./g, "The calculated Cm ($1) was below the internal WS minimum of 1.67."],
+        [/O Cmk calculado \(([^)]+)\) ficou abaixo do mínimo interno WS de 1,67\./g, "The calculated Cmk ($1) was below the internal WS minimum of 1.67."]
+      ] : [
+        [/Nenhuma amostra válida foi preenchida para calcular o ensaio\./g, "No se ingresó ninguna muestra válida para calcular el ensayo."],
+        [/Nenhuma amostra válida foi preenchida para calcular o torque único\./g, "No se ingresó ninguna muestra válida para calcular el torque único."],
+        [/Existem amostras incompletas: preenchidas (\d+) de (\d+) leituras esperadas\./g, "Hay muestras incompletas: se ingresaron $1 de $2 lecturas esperadas."],
+        [/(\d+) leitura\(s\) ficaram fora dos limites de tolerância calculados\./g, "$1 lectura(s) quedaron fuera de los límites de tolerancia calculados."],
+        [/A % final encontrada \(([^)]+)\) ficou acima da tolerância informada \(([^)]+)\)\./g, "El % final encontrado ($1) quedó por encima de la tolerancia informada ($2)."],
+        [/O menor Cm encontrado \(([^)]+)\) ficou abaixo do mínimo interno WS de 1,67\./g, "El menor Cm encontrado ($1) quedó por debajo del mínimo interno WS de 1,67."],
+        [/O menor Cmk encontrado \(([^)]+)\) ficou abaixo do mínimo interno WS de 1,67\./g, "El menor Cmk encontrado ($1) quedó por debajo del mínimo interno WS de 1,67."],
+        [/O scatter calculado \(([^)]+)\) ficou acima da tolerância informada \(([^)]+)\)\./g, "El scatter calculado ($1) quedó por encima de la tolerancia informada ($2)."],
+        [/O Cm calculado \(([^)]+)\) ficou abaixo do mínimo interno WS de 1,67\./g, "El Cm calculado ($1) quedó por debajo del mínimo interno WS de 1,67."],
+        [/O Cmk calculado \(([^)]+)\) ficou abaixo do mínimo interno WS de 1,67\./g, "El Cmk calculado ($1) quedó por debajo del mínimo interno WS de 1,67."]
+      ];
+
+      substituicoes.forEach(([regex, valor]) => { saida = saida.replace(regex, valor); });
+      return saida;
+    }
+
     function tabelaHtmlRelatorio(rotulo, valores) {
       const porLinha = 8;
       const grupos = [];
       for (let i = 0; i < valores.length; i += porLinha) grupos.push(valores.slice(i, i + porLinha));
-      const cabecalho = Array.from({ length: porLinha }, () => "<th>Amostra</th><th>Valor</th>").join("");
+      const cabecalho = Array.from({ length: porLinha }, () => `<th>${relT("Amostra")}</th><th>${relT("Valor")}</th>`).join("");
       const linhas = grupos.map((grupo, bloco) => {
         let tds = "";
         for (let j = 0; j < porLinha; j++) {
@@ -2244,7 +2455,7 @@
           <h3>${rotulo}</h3>
           <table class="tabela-medicoes">
             <thead><tr>${cabecalho}</tr></thead>
-            <tbody>${linhas || '<tr><td colspan="16">Sem dados</td></tr>'}</tbody>
+            <tbody>${linhas || `<tr><td colspan="16">${relT("Sem dados")}</td></tr>`}</tbody>
           </table>
         </div>
       `;
@@ -2262,14 +2473,16 @@
 
       const total = Math.max(obterTotalAmostras(), maxRigida.length, maxFlexivel.length, minRigida.length, minFlexivel.length, 1);
       const labels = Array.from({ length: total }, (_, i) => i + 1);
+      const statusGeralRel = relT(statusGeralEl.textContent);
+      const motivoGeralRel = relTraduzirTexto(motivoGeralEl.textContent);
 
       const relatorio = window.open("", "_blank");
       relatorio.document.write(`
         <!DOCTYPE html>
-        <html lang="pt-BR">
+        <html lang="${relLangHtml()}">
         <head>
           <meta charset="UTF-8">
-          <title>Relatório ISO 5393</title>
+          <title>${relT("Relatório ISO 5393")}</title>
           <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
           <style>
             @page { size: A4 portrait; margin: 6mm; }
@@ -2305,82 +2518,81 @@
             <div class="topo-esq">
               <img src="logo-atlas-copco.png" alt="Atlas Copco">
               <div>
-                <h1>Relatório ISO 5393 / Capabilidade</h1>
-                <div>Número do relatório: ${d.numeroRelatorio}</div>
+                <h1>${relT("Relatório ISO 5393 / Capabilidade")}</h1>
+                <div>${relT("Número do relatório")}: ${d.numeroRelatorio}</div>
               </div>
             </div>
-            <button class="print-btn" onclick="window.print()">Imprimir relatório</button>
+            <button class="print-btn" onclick="window.print()">${relT("Imprimir relatório")}</button>
           </div>
 
           <div class="cabecalho">
             <div class="cabecalho-grid">
               <div class="cabecalho-card">
-                <h3>Identificação do ensaio</h3>
+                <h3>${relT("Identificação do ensaio")}</h3>
                 <div class="cabecalho-linhas">
-                  <div><strong>Número do relatório:</strong> ${d.numeroRelatorio}</div>
-                  <div><strong>Norma de referência:</strong> ${d.normaReferencia}</div>
-                  <div><strong>Data do ensaio:</strong> ${d.dataEnsaio}</div>
-                  <div><strong>Local do ensaio:</strong> ${d.localEnsaio}</div>
-                  <div><strong>Cliente / projeto / linha:</strong> ${d.clienteProjeto}</div>
-                  <div><strong>Técnico responsável:</strong> ${d.tecnicoResponsavel}</div>
-                  <div><strong>Total de amostras:</strong> ${d.amostras}</div>
+                  <div><strong>${relT("Número do relatório")}:</strong> ${d.numeroRelatorio}</div>
+                  <div><strong>${relT("Norma de referência")}:</strong> ${d.normaReferencia}</div>
+                  <div><strong>${relT("Data do ensaio")}:</strong> ${d.dataEnsaio}</div>
+                  <div><strong>${relT("Local do ensaio")}:</strong> ${d.localEnsaio}</div>
+                  <div><strong>${relT("Cliente / projeto / linha")}:</strong> ${d.clienteProjeto}</div>
+                  <div><strong>${relT("Técnico responsável")}:</strong> ${d.tecnicoResponsavel}</div>
+                  <div><strong>${relT("Total de amostras")}:</strong> ${d.amostras}</div>
                 </div>
               </div>
 
               <div class="cabecalho-card">
-                <h3>Ferramenta / aplicação</h3>
+                <h3>${relT("Ferramenta / aplicação")}</h3>
                 <div class="cabecalho-linhas">
-                  <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
-                  <div><strong>Crowfoot:</strong> ${d.crowfoot}</div>
-                  <div><strong>Apertadeira modelo:</strong> ${d.apertadeiraModelo}</div>
-                  <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
-                  <div><strong>Controlador modelo:</strong> ${d.controladorModelo}</div>
-                  <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
+                  <div><strong>${relT("Aplicação")}:</strong> ${relT(d.tipoAplicacao)}</div>
+                  <div><strong>${relT("Crowfoot")}:</strong> ${d.crowfoot}</div>
+                  <div><strong>${relT("Apertadeira modelo")}:</strong> ${d.apertadeiraModelo}</div>
+                  <div><strong>${relT("Serial apertadeira")}:</strong> ${d.serialApertadeira}</div>
+                  <div><strong>${relT("Controlador modelo")}:</strong> ${d.controladorModelo}</div>
+                  <div><strong>${relT("Serial controlador")}:</strong> ${d.serialControlador}</div>
                 </div>
               </div>
 
               <div class="cabecalho-card">
-                <h3>Medição / rastreabilidade</h3>
+                <h3>${relT("Medição / rastreabilidade")}</h3>
                 <div class="cabecalho-linhas">
-                  <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-                  <div><strong>Certificado transdutor:</strong> ${d.certificadoCalibracao}</div>
-                  <div><strong>STA 6000:</strong> ${d.painel}</div>
-                  <div><strong>Certificado STA 6000:</strong> ${d.certificadoSta}</div>
+                  <div><strong>${relT("Transdutor")}:</strong> ${d.transdutor}</div>
+                  <div><strong>${relT("Certificado transdutor")}:</strong> ${d.certificadoCalibracao}</div>
+                  <div><strong>${relT("STA 6000")}:</strong> ${d.painel}</div>
+                  <div><strong>${relT("Certificado STA 6000")}:</strong> ${d.certificadoSta}</div>
                   <div><strong>Junta rígida:</strong> Junta rígida - 30 Graus</div>
                   <div><strong>Junta flexível:</strong> Junta flexível - 720 Graus</div>
                 </div>
               </div>
 
               <div class="cabecalho-card">
-                <h3>Condições / parâmetros</h3>
+                <h3>${relT("Condições / parâmetros")}</h3>
                 <div class="cabecalho-linhas">
-                  <div><strong>Torque de teste superior:</strong> ${d.torqueMaiorBase}</div>
-                  <div><strong>Torque de teste inferior:</strong> ${d.torqueMenorBase}</div>
-                  <div><strong>Tolerância:</strong> ${d.porcentagem}%</div>
-                  <div><strong>Máx. esperado torque superior:</strong> ${d.maxExpMaior}</div>
-                  <div><strong>Mín. esperado torque superior:</strong> ${d.minExpMaior}</div>
-                  <div><strong>Máx. esperado torque inferior:</strong> ${d.maxExpMenor}</div>
-                  <div><strong>Mín. esperado torque inferior:</strong> ${d.minExpMenor}</div>
+                  <div><strong>${relT("Torque de teste superior")}:</strong> ${d.torqueMaiorBase}</div>
+                  <div><strong>${relT("Torque de teste inferior")}:</strong> ${d.torqueMenorBase}</div>
+                  <div><strong>${relT("Tolerância")}:</strong> ${d.porcentagem}%</div>
+                  <div><strong>${relT("Máx. esperado torque superior")}:</strong> ${d.maxExpMaior}</div>
+                  <div><strong>${relT("Mín. esperado torque superior")}:</strong> ${d.minExpMaior}</div>
+                  <div><strong>${relT("Máx. esperado torque inferior")}:</strong> ${d.maxExpMenor}</div>
+                  <div><strong>${relT("Mín. esperado torque inferior")}:</strong> ${d.minExpMenor}</div>
                 </div>
               </div>
 
               <div class="cabecalho-card cabecalho-wide">
-                <h3>Observações do ensaio</h3>
+                <h3>${relT("Observações do ensaio")}</h3>
                 <div class="cabecalho-linhas"><div>${d.observacoesEnsaio}</div></div>
               </div>
             </div>
           </div>
 
           <div class="bloco">
-            <h2>Leitura ISO 5393</h2>
+            <h2>${relT("Leitura ISO 5393")}</h2>
             <div class="nota">
-              Este relatório registra as condições do ensaio, a identificação da ferramenta, a junta utilizada e a repetibilidade/scatter dos resultados.
-              Os índices Cm e Cmk permanecem como critério complementar interno WS.
+              ${relT("Este relatório registra as condições do ensaio, a identificação da ferramenta, a junta utilizada e a repetibilidade/scatter dos resultados. Os índices Cm e Cmk permanecem como critério complementar interno WS.")}
             </div>
           </div>
 
           <div class="bloco">
-            <h2>Resultado Torque Superior</h2>
+            <h2>${relT("Resultado Torque Superior")}</h2>
             <div class="resumo">
               <div><strong>Média rígida:</strong> ${el("media-max-rigida").textContent}</div>
               <div><strong>Média flexível:</strong> ${el("media-max-flexivel").textContent}</div>
@@ -2397,7 +2609,7 @@
           </div>
 
           <div class="bloco">
-            <h2>Resultado Torque Inferior</h2>
+            <h2>${relT("Resultado Torque Inferior")}</h2>
             <div class="resumo">
               <div><strong>Média rígida:</strong> ${el("media-min-rigida").textContent}</div>
               <div><strong>Média flexível:</strong> ${el("media-min-flexivel").textContent}</div>
@@ -2414,34 +2626,34 @@
           </div>
 
           <div class="bloco">
-            <h2>Resultado final</h2>
+            <h2>${relT("Resultado final")}</h2>
             <div class="resumo">
-              <div><strong>% final encontrada:</strong> ${el("pct-final").textContent}</div>
-              <div><strong>Status interno WS:</strong> <span class="status-relatorio ${statusGeralEl.textContent === "APROVADO" ? "aprovado" : statusGeralEl.textContent === "REPROVADO" ? "reprovado" : "aguardando"}">${statusGeralEl.textContent}</span></div>
-              <div style="grid-column:1 / -1;"><strong>Motivo do resultado:</strong> ${motivoGeralEl.textContent}</div>
+              <div><strong>${relT("% final encontrada")}:</strong> ${el("pct-final").textContent}</div>
+              <div><strong>${relT("Status interno WS")}:</strong> <span class="status-relatorio ${statusGeralEl.textContent === "APROVADO" ? "aprovado" : statusGeralEl.textContent === "REPROVADO" ? "reprovado" : "aguardando"}">${statusGeralRel}</span></div>
+              <div style="grid-column:1 / -1;"><strong>${relT("Motivo do resultado")}:</strong> ${motivoGeralRel}</div>
             </div>
           </div>
 
           <div class="graficos-grid">
-            <div class="bloco"><h2>Gráfico limpo - Torque superior</h2><canvas id="graficoMaiorRel"></canvas></div>
-            <div class="bloco"><h2>Gráfico limpo - Torque inferior</h2><canvas id="graficoMenorRel"></canvas></div>
+            <div class="bloco"><h2>${relT("Gráfico limpo - Torque superior")}</h2><canvas id="graficoMaiorRel"></canvas></div>
+            <div class="bloco"><h2>${relT("Gráfico limpo - Torque inferior")}</h2><canvas id="graficoMenorRel"></canvas></div>
           </div>
 
           <div class="graficos-grid">
-            <div class="bloco"><h2>Histograma - Torque superior / Junta rígida</h2><canvas id="histMaxRigidaRel"></canvas></div>
-            <div class="bloco"><h2>Histograma - Torque superior / Junta flexível</h2><canvas id="histMaxFlexivelRel"></canvas></div>
-            <div class="bloco"><h2>Histograma - Torque inferior / Junta rígida</h2><canvas id="histMinRigidaRel"></canvas></div>
-            <div class="bloco"><h2>Histograma - Torque inferior / Junta flexível</h2><canvas id="histMinFlexivelRel"></canvas></div>
+            <div class="bloco"><h2>${relT("Histograma - Torque superior / Junta rígida")}</h2><canvas id="histMaxRigidaRel"></canvas></div>
+            <div class="bloco"><h2>${relT("Histograma - Torque superior / Junta flexível")}</h2><canvas id="histMaxFlexivelRel"></canvas></div>
+            <div class="bloco"><h2>${relT("Histograma - Torque inferior / Junta rígida")}</h2><canvas id="histMinRigidaRel"></canvas></div>
+            <div class="bloco"><h2>${relT("Histograma - Torque inferior / Junta flexível")}</h2><canvas id="histMinFlexivelRel"></canvas></div>
           </div>
 
-          ${tabelaHtmlRelatorio("Torque inferior — Junta rígida", minRigida)}
-          ${tabelaHtmlRelatorio("Torque inferior — Junta flexível", minFlexivel)}
-          ${tabelaHtmlRelatorio("Torque superior — Junta rígida", maxRigida)}
-          ${tabelaHtmlRelatorio("Torque superior — Junta flexível", maxFlexivel)}
+          ${tabelaHtmlRelatorio(relT("Torque inferior — Junta rígida"), minRigida)}
+          ${tabelaHtmlRelatorio(relT("Torque inferior — Junta flexível"), minFlexivel)}
+          ${tabelaHtmlRelatorio(relT("Torque superior — Junta rígida"), maxRigida)}
+          ${tabelaHtmlRelatorio(relT("Torque superior — Junta flexível"), maxFlexivel)}
 
           <div class="bloco">
             <strong>${d.tecnicoResponsavel}</strong>
-            <div>Técnico responsável</div>
+            <div>${relT("Técnico responsável")}</div>
           </div>
 
           <script>
@@ -2449,7 +2661,7 @@
             function criarSeriePontos(label, data) { return { label, data, showLine: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, fill: false, tension: 0 }; }
             function criarLinhaReferencia(label, valor, tamanho) { return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false }; }
             function opcoes(titulo) {
-              return { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Amostra" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: titulo }, ticks: { font: { size: 8 } } } } };
+              return { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "${relT("Amostra")}" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: titulo }, ticks: { font: { size: 8 } } } } };
             }
             function formatarNumeroRel(valor) {
               if (!Number.isFinite(valor)) return "-";
@@ -2485,7 +2697,7 @@
                   labels: hist.labels,
                   datasets: [
                     { type: "bar", label: titulo, data: hist.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 },
-                    { type: "line", label: "Linha de tendência", data: hist.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }
+                    { type: "line", label: "${relT("Linha de tendência")}", data: hist.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }
                   ]
                 },
                 options: {
@@ -2493,8 +2705,8 @@
                   maintainAspectRatio: false,
                   plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } },
                   scales: {
-                    x: { title: { display: true, text: "Faixas de torque" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } },
-                    y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0, font: { size: 8 } } }
+                    x: { title: { display: true, text: "${relT("Faixas de torque")}" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } },
+                    y: { beginAtZero: true, title: { display: true, text: "${relT("Frequência")}" }, ticks: { precision: 0, font: { size: 8 } } }
                   }
                 }
               });
@@ -2508,30 +2720,30 @@
             new Chart(document.getElementById("graficoMaiorRel"), {
               type: "line",
               data: { labels: labelsRel, datasets: [
-                criarSeriePontos("Rígida", maxRigida),
-                criarSeriePontos("Flexível", maxFlexivel),
-                criarLinhaReferencia("Nominal", ${parseNumero(el("torqueMaiorBase").value)}, totalRel),
-                criarLinhaReferencia("Limite mínimo", ${parseNumero(el("minExpMaior").value)}, totalRel),
-                criarLinhaReferencia("Limite máximo", ${parseNumero(el("maxExpMaior").value)}, totalRel)
+                criarSeriePontos("${relT("Rígida")}", maxRigida),
+                criarSeriePontos("${relT("Flexível")}", maxFlexivel),
+                criarLinhaReferencia("${relT("Nominal")}", ${parseNumero(el("torqueMaiorBase").value)}, totalRel),
+                criarLinhaReferencia("${relT("Limite mínimo")}", ${parseNumero(el("minExpMaior").value)}, totalRel),
+                criarLinhaReferencia("${relT("Limite máximo")}", ${parseNumero(el("maxExpMaior").value)}, totalRel)
               ] },
-              options: opcoes("Torque superior")
+              options: opcoes("${relT("Torque superior")}")
             });
             new Chart(document.getElementById("graficoMenorRel"), {
               type: "line",
               data: { labels: labelsRel, datasets: [
-                criarSeriePontos("Rígida", minRigida),
-                criarSeriePontos("Flexível", minFlexivel),
-                criarLinhaReferencia("Nominal", ${parseNumero(el("torqueMenorBase").value)}, totalRel),
-                criarLinhaReferencia("Limite mínimo", ${parseNumero(el("minExpMenor").value)}, totalRel),
-                criarLinhaReferencia("Limite máximo", ${parseNumero(el("maxExpMenor").value)}, totalRel)
+                criarSeriePontos("${relT("Rígida")}", minRigida),
+                criarSeriePontos("${relT("Flexível")}", minFlexivel),
+                criarLinhaReferencia("${relT("Nominal")}", ${parseNumero(el("torqueMenorBase").value)}, totalRel),
+                criarLinhaReferencia("${relT("Limite mínimo")}", ${parseNumero(el("minExpMenor").value)}, totalRel),
+                criarLinhaReferencia("${relT("Limite máximo")}", ${parseNumero(el("maxExpMenor").value)}, totalRel)
               ] },
-              options: opcoes("Torque inferior")
+              options: opcoes("${relT("Torque inferior")}")
             });
 
-            criarHistogramaRel("histMaxRigidaRel", maxRigida, "Torque superior / Junta rígida");
-            criarHistogramaRel("histMaxFlexivelRel", maxFlexivel, "Torque superior / Junta flexível");
-            criarHistogramaRel("histMinRigidaRel", minRigida, "Torque inferior / Junta rígida");
-            criarHistogramaRel("histMinFlexivelRel", minFlexivel, "Torque inferior / Junta flexível");
+            criarHistogramaRel("histMaxRigidaRel", maxRigida, "${relT("Torque superior — Junta rígida")}");
+            criarHistogramaRel("histMaxFlexivelRel", maxFlexivel, "${relT("Torque superior — Junta flexível")}");
+            criarHistogramaRel("histMinRigidaRel", minRigida, "${relT("Torque inferior — Junta rígida")}");
+            criarHistogramaRel("histMinFlexivelRel", minFlexivel, "${relT("Torque inferior — Junta flexível")}");
           <\/script>
         </body>
         </html>
@@ -3069,9 +3281,9 @@
           labels,
           datasets: [
             criarSeriePontos("Medições", valores),
-            criarLinhaReferencia("Nominal", torqueNominal, total),
-            criarLinhaReferencia("Limite mínimo", limiteMin, total),
-            criarLinhaReferencia("Limite máximo", limiteMax, total)
+            criarLinhaReferencia(relT("Nominal"), torqueNominal, total),
+            criarLinhaReferencia(relT("Limite mínimo"), limiteMin, total),
+            criarLinhaReferencia(relT("Limite máximo"), limiteMax, total)
           ]
         },
         options: obterOpcoesGraficoLimpo("Torque")
@@ -3099,15 +3311,17 @@
       const totalTU = Math.max(valores.length, 1);
       const labelsTU = Array.from({ length: totalTU }, (_, i) => i + 1);
 
-      const tabela = tabelaHtmlRelatorio("Amostras do torque único", valores);
+      const tabela = tabelaHtmlRelatorio(relT("Amostras do torque único"), valores);
+      const statusRel = relT(status);
+      const motivoResultadoRel = relTraduzirTexto(motivoResultado);
 
       const relatorio = window.open("", "_blank");
       relatorio.document.write(`
         <!DOCTYPE html>
-        <html lang="pt-BR">
+        <html lang="${relLangHtml()}">
         <head>
           <meta charset="UTF-8">
-          <title>Relatório Torque Único</title>
+          <title>${relT("Relatório Torque Único")}</title>
           <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
           <style>
             @page { size: A4 portrait; margin: 6mm; }
@@ -3280,67 +3494,67 @@
             <div class="topo-esq">
               <img src="logo-atlas-copco.png" alt="Atlas Copco">
               <div>
-                <h1>Relatório ISO 5393 / Capabilidade - Torque Único</h1>
-                <div>Número do relatório: ${d.numeroRelatorio}</div>
+                <h1>${relT("Relatório ISO 5393 / Capabilidade - Torque Único")}</h1>
+                <div>${relT("Número do relatório")}: ${d.numeroRelatorio}</div>
               </div>
             </div>
-            <button class="print-btn" onclick="window.print()">Imprimir relatório</button>
+            <button class="print-btn" onclick="window.print()">${relT("Imprimir relatório")}</button>
           </div>
 
           <div class="cabecalho">
             <div class="cabecalho-grid">
               <div class="cabecalho-card">
-                <h3>Identificação do ensaio</h3>
+                <h3>${relT("Identificação do ensaio")}</h3>
                 <div class="cabecalho-linhas">
-                  <div><strong>Número do relatório:</strong> ${d.numeroRelatorio}</div>
-                  <div><strong>Norma de referência:</strong> ${d.normaReferencia}</div>
-                  <div><strong>Data do ensaio:</strong> ${d.dataEnsaio}</div>
-                  <div><strong>Local do ensaio:</strong> ${d.localEnsaio}</div>
-                  <div><strong>Cliente / projeto / linha:</strong> ${d.clienteProjeto}</div>
-                  <div><strong>Técnico responsável:</strong> ${d.tecnicoResponsavel}</div>
-                  <div><strong>Total de amostras:</strong> ${valores.length}</div>
+                  <div><strong>${relT("Número do relatório")}:</strong> ${d.numeroRelatorio}</div>
+                  <div><strong>${relT("Norma de referência")}:</strong> ${d.normaReferencia}</div>
+                  <div><strong>${relT("Data do ensaio")}:</strong> ${d.dataEnsaio}</div>
+                  <div><strong>${relT("Local do ensaio")}:</strong> ${d.localEnsaio}</div>
+                  <div><strong>${relT("Cliente / projeto / linha")}:</strong> ${d.clienteProjeto}</div>
+                  <div><strong>${relT("Técnico responsável")}:</strong> ${d.tecnicoResponsavel}</div>
+                  <div><strong>${relT("Total de amostras")}:</strong> ${valores.length}</div>
                 </div>
               </div>
 
               <div class="cabecalho-card">
-                <h3>Ferramenta / aplicação</h3>
+                <h3>${relT("Ferramenta / aplicação")}</h3>
                 <div class="cabecalho-linhas">
-                  <div><strong>Aplicação:</strong> ${d.tipoAplicacao}</div>
-                  <div><strong>Crowfoot:</strong> ${d.crowfoot}</div>
-                  <div><strong>Apertadeira modelo:</strong> ${d.apertadeiraModelo}</div>
-                  <div><strong>Serial apertadeira:</strong> ${d.serialApertadeira}</div>
-                  <div><strong>Controlador modelo:</strong> ${d.controladorModelo}</div>
-                  <div><strong>Serial controlador:</strong> ${d.serialControlador}</div>
+                  <div><strong>${relT("Aplicação")}:</strong> ${relT(d.tipoAplicacao)}</div>
+                  <div><strong>${relT("Crowfoot")}:</strong> ${d.crowfoot}</div>
+                  <div><strong>${relT("Apertadeira modelo")}:</strong> ${d.apertadeiraModelo}</div>
+                  <div><strong>${relT("Serial apertadeira")}:</strong> ${d.serialApertadeira}</div>
+                  <div><strong>${relT("Controlador modelo")}:</strong> ${d.controladorModelo}</div>
+                  <div><strong>${relT("Serial controlador")}:</strong> ${d.serialControlador}</div>
                 </div>
               </div>
 
               <div class="cabecalho-card">
-                <h3>Medição / rastreabilidade</h3>
+                <h3>${relT("Medição / rastreabilidade")}</h3>
                 <div class="cabecalho-linhas">
-                  <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-                  <div><strong>Certificado transdutor:</strong> ${d.certificadoCalibracao}</div>
-                  <div><strong>STA 6000:</strong> ${d.painel}</div>
-                  <div><strong>Certificado STA 6000:</strong> ${d.certificadoSta}</div>
-                  <div><strong>Sentido de aperto:</strong> ${d.sentidoAperto}</div>
-                  <div><strong>Temperatura ambiente:</strong> ${d.temperaturaAmbiente} °C</div>
-                  <div><strong>Umidade relativa:</strong> ${d.umidadeRelativa}%</div>
+                  <div><strong>${relT("Transdutor")}:</strong> ${d.transdutor}</div>
+                  <div><strong>${relT("Certificado transdutor")}:</strong> ${d.certificadoCalibracao}</div>
+                  <div><strong>${relT("STA 6000")}:</strong> ${d.painel}</div>
+                  <div><strong>${relT("Certificado STA 6000")}:</strong> ${d.certificadoSta}</div>
+                  <div><strong>${relT("Sentido de aperto")}:</strong> ${relT(d.sentidoAperto)}</div>
+                  <div><strong>${relT("Temperatura ambiente")}:</strong> ${d.temperaturaAmbiente} °C</div>
+                  <div><strong>${relT("Umidade relativa")}:</strong> ${d.umidadeRelativa}%</div>
                 </div>
               </div>
 
               <div class="cabecalho-card">
-                <h3>Parâmetros do torque único</h3>
+                <h3>${relT("Parâmetros do torque único")}</h3>
                 <div class="cabecalho-linhas">
-                  <div><strong>Descrição / ponto:</strong> ${descricao}</div>
-                  <div><strong>Tipo de junta:</strong> ${tipoJunta}</div>
-                  <div><strong>Torque nominal:</strong> ${torque}</div>
-                  <div><strong>Tolerância:</strong> ${formatarNumero(tolerancia)}%</div>
+                  <div><strong>${relT("Descrição / ponto")}:</strong> ${descricao}</div>
+                  <div><strong>${relT("Tipo de junta")}:</strong> ${relT(tipoJunta)}</div>
+                  <div><strong>${relT("Torque nominal")}:</strong> ${torque}</div>
+                  <div><strong>${relT("Tolerância")}:</strong> ${formatarNumero(tolerancia)}%</div>
                   <div><strong>Limite mínimo:</strong> ${formatarNumero(limiteMin)}</div>
                   <div><strong>Limite máximo:</strong> ${formatarNumero(limiteMax)}</div>
                 </div>
               </div>
 
               <div class="cabecalho-card cabecalho-wide">
-                <h3>Observações do ensaio</h3>
+                <h3>${relT("Observações do ensaio")}</h3>
                 <div class="cabecalho-linhas">
                   <div>${d.observacoesEnsaio}</div>
                 </div>
@@ -3349,36 +3563,35 @@
           </div>
 
           <div class="bloco">
-            <h2>Leitura ISO 5393</h2>
+            <h2>${relT("Leitura ISO 5393")}</h2>
             <div class="nota">
-              Este relatório registra a condição de ensaio, a rastreabilidade, o tipo de junta, o número de amostras, os limites aplicados e a repetibilidade/scatter do torque único.
-              Os índices Cm e Cmk permanecem como critério complementar interno WS.
+              ${relT("Este relatório registra a condição de ensaio, a rastreabilidade, o tipo de junta, o número de amostras, os limites aplicados e a repetibilidade/scatter do torque único. Os índices Cm e Cmk permanecem como critério complementar interno WS.")}
             </div>
           </div>
 
           <div class="bloco">
             <h2>Resultado do Torque Único</h2>
             <div class="resumo">
-              <div><strong>Média:</strong> ${formatarNumero(est.media)}</div>
-              <div><strong>Desvio padrão:</strong> ${formatarNumero(est.dp)}</div>
-              <div><strong>Mínimo:</strong> ${formatarNumero(est.min)}</div>
-              <div><strong>Máximo:</strong> ${formatarNumero(est.max)}</div>
-              <div><strong>Amplitude:</strong> ${formatarNumero(est.amplitude)}</div>
-              <div><strong>Scatter:</strong> ${formatarNumero(est.scatter)}%</div>
+              <div><strong>${relT("Média")}:</strong> ${formatarNumero(est.media)}</div>
+              <div><strong>${relT("Desvio padrão")}:</strong> ${formatarNumero(est.dp)}</div>
+              <div><strong>${relT("Mínimo")}:</strong> ${formatarNumero(est.min)}</div>
+              <div><strong>${relT("Máximo")}:</strong> ${formatarNumero(est.max)}</div>
+              <div><strong>${relT("Amplitude")}:</strong> ${formatarNumero(est.amplitude)}</div>
+              <div><strong>${relT("Scatter")}:</strong> ${formatarNumero(est.scatter)}%</div>
               <div><strong>Cm:</strong> ${formatarNumero(est.cm)}</div>
               <div><strong>Cmk:</strong> ${formatarNumero(est.cmk)}</div>
-              <div><strong>Status interno WS:</strong> <span class="status-relatorio ${status === "APROVADO" ? "aprovado" : "reprovado"}">${status}</span></div>
+              <div><strong>${relT("Status interno WS")}:</strong> <span class="status-relatorio ${status === "APROVADO" ? "aprovado" : "reprovado"}">${statusRel}</span></div>
               <div style="grid-column:1/-1;"><strong>Motivo do resultado:</strong> ${motivoResultado}</div>
             </div>
           </div>
 
           <div class="graficos-grid">
             <div class="bloco">
-              <h2>Gráfico limpo - Torque único</h2>
+              <h2>${relT("Gráfico limpo - Torque único")}</h2>
               <canvas id="graficoTorqueUnicoRel"></canvas>
             </div>
             <div class="bloco">
-              <h2>Histograma - Torque único</h2>
+              <h2>${relT("Histograma - Torque único")}</h2>
               <canvas id="histTorqueUnicoRel"></canvas>
             </div>
           </div>
@@ -3440,9 +3653,9 @@
                 labels: labelsTU,
                 datasets: [
                   criarSeriePontos("Medições", valoresTU),
-                  criarLinhaReferencia("Nominal", ${parseNumero(el("tuTorqueNominal").value)}, totalTU),
-                  criarLinhaReferencia("Limite mínimo", ${parseNumero(el("tuLimiteMin").value)}, totalTU),
-                  criarLinhaReferencia("Limite máximo", ${parseNumero(el("tuLimiteMax").value)}, totalTU)
+                  criarLinhaReferencia("${relT("Nominal")}", ${parseNumero(el("tuTorqueNominal").value)}, totalTU),
+                  criarLinhaReferencia("${relT("Limite mínimo")}", ${parseNumero(el("tuLimiteMin").value)}, totalTU),
+                  criarLinhaReferencia("${relT("Limite máximo")}", ${parseNumero(el("tuLimiteMax").value)}, totalTU)
                 ]
               },
               options: {
@@ -3450,7 +3663,7 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } },
                 scales: {
-                  x: { title: { display: true, text: "Amostra" }, ticks: { font: { size: 8 } } },
+                  x: { title: { display: true, text: "${relT("Amostra")}" }, ticks: { font: { size: 8 } } },
                   y: { title: { display: true, text: "Torque" }, ticks: { font: { size: 8 } } }
                 }
               }
@@ -3461,8 +3674,8 @@
               data: {
                 labels: histTU.labels,
                 datasets: [
-                  { type: "bar", label: "Torque único", data: histTU.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 },
-                  { type: "line", label: "Linha de tendência", data: histTU.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }
+                  { type: "bar", label: "${relT("Torque único")}", data: histTU.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 },
+                  { type: "line", label: "${relT("Linha de tendência")}", data: histTU.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }
                 ]
               },
               options: {
@@ -3470,8 +3683,8 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } },
                 scales: {
-                  x: { title: { display: true, text: "Faixas de torque" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } },
-                  y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0, font: { size: 8 } } }
+                  x: { title: { display: true, text: "${relT("Faixas de torque")}" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } },
+                  y: { beginAtZero: true, title: { display: true, text: "${relT("Frequência")}" }, ticks: { precision: 0, font: { size: 8 } } }
                 }
               }
             });
