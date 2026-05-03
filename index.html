@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="${relLangHtml()}">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -1428,11 +1428,11 @@
         return Promise.resolve(true);
       }
 
-      title.textContent = opcoes.titulo || "Aviso do sistema";
-      subtitle.textContent = opcoes.subtitulo || "Atlas Copco WS";
-      message.innerHTML = opcoes.mensagem || "";
-      confirmBtn.textContent = opcoes.textoConfirmar || "OK";
-      cancelBtn.textContent = opcoes.textoCancelar || "Cancelar";
+      title.textContent = relT(opcoes.titulo || "Aviso do sistema");
+      subtitle.textContent = relT(opcoes.subtitulo || "Atlas Copco WS");
+      message.innerHTML = traduzirMensagemHtml(opcoes.mensagem || "");
+      confirmBtn.textContent = relT(opcoes.textoConfirmar || "OK");
+      cancelBtn.textContent = relT(opcoes.textoCancelar || "Cancelar");
       cancelBtn.style.display = opcoes.mostrarCancelar ? "inline-flex" : "none";
 
       confirmBtn.onclick = () => fecharPopupSistema(true);
@@ -1663,6 +1663,7 @@
       });
 
       if (limparResultado) limparResultados();
+      reaplicarIdiomaAtual();
     }
 
     function validarTabelasObrigatorias() {
@@ -1713,6 +1714,7 @@
       }
 
       atualizarResumoDados();
+      reaplicarIdiomaAtual();
       mostrarPagina("pagina-tabelas");
     }
 
@@ -1770,20 +1772,20 @@
     function atualizarResumoDados() {
       const d = obterDadosFerramenta();
       resumoDados.innerHTML = `
-        <div><strong>Relatório:</strong> ${d.numeroRelatorio}</div>
+        <div><strong>${relT("Relatório")}:</strong> ${d.numeroRelatorio}</div>
         <div><strong>${relT("Data do ensaio")}:</strong> ${d.dataEnsaio}</div>
-        <div><strong>Cliente / projeto:</strong> ${d.clienteProjeto}</div>
+        <div><strong>${relT("Cliente / projeto")}:</strong> ${d.clienteProjeto}</div>
         <div><strong>${relT("Aplicação")}:</strong> ${relT(d.tipoAplicacao)}</div>
-        <div><strong>Apertadeira:</strong> ${d.apertadeiraModelo}</div>
+        <div><strong>${relT("Apertadeira")}:</strong> ${d.apertadeiraModelo}</div>
         <div><strong>${relT("Serial apertadeira")}:</strong> ${d.serialApertadeira}</div>
-        <div><strong>Controlador:</strong> ${d.controladorModelo}</div>
+        <div><strong>${relT("Controlador")}:</strong> ${d.controladorModelo}</div>
         <div><strong>${relT("Transdutor")}:</strong> ${d.transdutor}</div>
         <div><strong>${relT("STA 6000")}:</strong> ${d.painel}</div>
         <div><strong>${relT("Certificado STA 6000")}:</strong> ${d.certificadoSta}</div>
-        <div><strong>Junta rígida:</strong> Junta rígida - 30 Graus</div>
-        <div><strong>Junta flexível:</strong> Junta flexível - 720 Graus</div>
-        <div><strong>Torque superior:</strong> ${d.torqueMaiorBase}</div>
-        <div><strong>Torque inferior:</strong> ${d.torqueMenorBase}</div>
+        <div><strong>${relT("Junta rígida")}:</strong> ${relT("Junta rígida - 30 Graus")}</div>
+        <div><strong>${relT("Junta flexível")}:</strong> ${relT("Junta flexível - 720 Graus")}</div>
+        <div><strong>${relT("Torque superior")}:</strong> ${d.torqueMaiorBase}</div>
+        <div><strong>${relT("Torque inferior")}:</strong> ${d.torqueMenorBase}</div>
         <div><strong>${relT("Tolerância")}:</strong> ${d.porcentagem}%</div>
         <div><strong>${relT("Total de amostras")}:</strong> ${d.amostras}</div>
       `;
@@ -1837,11 +1839,14 @@
         if (el(id)) el(id).textContent = "-";
       });
       el("pct-final").textContent = "-";
-      statusGeralEl.textContent = "AGUARDANDO";
+      statusGeralEl.dataset.statusPt = "AGUARDANDO";
+      statusGeralEl.textContent = relT("AGUARDANDO");
       statusGeralEl.className = "status-badge status-neutro";
-      statusIsoEl.textContent = "ENSAIO REGISTRADO";
+      statusIsoEl.dataset.statusPt = "ENSAIO REGISTRADO";
+      statusIsoEl.textContent = relT("ENSAIO REGISTRADO");
       statusIsoEl.className = "status-badge status-neutro";
-      motivoGeralEl.textContent = "Aguardando cálculo.";
+      motivoGeralEl.dataset.motivoPt = "Aguardando cálculo.";
+      motivoGeralEl.textContent = relT("Aguardando cálculo.");
       destruirGraficos();
     }
 
@@ -1964,7 +1969,8 @@
       const cmkMinimo = Math.min(estMaxRig.cmk, estMaxFlex.cmk, estMinRig.cmk, estMinFlex.cmk);
       const tolerancia = parseNumero(el("porcentagem").value);
 
-      statusIsoEl.textContent = "ENSAIO REGISTRADO";
+      statusIsoEl.dataset.statusPt = "ENSAIO REGISTRADO";
+      statusIsoEl.textContent = relT("ENSAIO REGISTRADO");
       statusIsoEl.className = "status-badge status-neutro";
 
       const motivoResultado = avaliarMotivosGeral({
@@ -1974,9 +1980,12 @@
 
       const aprovado = pctFinal <= tolerancia && cmMinimo >= 1.67 && cmkMinimo >= 1.67 && motivoResultado.startsWith("Aprovado");
 
-      statusGeralEl.textContent = aprovado ? "APROVADO" : "REPROVADO";
+      const statusPt = aprovado ? "APROVADO" : "REPROVADO";
+      statusGeralEl.dataset.statusPt = statusPt;
+      statusGeralEl.textContent = relT(statusPt);
       statusGeralEl.className = `status-badge ${aprovado ? "status-aprovado" : "status-reprovado"}`;
-      motivoGeralEl.textContent = motivoResultado;
+      motivoGeralEl.dataset.motivoPt = motivoResultado;
+      motivoGeralEl.textContent = relTraduzirTexto(motivoResultado);
 
       atualizarGraficos({
         maxRigida, maxFlexivel, minRigida, minFlexivel, limites
@@ -2062,7 +2071,7 @@
       for (let i = 0; i < bins; i++) {
         const inicio = minimo + (largura * i);
         const fim = i === bins - 1 ? maximo : inicio + largura;
-        labels.push(formatarNumero(inicio) + " até " + formatarNumero(fim));
+        labels.push(formatarNumero(inicio) + " " + relT("até") + " " + formatarNumero(fim));
       }
 
       numeros.forEach(valor => {
@@ -2167,7 +2176,7 @@
               criarLinhaReferencia(relT("Limite máximo"), dados.limites.maxExpMaior, total)
             ]
           },
-          options: obterOpcoesGraficoLimpo("Torque superior")
+          options: obterOpcoesGraficoLimpo(relT("Torque superior"))
         });
       }
 
@@ -2184,14 +2193,14 @@
               criarLinhaReferencia(relT("Limite máximo"), dados.limites.maxExpMenor, total)
             ]
           },
-          options: obterOpcoesGraficoLimpo("Torque inferior")
+          options: obterOpcoesGraficoLimpo(relT("Torque inferior"))
         });
       }
 
-      histMaxRigida = criarHistograma("histMaxRigida", dados.maxRigida, "Torque superior / Junta rígida");
-      histMaxFlexivel = criarHistograma("histMaxFlexivel", dados.maxFlexivel, "Torque superior / Junta flexível");
-      histMinRigida = criarHistograma("histMinRigida", dados.minRigida, "Torque inferior / Junta rígida");
-      histMinFlexivel = criarHistograma("histMinFlexivel", dados.minFlexivel, "Torque inferior / Junta flexível");
+      histMaxRigida = criarHistograma("histMaxRigida", dados.maxRigida, relT("Torque superior / Junta rígida"));
+      histMaxFlexivel = criarHistograma("histMaxFlexivel", dados.maxFlexivel, relT("Torque superior / Junta flexível"));
+      histMinRigida = criarHistograma("histMinRigida", dados.minRigida, relT("Torque inferior / Junta rígida"));
+      histMinFlexivel = criarHistograma("histMinFlexivel", dados.minFlexivel, relT("Torque inferior / Junta flexível"));
     }
 
     function limparTabelas() {
@@ -2388,12 +2397,245 @@
       }
     };
 
+
+
+    const traducoesFrontExtra = {
+      en: {
+        "ISO 5393 / Capabilidade": "ISO 5393 / Capability",
+        "Sistema interno para ensaio ISO 5393, capabilidade e apoio ao processo técnico.": "Internal system for ISO 5393 testing, capability and technical process support.",
+        "English": "English",
+        "Español": "Spanish",
+        "HELP": "HELP",
+        "Marcos Tadeu Silva": "Marcos Tadeu Silva",
+        "⚠ Campos em laranja têm preenchimento obrigatório": "⚠ Orange fields are mandatory",
+        "Campos em laranja": "Orange fields",
+        "têm preenchimento obrigatório": "are mandatory",
+        "STA 6000": "STA 6000",
+        "30 Graus": "30 Degrees",
+        "720 Graus": "720 Degrees",
+        "Junta rígida - 30 Graus": "Hard joint - 30 Degrees",
+        "Junta flexível - 720 Graus": "Soft joint - 720 Degrees",
+        "ISO 5393:2017": "ISO 5393:2017",
+        "ENSAIO REGISTRADO": "TEST RECORDED",
+        "Aguardando cálculo.": "Waiting for calculation.",
+        "A ISO 5393 foca no método de ensaio, rastreabilidade, condições de teste e repetibilidade/scatter. Os índices Cm e Cmk abaixo permanecem como critério interno WS.": "ISO 5393 focuses on the test method, traceability, test conditions and repeatability/scatter. The Cm and Cmk indexes below remain as an internal WS criterion.",
+        "Torque inferior — Junta rígida - 30 Graus": "Lower torque — Hard joint - 30 Degrees",
+        "Torque inferior — Junta flexível - 720 Graus": "Lower torque — Soft joint - 720 Degrees",
+        "Torque superior — Junta rígida - 30 Graus": "Upper torque — Hard joint - 30 Degrees",
+        "Torque superior — Junta flexível - 720 Graus": "Upper torque — Soft joint - 720 Degrees",
+        "Copiar valores": "Copy values",
+        "Colar valores do Excel": "Paste Excel values",
+        "Copia ou cola em coluna para uso no Excel.": "Copy or paste as a column for Excel use.",
+        "Visual simplificado: linhas das medições, torque nominal e limites mínimo/máximo.": "Simplified view: measurement lines, nominal torque and minimum/maximum limits.",
+        "Histogramas por tipo de junta": "Histograms by joint type",
+        "Distribuição das leituras por torque e tipo de junta.": "Distribution of readings by torque and joint type.",
+        "Histograma — Torque superior / Junta rígida": "Histogram — Upper torque / Hard joint",
+        "Histograma — Torque superior / Junta flexível": "Histogram — Upper torque / Soft joint",
+        "Histograma — Torque inferior / Junta rígida": "Histogram — Lower torque / Hard joint",
+        "Histograma — Torque inferior / Junta flexível": "Histogram — Lower torque / Soft joint",
+        "Cálculo separado para apenas um valor de torque, usando uma única tabela de amostras.": "Separate calculation for only one torque value, using a single sample table.",
+        "Informe o torque nominal, a tolerância e a quantidade de amostras.": "Enter nominal torque, tolerance and number of samples.",
+        "Média": "Average",
+        "Média rígida": "Hard joint average",
+        "Média flexível": "Soft joint average",
+        "DP rígida": "Hard joint SD",
+        "DP flexível": "Soft joint SD",
+        "Mínimo rígida": "Hard joint minimum",
+        "Mínimo flexível": "Soft joint minimum",
+        "Máximo rígida": "Hard joint maximum",
+        "Máximo flexível": "Soft joint maximum",
+        "Amplitude rígida": "Hard joint range",
+        "Amplitude flexível": "Soft joint range",
+        "Scatter rígida (%)": "Hard joint scatter (%)",
+        "Scatter flexível (%)": "Soft joint scatter (%)",
+        "Cm rígida": "Hard joint Cm",
+        "Cmk rígida": "Hard joint Cmk",
+        "Cm flexível": "Soft joint Cm",
+        "Cmk flexível": "Soft joint Cmk",
+        "% calculada torque superior": "Calculated % upper torque",
+        "% calculada torque inferior": "Calculated % lower torque",
+        "DP": "SD",
+        "Scatter (%)": "Scatter (%)",
+        "Cm": "Cm",
+        "Cmk": "Cmk",
+        "Use uma coluna com os valores medidos do torque.": "Use one column with the measured torque values.",
+        "Histograma — Torque único": "Histogram — Single torque",
+        "Central de ajuda do app Nova Capabilidade / ISO 5393.": "Help center for the Nova Capabilidade / ISO 5393 app.",
+        "Ajuda do app": "App help",
+        "Mensagem": "Message",
+        "Cancelar": "Cancel",
+        "OK": "OK",
+        "Relatório:": "Report:",
+        "Relatório": "Report",
+        "Cliente / projeto": "Customer / project",
+        "Apertadeira:": "Nutrunner:",
+        "Apertadeira": "Nutrunner",
+        "Controlador:": "Controller:",
+        "Controlador": "Controller",
+        "Junta rígida:": "Hard joint:",
+        "Junta flexível:": "Soft joint:",
+        "Torque superior:": "Upper torque:",
+        "Torque inferior:": "Lower torque:",
+        "Amostras do torque único: preencher": "Single torque samples: fill in",
+        "amostras": "samples",
+        "Processo concluído": "Process completed",
+        "Copiar valores": "Copy values",
+        "Falha ao copiar": "Copy failed",
+        "Falha ao colar": "Paste failed",
+        "Valores copiados com sucesso.": "Values copied successfully.",
+        "Não foi possível copiar automaticamente.": "It was not possible to copy automatically.",
+        "Não foi possível ler a área de transferência.": "It was not possible to read the clipboard.",
+        "Campos obrigatórios": "Mandatory fields",
+        "Tabelas obrigatórias": "Mandatory tables",
+        "Tabela obrigatória": "Mandatory table",
+        "Não foi possível ir para as tabelas.": "It was not possible to go to the tables.",
+        "Falta preencher campos obrigatórios:": "Mandatory fields are missing:",
+        "Não foi possível calcular ou gerar o relatório.": "It was not possible to calculate or generate the report.",
+        "Falta preencher as tabelas obrigatórias:": "Mandatory tables are missing:",
+        "Não foi possível calcular o torque único.": "It was not possible to calculate the single torque.",
+        "Falta preencher a tabela obrigatória:": "The mandatory table is missing:",
+        "Ensaio novo iniciado com sucesso.": "New test started successfully.",
+        "Todos os campos e tabelas foram limpos.": "All fields and tables have been cleared.",
+        "Torque superior deve ser maior que zero": "Upper torque must be greater than zero",
+        "Torque inferior deve ser maior que zero": "Lower torque must be greater than zero",
+        "Tolerância deve ser maior que zero": "Tolerance must be greater than zero",
+        "Quantidade de amostras deve ser maior que zero": "Number of samples must be greater than zero",
+        "Torque nominal deve ser maior que zero": "Nominal torque must be greater than zero",
+        "Tolerância do torque único deve ser maior que zero": "Single torque tolerance must be greater than zero",
+        "Quantidade de amostras do torque único deve ser maior que zero": "Number of single torque samples must be greater than zero",
+        "até": "to",
+        "Após calcular os resultados, clique em": "After calculating the results, click",
+        "Na nova janela, clique em": "In the new window, click",
+        "e selecione a opção de salvar em PDF.": "and select the option to save as PDF.",
+        "O botão": "The button",
+        "gera um arquivo JSON com os dados preenchidos e as tabelas.": "generates a JSON file with the completed data and tables.",
+        "permite abrir novamente um ensaio salvo anteriormente.": "allows you to open a previously saved test again.",
+        "no título e o ícone de atenção dentro do campo.": "in the title and the warning icon inside the field.",
+        "Campos em laranja são obrigatórios. Eles também possuem o símbolo": "Orange fields are mandatory. They also have the symbol",
+        "Scatter": "Scatter",
+      },
+      es: {
+        "ISO 5393 / Capabilidade": "ISO 5393 / Capacidad",
+        "Sistema interno para ensaio ISO 5393, capabilidade e apoio ao processo técnico.": "Sistema interno para ensayo ISO 5393, capacidad y soporte al proceso técnico.",
+        "English": "Inglés",
+        "Español": "Español",
+        "HELP": "AYUDA",
+        "Marcos Tadeu Silva": "Marcos Tadeu Silva",
+        "⚠ Campos em laranja têm preenchimento obrigatório": "⚠ Los campos en naranja son obligatorios",
+        "Campos em laranja": "Campos en naranja",
+        "têm preenchimento obrigatório": "son obligatorios",
+        "STA 6000": "STA 6000",
+        "30 Graus": "30 Grados",
+        "720 Graus": "720 Grados",
+        "Junta rígida - 30 Graus": "Junta rígida - 30 Grados",
+        "Junta flexível - 720 Graus": "Junta flexible - 720 Grados",
+        "ISO 5393:2017": "ISO 5393:2017",
+        "ENSAIO REGISTRADO": "ENSAYO REGISTRADO",
+        "Aguardando cálculo.": "Esperando cálculo.",
+        "A ISO 5393 foca no método de ensaio, rastreabilidade, condições de teste e repetibilidade/scatter. Os índices Cm e Cmk abaixo permanecem como critério interno WS.": "La ISO 5393 se centra en el método de ensayo, trazabilidad, condiciones de prueba y repetibilidad/scatter. Los índices Cm y Cmk abajo permanecen como criterio interno WS.",
+        "Torque inferior — Junta rígida - 30 Graus": "Torque inferior — Junta rígida - 30 Grados",
+        "Torque inferior — Junta flexível - 720 Graus": "Torque inferior — Junta flexible - 720 Grados",
+        "Torque superior — Junta rígida - 30 Graus": "Torque superior — Junta rígida - 30 Grados",
+        "Torque superior — Junta flexível - 720 Graus": "Torque superior — Junta flexible - 720 Grados",
+        "Copiar valores": "Copiar valores",
+        "Colar valores do Excel": "Pegar valores de Excel",
+        "Copia ou cola em coluna para uso no Excel.": "Copia o pega en columna para usar en Excel.",
+        "Visual simplificado: linhas das medições, torque nominal e limites mínimo/máximo.": "Visual simplificado: líneas de medición, torque nominal y límites mínimo/máximo.",
+        "Histogramas por tipo de junta": "Histogramas por tipo de junta",
+        "Distribuição das leituras por torque e tipo de junta.": "Distribución de lecturas por torque y tipo de junta.",
+        "Histograma — Torque superior / Junta rígida": "Histograma — Torque superior / Junta rígida",
+        "Histograma — Torque superior / Junta flexível": "Histograma — Torque superior / Junta flexible",
+        "Histograma — Torque inferior / Junta rígida": "Histograma — Torque inferior / Junta rígida",
+        "Histograma — Torque inferior / Junta flexível": "Histograma — Torque inferior / Junta flexible",
+        "Cálculo separado para apenas um valor de torque, usando uma única tabela de amostras.": "Cálculo separado para un solo valor de torque, usando una única tabla de muestras.",
+        "Informe o torque nominal, a tolerância e a quantidade de amostras.": "Informe el torque nominal, la tolerancia y la cantidad de muestras.",
+        "Média": "Promedio",
+        "Média rígida": "Promedio rígida",
+        "Média flexível": "Promedio flexible",
+        "DP rígida": "DE rígida",
+        "DP flexível": "DE flexible",
+        "Mínimo rígida": "Mínimo rígida",
+        "Mínimo flexível": "Mínimo flexible",
+        "Máximo rígida": "Máximo rígida",
+        "Máximo flexível": "Máximo flexible",
+        "Amplitude rígida": "Amplitud rígida",
+        "Amplitude flexível": "Amplitud flexible",
+        "Scatter rígida (%)": "Scatter rígida (%)",
+        "Scatter flexível (%)": "Scatter flexible (%)",
+        "Cm rígida": "Cm rígida",
+        "Cmk rígida": "Cmk rígida",
+        "Cm flexível": "Cm flexible",
+        "Cmk flexível": "Cmk flexible",
+        "% calculada torque superior": "% calculada torque superior",
+        "% calculada torque inferior": "% calculada torque inferior",
+        "DP": "DE",
+        "Scatter (%)": "Scatter (%)",
+        "Cm": "Cm",
+        "Cmk": "Cmk",
+        "Use uma coluna com os valores medidos do torque.": "Use una columna con los valores medidos del torque.",
+        "Histograma — Torque único": "Histograma — Torque único",
+        "Central de ajuda do app Nova Capabilidade / ISO 5393.": "Centro de ayuda de la app Nova Capabilidade / ISO 5393.",
+        "Ajuda do app": "Ayuda de la app",
+        "Mensagem": "Mensaje",
+        "Cancelar": "Cancelar",
+        "OK": "OK",
+        "Relatório:": "Informe:",
+        "Relatório": "Informe",
+        "Cliente / projeto": "Cliente / proyecto",
+        "Apertadeira:": "Aprietatuercas:",
+        "Apertadeira": "Aprietatuercas",
+        "Controlador:": "Controlador:",
+        "Controlador": "Controlador",
+        "Junta rígida:": "Junta rígida:",
+        "Junta flexível:": "Junta flexible:",
+        "Torque superior:": "Torque superior:",
+        "Torque inferior:": "Torque inferior:",
+        "Amostras do torque único: preencher": "Muestras de torque único: completar",
+        "amostras": "muestras",
+        "Processo concluído": "Proceso concluido",
+        "Falha ao copiar": "Error al copiar",
+        "Falha ao colar": "Error al pegar",
+        "Valores copiados com sucesso.": "Valores copiados con éxito.",
+        "Não foi possível copiar automaticamente.": "No fue posible copiar automáticamente.",
+        "Não foi possível ler a área de transferência.": "No fue posible leer el portapapeles.",
+        "Campos obrigatórios": "Campos obligatorios",
+        "Tabelas obrigatórias": "Tablas obligatorias",
+        "Tabela obrigatória": "Tabla obligatoria",
+        "Não foi possível ir para as tabelas.": "No fue posible ir a las tablas.",
+        "Falta preencher campos obrigatórios:": "Faltan campos obligatorios:",
+        "Não foi possível calcular ou gerar o relatório.": "No fue posible calcular o generar el informe.",
+        "Falta preencher as tabelas obrigatórias:": "Faltan completar las tablas obligatorias:",
+        "Não foi possível calcular o torque único.": "No fue posible calcular el torque único.",
+        "Falta preencher a tabela obrigatória:": "Falta completar la tabla obligatoria:",
+        "Ensaio novo iniciado com sucesso.": "Nuevo ensayo iniciado con éxito.",
+        "Todos os campos e tabelas foram limpos.": "Todos los campos y tablas fueron limpiados.",
+        "Torque superior deve ser maior que zero": "El torque superior debe ser mayor que cero",
+        "Torque inferior deve ser maior que zero": "El torque inferior debe ser mayor que cero",
+        "Tolerância deve ser maior que zero": "La tolerancia debe ser mayor que cero",
+        "Quantidade de amostras deve ser maior que zero": "La cantidad de muestras debe ser mayor que cero",
+        "Torque nominal deve ser maior que zero": "El torque nominal debe ser mayor que cero",
+        "Tolerância do torque único deve ser maior que zero": "La tolerancia del torque único debe ser mayor que cero",
+        "Quantidade de amostras do torque único deve ser maior que zero": "La cantidad de muestras del torque único debe ser mayor que cero",
+        "até": "hasta",
+        "Após calcular os resultados, clique em": "Después de calcular los resultados, haga clic en",
+        "Na nova janela, clique em": "En la nueva ventana, haga clic en",
+        "e selecione a opção de salvar em PDF.": "y seleccione la opción de guardar como PDF.",
+        "O botão": "El botón",
+        "gera um arquivo JSON com os dados preenchidos e as tabelas.": "genera un archivo JSON con los datos completados y las tablas.",
+        "permite abrir novamente um ensaio salvo anteriormente.": "permite abrir nuevamente un ensayo guardado anteriormente.",
+        "no título e o ícone de atenção dentro do campo.": "en el título y el icono de atención dentro del campo.",
+        "Campos em laranja são obrigatórios. Eles também possuem o símbolo": "Los campos en naranja son obligatorios. También tienen el símbolo",
+        "Scatter": "Scatter",
+      }
+    };
+
     function relT(texto) {
       const idioma = relIdiomaAtual();
-      if (idioma === "pt") return texto;
+      if (!texto || idioma === "pt") return texto;
       const mapaSistema = (typeof traducoesSistema !== "undefined" && traducoesSistema[idioma]) ? traducoesSistema[idioma] : {};
-      const mapaRelatorio = traducoesRelatorioExtra[idioma] || {};
-      return mapaRelatorio[texto] || mapaSistema[texto] || texto;
+      const mapaRelatorio = (typeof traducoesRelatorioExtra !== "undefined" && traducoesRelatorioExtra[idioma]) ? traducoesRelatorioExtra[idioma] : {};
+      const mapaFront = (typeof traducoesFrontExtra !== "undefined" && traducoesFrontExtra[idioma]) ? traducoesFrontExtra[idioma] : {};
+      return mapaFront[texto] || mapaRelatorio[texto] || mapaSistema[texto] || texto;
     }
 
     function relTraduzirTexto(texto) {
@@ -2473,8 +2715,10 @@
 
       const total = Math.max(obterTotalAmostras(), maxRigida.length, maxFlexivel.length, minRigida.length, minFlexivel.length, 1);
       const labels = Array.from({ length: total }, (_, i) => i + 1);
-      const statusGeralRel = relT(statusGeralEl.textContent);
-      const motivoGeralRel = relTraduzirTexto(motivoGeralEl.textContent);
+      const statusGeralPt = statusGeralEl.dataset.statusPt || statusGeralEl.textContent;
+      const motivoGeralPt = motivoGeralEl.dataset.motivoPt || motivoGeralEl.textContent;
+      const statusGeralRel = relT(statusGeralPt);
+      const motivoGeralRel = relTraduzirTexto(motivoGeralPt);
 
       const relatorio = window.open("", "_blank");
       relatorio.document.write(`
@@ -2559,8 +2803,8 @@
                   <div><strong>${relT("Certificado transdutor")}:</strong> ${d.certificadoCalibracao}</div>
                   <div><strong>${relT("STA 6000")}:</strong> ${d.painel}</div>
                   <div><strong>${relT("Certificado STA 6000")}:</strong> ${d.certificadoSta}</div>
-                  <div><strong>Junta rígida:</strong> Junta rígida - 30 Graus</div>
-                  <div><strong>Junta flexível:</strong> Junta flexível - 720 Graus</div>
+                  <div><strong>${relT("Junta rígida")}:</strong> ${relT("Junta rígida - 30 Graus")}</div>
+                  <div><strong>${relT("Junta flexível")}:</strong> ${relT("Junta flexível - 720 Graus")}</div>
                 </div>
               </div>
 
@@ -2629,7 +2873,7 @@
             <h2>${relT("Resultado final")}</h2>
             <div class="resumo">
               <div><strong>${relT("% final encontrada")}:</strong> ${el("pct-final").textContent}</div>
-              <div><strong>${relT("Status interno WS")}:</strong> <span class="status-relatorio ${statusGeralEl.textContent === "APROVADO" ? "aprovado" : statusGeralEl.textContent === "REPROVADO" ? "reprovado" : "aguardando"}">${statusGeralRel}</span></div>
+              <div><strong>${relT("Status interno WS")}:</strong> <span class="status-relatorio ${statusGeralEl.classList.contains("status-aprovado") ? "aprovado" : statusGeralEl.classList.contains("status-reprovado") ? "reprovado" : "aguardando"}">${statusGeralRel}</span></div>
               <div style="grid-column:1 / -1;"><strong>${relT("Motivo do resultado")}:</strong> ${motivoGeralRel}</div>
             </div>
           </div>
@@ -3042,29 +3286,119 @@
     };
 
     function prepararTextosOriginais() {
-      const elementos = document.querySelectorAll("button, label, h1, h2, h3, p, li, span, strong, option, .assinatura-linha");
+      const elementos = document.querySelectorAll("button, label, h1, h2, h3, h4, p, li, span, strong, option, th, td, .assinatura-linha, .assinatura-nome, .destino-badge, .small-note");
       elementos.forEach(item => {
-        if (!item.dataset.ptOriginal) {
-          const texto = item.textContent.trim();
-          if (texto) item.dataset.ptOriginal = texto;
-        }
+        const texto = item.textContent.trim();
+        if (texto && !item.dataset.ptOriginal) item.dataset.ptOriginal = texto;
       });
+
+      document.querySelectorAll("input[placeholder], textarea[placeholder]").forEach(item => {
+        if (!item.dataset.ptPlaceholderOriginal) item.dataset.ptPlaceholderOriginal = item.getAttribute("placeholder") || "";
+      });
+
+      document.querySelectorAll("input[readonly]").forEach(item => {
+        if (!item.dataset.ptValueOriginal) item.dataset.ptValueOriginal = item.value || "";
+      });
+    }
+
+    function traduzirMensagemHtml(html) {
+      const idioma = relIdiomaAtual();
+      if (idioma === "pt" || !html) return html;
+      let saida = html;
+      const mapa = {
+        ...((typeof traducoesSistema !== "undefined" && traducoesSistema[idioma]) ? traducoesSistema[idioma] : {}),
+        ...((typeof traducoesRelatorioExtra !== "undefined" && traducoesRelatorioExtra[idioma]) ? traducoesRelatorioExtra[idioma] : {}),
+        ...((typeof traducoesFrontExtra !== "undefined" && traducoesFrontExtra[idioma]) ? traducoesFrontExtra[idioma] : {})
+      };
+      Object.keys(mapa).sort((a,b) => b.length - a.length).forEach(chave => {
+        if (!chave) return;
+        saida = saida.split(chave).join(mapa[chave]);
+      });
+      return saida;
     }
 
     function traduzirElementos(idioma) {
-      const mapa = traducoesSistema[idioma] || {};
-      const elementos = document.querySelectorAll("button, label, h1, h2, h3, p, li, span, strong, option, .assinatura-linha");
+      const elementos = document.querySelectorAll("button, label, h1, h2, h3, h4, p, li, span, strong, option, th, td, .assinatura-linha, .assinatura-nome, .destino-badge, .small-note");
       elementos.forEach(item => {
         const original = item.dataset.ptOriginal;
         if (!original) return;
-        item.textContent = idioma === "pt" ? original : (mapa[original] || original);
+        if (item.children && item.children.length > 0) return;
+        item.textContent = idioma === "pt" ? original : relT(original);
+      });
+
+      document.querySelectorAll("input[placeholder], textarea[placeholder]").forEach(item => {
+        const original = item.dataset.ptPlaceholderOriginal;
+        if (original !== undefined) item.setAttribute("placeholder", idioma === "pt" ? original : relT(original));
+      });
+
+      document.querySelectorAll("input[readonly]").forEach(item => {
+        const original = item.dataset.ptValueOriginal;
+        if (original !== undefined && original) item.value = idioma === "pt" ? original : relT(original);
+      });
+
+      document.querySelectorAll("p, li, span").forEach(item => {
+        if (!item.children || item.children.length === 0) return;
+        item.childNodes.forEach(node => {
+          if (node.nodeType !== Node.TEXT_NODE) return;
+          if (!node._ptOriginal) node._ptOriginal = node.nodeValue;
+          const originalNode = node._ptOriginal;
+          const trimmed = originalNode.trim();
+          if (!trimmed) return;
+          const traduzido = idioma === "pt" ? trimmed : relT(trimmed);
+          node.nodeValue = originalNode.replace(trimmed, traduzido);
+        });
       });
     }
 
-    function alterarIdioma(idioma) {
+    function atualizarDocumentosPorIdioma(idioma) {
+      document.documentElement.lang = idioma === "en" ? "en" : idioma === "es" ? "es" : "pt-BR";
+      document.title = idioma === "en"
+        ? "ISO 5393 Test - WS Capability"
+        : idioma === "es"
+          ? "Ensayo ISO 5393 - Capacidad WS"
+          : "Ensaio ISO 5393 - Capabilidade WS";
+    }
+
+    function traduzirGraficosAtivos() {
+      const atualizarChart = (chart, tituloY) => {
+        if (!chart) return;
+        chart.data.datasets.forEach(ds => {
+          if (!ds._labelPt) ds._labelPt = ds.label;
+          ds.label = relT(ds._labelPt);
+        });
+        if (chart.options?.scales?.x?.title) chart.options.scales.x.title.text = relT("Amostra");
+        if (chart.options?.scales?.y?.title && tituloY) chart.options.scales.y.title.text = relT(tituloY);
+        chart.update("none");
+      };
+      atualizarChart(graficoMaior, "Torque superior");
+      atualizarChart(graficoMenor, "Torque inferior");
+      atualizarChart(graficoTorqueUnico, "Torque único");
+      [histMaxRigida, histMaxFlexivel, histMinRigida, histMinFlexivel, histTorqueUnico].forEach(chart => {
+        if (!chart) return;
+        chart.data.datasets.forEach(ds => {
+          if (!ds._labelPt) ds._labelPt = ds.label;
+          ds.label = relT(ds._labelPt);
+        });
+        if (chart.options?.scales?.x?.title) chart.options.scales.x.title.text = relT("Faixas de torque");
+        if (chart.options?.scales?.y?.title) chart.options.scales.y.title.text = relT("Frequência");
+        chart.update("none");
+      });
+    }
+
+    function reaplicarIdiomaAtual() {
+      const idioma = relIdiomaAtual();
       prepararTextosOriginais();
       traduzirElementos(idioma);
+      traduzirGraficosAtivos();
+    }
+
+    function alterarIdioma(idioma) {
       localStorage.setItem("idiomaCapabilidadeWS", idioma);
+      atualizarDocumentosPorIdioma(idioma);
+      prepararTextosOriginais();
+      atualizarResumoDados();
+      traduzirElementos(idioma);
+      traduzirGraficosAtivos();
     }
 
     function abrirTopicoHelp(id) {
@@ -3115,6 +3449,7 @@
       }
 
       if (limparResultado) limparResultadosTorqueUnico();
+      reaplicarIdiomaAtual();
     }
 
     function calcularLimitesTorqueUnico() {
@@ -3132,9 +3467,11 @@
         if (el(id)) el(id).textContent = "-";
       });
       const status = el("tuStatus");
-      status.textContent = "AGUARDANDO";
+      status.dataset.statusPt = "AGUARDANDO";
+      status.textContent = relT("AGUARDANDO");
       status.className = "status-badge status-neutro";
-      el("tuMotivo").textContent = "Aguardando cálculo.";
+      el("tuMotivo").dataset.motivoPt = "Aguardando cálculo.";
+      el("tuMotivo").textContent = relT("Aguardando cálculo.");
 
       if (graficoTorqueUnico) {
         graficoTorqueUnico.destroy();
@@ -3260,9 +3597,12 @@
       const aprovado = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 && motivoResultado.startsWith("Aprovado");
 
       const status = el("tuStatus");
-      status.textContent = aprovado ? "APROVADO" : "REPROVADO";
+      const statusPt = aprovado ? "APROVADO" : "REPROVADO";
+      status.dataset.statusPt = statusPt;
+      status.textContent = relT(statusPt);
       status.className = `status-badge ${aprovado ? "status-aprovado" : "status-reprovado"}`;
-      el("tuMotivo").textContent = motivoResultado;
+      el("tuMotivo").dataset.motivoPt = motivoResultado;
+      el("tuMotivo").textContent = relTraduzirTexto(motivoResultado);
 
       atualizarGraficoTorqueUnico(valores, limiteMin, limiteMax);
       return true;
@@ -3548,8 +3888,8 @@
                   <div><strong>${relT("Tipo de junta")}:</strong> ${relT(tipoJunta)}</div>
                   <div><strong>${relT("Torque nominal")}:</strong> ${torque}</div>
                   <div><strong>${relT("Tolerância")}:</strong> ${formatarNumero(tolerancia)}%</div>
-                  <div><strong>Limite mínimo:</strong> ${formatarNumero(limiteMin)}</div>
-                  <div><strong>Limite máximo:</strong> ${formatarNumero(limiteMax)}</div>
+                  <div><strong>${relT("Limite mínimo")}:</strong> ${formatarNumero(limiteMin)}</div>
+                  <div><strong>${relT("Limite máximo")}:</strong> ${formatarNumero(limiteMax)}</div>
                 </div>
               </div>
 
@@ -3570,18 +3910,18 @@
           </div>
 
           <div class="bloco">
-            <h2>Resultado do Torque Único</h2>
+            <h2>${relT("Resultado do torque único")}</h2>
             <div class="resumo">
               <div><strong>${relT("Média")}:</strong> ${formatarNumero(est.media)}</div>
               <div><strong>${relT("Desvio padrão")}:</strong> ${formatarNumero(est.dp)}</div>
               <div><strong>${relT("Mínimo")}:</strong> ${formatarNumero(est.min)}</div>
               <div><strong>${relT("Máximo")}:</strong> ${formatarNumero(est.max)}</div>
               <div><strong>${relT("Amplitude")}:</strong> ${formatarNumero(est.amplitude)}</div>
-              <div><strong>${relT("Scatter")}:</strong> ${formatarNumero(est.scatter)}%</div>
+              <div><strong>${relT("Scatter") || "Scatter"}:</strong> ${formatarNumero(est.scatter)}%</div>
               <div><strong>Cm:</strong> ${formatarNumero(est.cm)}</div>
               <div><strong>Cmk:</strong> ${formatarNumero(est.cmk)}</div>
-              <div><strong>${relT("Status interno WS")}:</strong> <span class="status-relatorio ${status === "APROVADO" ? "aprovado" : "reprovado"}">${statusRel}</span></div>
-              <div style="grid-column:1/-1;"><strong>Motivo do resultado:</strong> ${motivoResultado}</div>
+              <div><strong>${relT("Status interno WS")}:</strong> <span class="status-relatorio ${status === "APROVADO" ? "aprovado" : status === "REPROVADO" ? "reprovado" : "aguardando"}">${statusRel}</span></div>
+              <div style="grid-column:1/-1;"><strong>${relT("Motivo do resultado")}:</strong> ${motivoResultadoRel}</div>
             </div>
           </div>
 
@@ -3600,7 +3940,7 @@
 
           <div class="bloco assinatura">
             <strong>${d.tecnicoResponsavel}</strong>
-            <div class="cargo">Técnico responsável</div>
+            <div class="cargo">${relT("Técnico responsável")}</div>
           </div>
 
           <script>
