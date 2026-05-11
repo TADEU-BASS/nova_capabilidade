@@ -696,6 +696,7 @@
           <button class="menu-btn" type="button" onclick="mostrarPagina('pagina-dados')">Dados do Ensaio</button>
           <button class="menu-btn" type="button" onclick="abrirTabelas()">Abrir tabelas</button>
           <button class="menu-btn" type="button" onclick="abrirTorqueUnico()">Torque único</button>
+          <button class="menu-btn" type="button" onclick="abrirAngulo()">Ângulo</button>
           <button class="menu-btn secondary" type="button" onclick="salvarEnsaio()">Salvar ensaio</button>
           <button class="menu-btn secondary" type="button" onclick="document.getElementById('arquivoEnsaio').click()">Carregar ensaio</button>
           <button class="menu-btn secondary" type="button" onclick="abrirManualPdf()">HELP</button>
@@ -1169,6 +1170,168 @@
         </section>
       </div>
 
+      <div id="pagina-angulo" class="page">
+        <section class="top-card">
+          <div>
+            <h1>Ângulo</h1>
+            <p>Cálculo separado para ângulo mínimo e ângulo máximo, com duas tabelas de amostras.</p>
+          </div>
+          <button class="destino-badge">Folha de ângulo</button>
+        </section>
+
+        <section class="content-card">
+          <div class="card-header">
+            <h2>Parâmetros do ensaio de ângulo</h2>
+            <p>Informe o ângulo mínimo, ângulo máximo, tolerância e quantidade de amostras.</p>
+          </div>
+
+          <div class="card-body">
+            <div class="form-grid">
+              <div class="form-section">
+                <h3 class="section-title">Configuração do ângulo</h3>
+                <div class="section-grid">
+                  <div class="field">
+                    <label for="anguloMinBase">Ângulo mínimo nominal (grau(s))</label>
+                    <input type="text" id="anguloMinBase" placeholder="EX.: 30">
+                  </div>
+                  <div class="field">
+                    <label for="anguloMaxBase">Ângulo máximo nominal (grau(s))</label>
+                    <input type="text" id="anguloMaxBase" placeholder="EX.: 720">
+                  </div>
+                  <div class="field">
+                    <label for="anguloTolerancia">Tolerância (%)</label>
+                    <input type="text" id="anguloTolerancia" placeholder="EX.: 15">
+                  </div>
+                  <div class="field">
+                    <label for="anguloAmostras">Quantidade de amostras</label>
+                    <input type="number" id="anguloAmostras" min="1" step="1" value="25">
+                  </div>
+                  <div class="field">
+                    <label for="anguloMinLimiteInferior">Limite inferior do ângulo mínimo</label>
+                    <input type="text" id="anguloMinLimiteInferior" readonly>
+                  </div>
+                  <div class="field">
+                    <label for="anguloMinLimiteSuperior">Limite superior do ângulo mínimo</label>
+                    <input type="text" id="anguloMinLimiteSuperior" readonly>
+                  </div>
+                  <div class="field">
+                    <label for="anguloMaxLimiteInferior">Limite inferior do ângulo máximo</label>
+                    <input type="text" id="anguloMaxLimiteInferior" readonly>
+                  </div>
+                  <div class="field">
+                    <label for="anguloMaxLimiteSuperior">Limite superior do ângulo máximo</label>
+                    <input type="text" id="anguloMaxLimiteSuperior" readonly>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="page-actions">
+              <button class="action-btn danger" type="button" onclick="limparTabelasAngulo()">Limpar tabelas</button>
+              <button class="action-btn primary" type="button" onclick="calcularAngulo()">Calcular resultados</button>
+              <button class="action-btn primary" type="button" onclick="gerarRelatorioAngulo()">Gerar relatório</button>
+            </div>
+
+            <div class="blocos-grid">
+              <div class="bloco-metrica">
+                <h4>Resultado Ângulo Mínimo</h4>
+                <div class="resultado-grid" id="resultadoAnguloMin">
+                  <div class="resultado-item"><strong>Média</strong><span id="angMinMedia">-</span></div>
+                  <div class="resultado-item"><strong>Desvio padrão</strong><span id="angMinDp">-</span></div>
+                  <div class="resultado-item"><strong>Mínimo</strong><span id="angMinMin">-</span></div>
+                  <div class="resultado-item"><strong>Máximo</strong><span id="angMinMax">-</span></div>
+                  <div class="resultado-item"><strong>Amplitude</strong><span id="angMinAmplitude">-</span></div>
+                  <div class="resultado-item"><strong>Scatter (%)</strong><span id="angMinScatter">-</span></div>
+                  <div class="resultado-item"><strong>Cm</strong><span id="angMinCm">-</span></div>
+                  <div class="resultado-item"><strong>Cmk</strong><span id="angMinCmk">-</span></div>
+                </div>
+              </div>
+
+              <div class="bloco-metrica">
+                <h4>Resultado Ângulo Máximo</h4>
+                <div class="resultado-grid" id="resultadoAnguloMax">
+                  <div class="resultado-item"><strong>Média</strong><span id="angMaxMedia">-</span></div>
+                  <div class="resultado-item"><strong>Desvio padrão</strong><span id="angMaxDp">-</span></div>
+                  <div class="resultado-item"><strong>Mínimo</strong><span id="angMaxMin">-</span></div>
+                  <div class="resultado-item"><strong>Máximo</strong><span id="angMaxMax">-</span></div>
+                  <div class="resultado-item"><strong>Amplitude</strong><span id="angMaxAmplitude">-</span></div>
+                  <div class="resultado-item"><strong>Scatter (%)</strong><span id="angMaxScatter">-</span></div>
+                  <div class="resultado-item"><strong>Cm</strong><span id="angMaxCm">-</span></div>
+                  <div class="resultado-item"><strong>Cmk</strong><span id="angMaxCmk">-</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="resultado-box">
+              <div class="samples-header"><h3>Resultado final do ângulo</h3></div>
+              <div class="resultado-grid">
+                <div class="resultado-item"><strong>Tolerância</strong><span id="angPctView">-</span></div>
+                <div class="resultado-item"><strong>% final encontrada</strong><span id="angPctFinal">-</span></div>
+                <div class="resultado-item" style="grid-column: 1 / -1;"><strong>Status interno WS</strong><span id="angStatus" class="status-badge status-neutro">AGUARDANDO</span></div>
+                <div class="resultado-item" style="grid-column: 1 / -1;"><strong>Motivo do resultado</strong><span id="angMotivo" class="motivo-texto">Aguardando cálculo.</span></div>
+              </div>
+            </div>
+
+            <div class="samples-box">
+              <div class="samples-header"><h3>Tabelas de amostras de ângulo</h3></div>
+              <div class="tables-grid">
+                <div class="table-card">
+                  <h4>Ângulo mínimo</h4>
+                  <div class="table-actions">
+                    <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-angulo-min')">Copiar valores</button>
+                    <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-angulo-min')">Colar valores do Excel</button>
+                    <div class="small-note">Copia ou cola em coluna para uso no Excel.</div>
+                  </div>
+                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor (grau(s))</th></tr></thead><tbody id="tbody-angulo-min"></tbody></table></div>
+                </div>
+
+                <div class="table-card">
+                  <h4>Ângulo máximo</h4>
+                  <div class="table-actions">
+                    <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-angulo-max')">Copiar valores</button>
+                    <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-angulo-max')">Colar valores do Excel</button>
+                    <div class="small-note">Copia ou cola em coluna para uso no Excel.</div>
+                  </div>
+                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor (grau(s))</th></tr></thead><tbody id="tbody-angulo-max"></tbody></table></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grafico-box">
+              <div class="samples-header">
+                <h3>Gráficos de ângulo</h3>
+                <div class="small-note">Visual simplificado: linhas das medições, ângulo nominal e limites mínimo/máximo.</div>
+              </div>
+              <div class="grafico-grid">
+                <div class="grafico-card">
+                  <h4>Ângulo mínimo</h4>
+                  <canvas id="graficoAnguloMin"></canvas>
+                </div>
+                <div class="grafico-card">
+                  <h4>Ângulo máximo</h4>
+                  <canvas id="graficoAnguloMax"></canvas>
+                </div>
+              </div>
+
+              <div class="samples-header" style="margin-top:18px;">
+                <h3>Histogramas de ângulo</h3>
+                <div class="small-note">Distribuição das leituras de ângulo mínimo e ângulo máximo.</div>
+              </div>
+              <div class="grafico-grid">
+                <div class="grafico-card">
+                  <h4>Histograma — Ângulo mínimo</h4>
+                  <canvas id="histAnguloMin"></canvas>
+                </div>
+                <div class="grafico-card">
+                  <h4>Histograma — Ângulo máximo</h4>
+                  <canvas id="histAnguloMax"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
       <div id="pagina-manual" class="page">
         <section class="top-card">
           <div>
@@ -1365,6 +1528,10 @@
     let histMinFlexivel = null;
     let graficoTorqueUnico = null;
     let histTorqueUnico = null;
+    let graficoAnguloMin = null;
+    let graficoAnguloMax = null;
+    let histAnguloMin = null;
+    let histAnguloMax = null;
     let popupResolver = null;
 
     const metricasSuperior = [
@@ -3486,6 +3653,8 @@
 
       mostrarPagina("pagina-torque-unico");
       calcularLimitesTorqueUnico();
+      criarLinhasAngulo(obterTotalAmostrasAngulo() || 25, false, true);
+      calcularLimitesAngulo();
       aplicarVisualObrigatorios();
 
       requestAnimationFrame(() => {
@@ -4100,6 +4269,418 @@
       relatorio.document.close();
     }
 
+
+    function abrirAngulo() {
+      const total = obterTotalAmostrasAngulo();
+      if (total > 0 && el("tbody-angulo-min") && el("tbody-angulo-min").querySelectorAll("tr").length !== total) {
+        criarLinhasAngulo(total, true, false);
+      }
+      calcularLimitesAngulo();
+      mostrarPagina("pagina-angulo");
+    }
+
+    function obterTotalAmostrasAngulo() {
+      const campo = el("anguloAmostras");
+      const total = parseInt(campo ? campo.value : "25", 10);
+      return Number.isInteger(total) && total > 0 ? total : 0;
+    }
+
+    function calcularLimitesAngulo() {
+      const tolerancia = parseNumero(el("anguloTolerancia") ? el("anguloTolerancia").value : "0");
+      const angMin = parseNumero(el("anguloMinBase") ? el("anguloMinBase").value : "0");
+      const angMax = parseNumero(el("anguloMaxBase") ? el("anguloMaxBase").value : "0");
+      const fator = tolerancia / 100;
+
+      const minInf = angMin ? angMin * (1 - fator) : 0;
+      const minSup = angMin ? angMin * (1 + fator) : 0;
+      const maxInf = angMax ? angMax * (1 - fator) : 0;
+      const maxSup = angMax ? angMax * (1 + fator) : 0;
+
+      if (el("anguloMinLimiteInferior")) el("anguloMinLimiteInferior").value = minInf ? `${formatarNumero(minInf)} grau(s)` : "";
+      if (el("anguloMinLimiteSuperior")) el("anguloMinLimiteSuperior").value = minSup ? `${formatarNumero(minSup)} grau(s)` : "";
+      if (el("anguloMaxLimiteInferior")) el("anguloMaxLimiteInferior").value = maxInf ? `${formatarNumero(maxInf)} grau(s)` : "";
+      if (el("anguloMaxLimiteSuperior")) el("anguloMaxLimiteSuperior").value = maxSup ? `${formatarNumero(maxSup)} grau(s)` : "";
+
+      return { minInf, minSup, maxInf, maxSup };
+    }
+
+    function criarLinhasAngulo(total, preservarValores = true, limparResultado = true) {
+      ["tbody-angulo-min", "tbody-angulo-max"].forEach(tbodyId => {
+        const tbody = el(tbodyId);
+        if (!tbody) return;
+        const valoresAntigos = preservarValores
+          ? [...tbody.querySelectorAll("input")].map(input => input.value || "")
+          : [];
+
+        tbody.innerHTML = "";
+        for (let i = 1; i <= total; i++) {
+          const tr = document.createElement("tr");
+          const valor = valoresAntigos[i - 1] !== undefined ? valoresAntigos[i - 1] : "";
+          tr.innerHTML = `<td>${i}</td><td><input type="text" inputmode="decimal" value="${valor}"></td>`;
+          tbody.appendChild(tr);
+        }
+      });
+
+      if (limparResultado) limparResultadosAngulo();
+    }
+
+    function definirTextoAngulo(id, valor, casas = 2, sufixo = " grau(s)") {
+      const campo = el(id);
+      if (!campo) return;
+      if (!Number.isFinite(valor)) {
+        campo.textContent = "-";
+        return;
+      }
+      campo.textContent = `${formatarNumero(valor, casas)}${sufixo}`;
+    }
+
+    function limparResultadosAngulo() {
+      ["angMinMedia", "angMinDp", "angMinMin", "angMinMax", "angMinAmplitude", "angMinScatter", "angMinCm", "angMinCmk",
+       "angMaxMedia", "angMaxDp", "angMaxMin", "angMaxMax", "angMaxAmplitude", "angMaxScatter", "angMaxCm", "angMaxCmk",
+       "angPctView", "angPctFinal"].forEach(id => { if (el(id)) el(id).textContent = "-"; });
+      if (el("angStatus")) {
+        el("angStatus").textContent = "AGUARDANDO";
+        el("angStatus").className = "status-badge status-neutro";
+      }
+      if (el("angMotivo")) el("angMotivo").textContent = "Aguardando cálculo.";
+      destruirGraficosAngulo();
+    }
+
+    function destruirGraficosAngulo() {
+      if (graficoAnguloMin) graficoAnguloMin.destroy();
+      if (graficoAnguloMax) graficoAnguloMax.destroy();
+      if (histAnguloMin) histAnguloMin.destroy();
+      if (histAnguloMax) histAnguloMax.destroy();
+      graficoAnguloMin = null;
+      graficoAnguloMax = null;
+      histAnguloMin = null;
+      histAnguloMax = null;
+    }
+
+    function validarAngulo() {
+      const faltando = [];
+      const total = obterTotalAmostrasAngulo();
+      const angMin = parseNumero(el("anguloMinBase") ? el("anguloMinBase").value : "0");
+      const angMax = parseNumero(el("anguloMaxBase") ? el("anguloMaxBase").value : "0");
+      const tol = parseNumero(el("anguloTolerancia") ? el("anguloTolerancia").value : "0");
+
+      if (angMin <= 0) faltando.push("Ângulo mínimo nominal");
+      if (angMax <= 0) faltando.push("Ângulo máximo nominal");
+      if (tol <= 0) faltando.push("Tolerância deve ser maior que zero");
+      if (total <= 0) faltando.push("Quantidade de amostras deve ser maior que zero");
+
+      [["tbody-angulo-min", "Ângulo mínimo"], ["tbody-angulo-max", "Ângulo máximo"]].forEach(([tbodyId, nome]) => {
+        const inputs = [...document.querySelectorAll(`#${tbodyId} input`)];
+        const preenchidos = inputs.filter(input => String(input.value || "").trim() !== "").length;
+        if (inputs.length < total || preenchidos < total) faltando.push(`${nome}: preencher ${total} amostras`);
+      });
+
+      if (faltando.length) {
+        mostrarPopup(
+          "Não foi possível calcular ou gerar o relatório de ângulo.<br><br>Verifique:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+          "Dados de ângulo incompletos"
+        );
+        return false;
+      }
+      return true;
+    }
+
+    function calcularAngulo(validar = true) {
+      if (validar && !validarAngulo()) return false;
+
+      const limites = calcularLimitesAngulo();
+      const valoresMin = lerValoresTabela("tbody-angulo-min");
+      const valoresMax = lerValoresTabela("tbody-angulo-max");
+      const estMin = estatisticas(valoresMin, limites.minInf, limites.minSup);
+      const estMax = estatisticas(valoresMax, limites.maxInf, limites.maxSup);
+      const tolerancia = parseNumero(el("anguloTolerancia") ? el("anguloTolerancia").value : "0");
+
+      definirTextoAngulo("angMinMedia", estMin.media);
+      definirTextoAngulo("angMinDp", estMin.dp);
+      definirTextoAngulo("angMinMin", estMin.min);
+      definirTextoAngulo("angMinMax", estMin.max);
+      definirTextoAngulo("angMinAmplitude", estMin.amplitude);
+      definirTextoAngulo("angMinScatter", estMin.scatter, 2, "%");
+      definirTextoAngulo("angMinCm", estMin.cm, 2, "");
+      definirTextoAngulo("angMinCmk", estMin.cmk, 2, "");
+
+      definirTextoAngulo("angMaxMedia", estMax.media);
+      definirTextoAngulo("angMaxDp", estMax.dp);
+      definirTextoAngulo("angMaxMin", estMax.min);
+      definirTextoAngulo("angMaxMax", estMax.max);
+      definirTextoAngulo("angMaxAmplitude", estMax.amplitude);
+      definirTextoAngulo("angMaxScatter", estMax.scatter, 2, "%");
+      definirTextoAngulo("angMaxCm", estMax.cm, 2, "");
+      definirTextoAngulo("angMaxCmk", estMax.cmk, 2, "");
+
+      const pctFinal = Math.max(estMin.scatter, estMax.scatter);
+      const cmMinimo = Math.min(estMin.cm, estMax.cm);
+      const cmkMinimo = Math.min(estMin.cmk, estMax.cmk);
+      const foraLimites = contarForaLimites(valoresMin, limites.minInf, limites.minSup) + contarForaLimites(valoresMax, limites.maxInf, limites.maxSup);
+
+      if (el("angPctView")) el("angPctView").textContent = tolerancia ? `${formatarNumero(tolerancia)}%` : "-";
+      if (el("angPctFinal")) el("angPctFinal").textContent = `${formatarNumero(pctFinal)}%`;
+
+      const motivos = [];
+      if (foraLimites > 0) motivos.push(`${foraLimites} leitura(s) de ângulo ficaram fora dos limites calculados.`);
+      if (pctFinal > tolerancia) motivos.push(`A % final encontrada (${formatarNumero(pctFinal)}%) ficou acima da tolerância informada (${formatarNumero(tolerancia)}%).`);
+      if (cmMinimo < 1.67) motivos.push(`O menor Cm encontrado (${formatarNumero(cmMinimo)}) ficou abaixo do mínimo interno WS de 1,67.`);
+      if (cmkMinimo < 1.67) motivos.push(`O menor Cmk encontrado (${formatarNumero(cmkMinimo)}) ficou abaixo do mínimo interno WS de 1,67.`);
+
+      const aprovado = motivos.length === 0;
+      if (el("angStatus")) {
+        el("angStatus").textContent = aprovado ? "APROVADO" : "REPROVADO";
+        el("angStatus").className = `status-badge ${aprovado ? "status-aprovado" : "status-reprovado"}`;
+      }
+      if (el("angMotivo")) {
+        el("angMotivo").textContent = aprovado
+          ? "Aprovado: scatter dentro da tolerância e índices Cm/Cmk iguais ou acima de 1,67."
+          : motivos.join(" ");
+      }
+
+      atualizarGraficosAngulo({ valoresMin, valoresMax, limites });
+      return true;
+    }
+
+    function obterOpcoesGraficoAngulo(tituloEixo) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "nearest", intersect: false },
+        plugins: {
+          legend: { display: true, position: "bottom", labels: { boxWidth: 10, boxHeight: 10, padding: 14, font: { size: 11, weight: "600" }, usePointStyle: true } },
+          tooltip: { callbacks: { label: function(context) {
+            const valor = context.parsed.y;
+            const textoValor = Number.isFinite(valor) ? valor.toFixed(2).replace(".", ",") : "-";
+            return `${context.dataset.label}: ${textoValor} grau(s)`;
+          } } }
+        },
+        scales: {
+          x: { title: { display: true, text: "Amostra" }, grid: { display: false } },
+          y: { title: { display: true, text: `${tituloEixo} (grau(s))` }, grid: { color: "rgba(36,68,83,0.10)" } }
+        }
+      };
+    }
+
+    function criarHistogramaAngulo(canvasId, valores, tituloDataset) {
+      const canvas = el(canvasId);
+      if (!canvas) return null;
+      const hist = calcularHistograma(valores);
+      return new Chart(canvas, {
+        data: {
+          labels: hist.labels,
+          datasets: [
+            { type: "bar", label: tituloDataset, data: hist.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 },
+            { type: "line", label: "Linha de tendência", data: hist.frequencias, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: false, tension: 0.35 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: true, position: "bottom", labels: { boxWidth: 10, boxHeight: 10, font: { size: 10, weight: "600" } } } },
+          scales: {
+            x: { title: { display: true, text: "Faixas de ângulo" }, ticks: { maxRotation: 45, minRotation: 0, font: { size: 10 } }, grid: { display: false } },
+            y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0 } }
+          }
+        }
+      });
+    }
+
+    function atualizarGraficosAngulo(dados) {
+      destruirGraficosAngulo();
+      const total = Math.max(obterTotalAmostrasAngulo(), dados.valoresMin.length, dados.valoresMax.length, 1);
+      const labels = Array.from({ length: total }, (_, i) => i + 1);
+      const angMinNominal = parseNumero(el("anguloMinBase") ? el("anguloMinBase").value : "0");
+      const angMaxNominal = parseNumero(el("anguloMaxBase") ? el("anguloMaxBase").value : "0");
+
+      if (el("graficoAnguloMin")) {
+        graficoAnguloMin = new Chart(el("graficoAnguloMin"), {
+          type: "line",
+          data: { labels, datasets: [
+            criarSeriePontos("Ângulo mínimo", dados.valoresMin),
+            criarLinhaReferencia("Nominal", angMinNominal, total),
+            criarLinhaReferencia("Limite mínimo", dados.limites.minInf, total),
+            criarLinhaReferencia("Limite máximo", dados.limites.minSup, total)
+          ] },
+          options: obterOpcoesGraficoAngulo("Ângulo mínimo")
+        });
+      }
+
+      if (el("graficoAnguloMax")) {
+        graficoAnguloMax = new Chart(el("graficoAnguloMax"), {
+          type: "line",
+          data: { labels, datasets: [
+            criarSeriePontos("Ângulo máximo", dados.valoresMax),
+            criarLinhaReferencia("Nominal", angMaxNominal, total),
+            criarLinhaReferencia("Limite mínimo", dados.limites.maxInf, total),
+            criarLinhaReferencia("Limite máximo", dados.limites.maxSup, total)
+          ] },
+          options: obterOpcoesGraficoAngulo("Ângulo máximo")
+        });
+      }
+
+      histAnguloMin = criarHistogramaAngulo("histAnguloMin", dados.valoresMin, "Ângulo mínimo");
+      histAnguloMax = criarHistogramaAngulo("histAnguloMax", dados.valoresMax, "Ângulo máximo");
+    }
+
+    function limparTabelasAngulo() {
+      ["tbody-angulo-min", "tbody-angulo-max"].forEach(tbodyId => {
+        const tbody = el(tbodyId);
+        if (tbody) tbody.querySelectorAll("input").forEach(input => input.value = "");
+      });
+      limparResultadosAngulo();
+    }
+
+    function montarLinhasRelatorioAngulo(valores) {
+      return (valores || []).map((valor, i) => `<tr><td>${i + 1}</td><td>${formatarNumero(valor)} grau(s)</td></tr>`).join("");
+    }
+
+    function gerarRelatorioAngulo() {
+      if (!calcularAngulo(true)) return;
+
+      const valoresMin = lerValoresTabela("tbody-angulo-min");
+      const valoresMax = lerValoresTabela("tbody-angulo-max");
+      const limites = calcularLimitesAngulo();
+      const labels = Array.from({ length: Math.max(valoresMin.length, valoresMax.length, 1) }, (_, i) => i + 1);
+      const d = obterDadosFerramenta();
+
+      const relatorio = window.open("", "_blank");
+      if (!relatorio) {
+        mostrarPopup("O navegador bloqueou a abertura do relatório. Libere popups para este site.", "Relatório bloqueado");
+        return;
+      }
+
+      relatorio.document.write(`
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <title>Relatório de Ângulo - Capabilidade WS</title>
+          <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+          <style>
+            body { font-family: Arial, sans-serif; color: #1f3f4d; margin: 18px; }
+            .header { border-bottom: 3px solid #0f6b86; padding-bottom: 10px; margin-bottom: 14px; }
+            h1 { color: #0f5f7d; margin: 0 0 6px; font-size: 22px; }
+            h2 { color: #0f5f7d; font-size: 16px; margin: 18px 0 8px; }
+            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; font-size: 12px; }
+            .box { border: 1px solid #cfe0e7; border-radius: 10px; padding: 10px; margin: 10px 0; background: #f7fbfd; }
+            table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 11px; }
+            th, td { border: 1px solid #d9e7ed; padding: 5px; text-align: center; }
+            th { background: #0f6b86; color: white; }
+            .charts { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+            .chart-box { height: 270px; border: 1px solid #d9e7ed; border-radius: 10px; padding: 8px; page-break-inside: avoid; }
+            .btn { background:#0f6b86; color:#fff; border:0; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer; }
+            @media print { .btn { display:none; } body { margin: 8mm; } .chart-box { height: 230px; } }
+          </style>
+        </head>
+        <body>
+          <button class="btn" onclick="window.print()">Imprimir relatório / salvar PDF</button>
+          <div class="header">
+            <h1>Relatório de Ângulo - Capabilidade WS</h1>
+            <div>ISO 5393 / Critério interno WS</div>
+          </div>
+
+          <div class="box">
+            <h2>Dados do ensaio</h2>
+            <div class="grid">
+              <div><strong>Relatório:</strong> ${d.numeroRelatorio}</div>
+              <div><strong>Data:</strong> ${d.dataEnsaio}</div>
+              <div><strong>Técnico:</strong> ${d.tecnicoResponsavel}</div>
+              <div><strong>Cliente / projeto:</strong> ${d.clienteProjeto}</div>
+              <div><strong>Apertadeira:</strong> ${d.apertadeiraModelo}</div>
+              <div><strong>Serial:</strong> ${d.serialApertadeira}</div>
+              <div><strong>Transdutor:</strong> ${d.transdutor}</div>
+              <div><strong>Certificado transdutor:</strong> ${d.certificadoCalibracao}</div>
+            </div>
+          </div>
+
+          <div class="box">
+            <h2>Parâmetros do ângulo</h2>
+            <div class="grid">
+              <div><strong>Ângulo mínimo nominal:</strong> ${valorOuTraco("anguloMinBase")} grau(s)</div>
+              <div><strong>Ângulo máximo nominal:</strong> ${valorOuTraco("anguloMaxBase")} grau(s)</div>
+              <div><strong>Tolerância:</strong> ${valorOuTraco("anguloTolerancia")}%</div>
+              <div><strong>Total de amostras:</strong> ${obterTotalAmostrasAngulo()}</div>
+              <div><strong>Limites ângulo mínimo:</strong> ${formatarNumero(limites.minInf)} até ${formatarNumero(limites.minSup)} grau(s)</div>
+              <div><strong>Limites ângulo máximo:</strong> ${formatarNumero(limites.maxInf)} até ${formatarNumero(limites.maxSup)} grau(s)</div>
+            </div>
+          </div>
+
+          <div class="box">
+            <h2>Resultado final</h2>
+            <div class="grid">
+              <div><strong>Status:</strong> ${el("angStatus").textContent}</div>
+              <div><strong>% final encontrada:</strong> ${el("angPctFinal").textContent}</div>
+              <div style="grid-column:1/-1"><strong>Motivo:</strong> ${el("angMotivo").textContent}</div>
+            </div>
+          </div>
+
+          <div class="box">
+            <h2>Resultados estatísticos</h2>
+            <table>
+              <thead><tr><th>Item</th><th>Média</th><th>DP</th><th>Mínimo</th><th>Máximo</th><th>Amplitude</th><th>Scatter</th><th>Cm</th><th>Cmk</th></tr></thead>
+              <tbody>
+                <tr><td>Ângulo mínimo</td><td>${el("angMinMedia").textContent}</td><td>${el("angMinDp").textContent}</td><td>${el("angMinMin").textContent}</td><td>${el("angMinMax").textContent}</td><td>${el("angMinAmplitude").textContent}</td><td>${el("angMinScatter").textContent}</td><td>${el("angMinCm").textContent}</td><td>${el("angMinCmk").textContent}</td></tr>
+                <tr><td>Ângulo máximo</td><td>${el("angMaxMedia").textContent}</td><td>${el("angMaxDp").textContent}</td><td>${el("angMaxMin").textContent}</td><td>${el("angMaxMax").textContent}</td><td>${el("angMaxAmplitude").textContent}</td><td>${el("angMaxScatter").textContent}</td><td>${el("angMaxCm").textContent}</td><td>${el("angMaxCmk").textContent}</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="box">
+            <h2>Gráficos</h2>
+            <div class="charts">
+              <div class="chart-box"><canvas id="graficoAnguloMinRel"></canvas></div>
+              <div class="chart-box"><canvas id="graficoAnguloMaxRel"></canvas></div>
+              <div class="chart-box"><canvas id="histAnguloMinRel"></canvas></div>
+              <div class="chart-box"><canvas id="histAnguloMaxRel"></canvas></div>
+            </div>
+          </div>
+
+          <div class="box">
+            <h2>Tabelas de amostras</h2>
+            <div class="charts">
+              <div><h2>Ângulo mínimo</h2><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody>${montarLinhasRelatorioAngulo(valoresMin)}</tbody></table></div>
+              <div><h2>Ângulo máximo</h2><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody>${montarLinhasRelatorioAngulo(valoresMax)}</tbody></table></div>
+            </div>
+          </div>
+
+          <script>
+            const labels = ${JSON.stringify(labels)};
+            const valoresMin = ${JSON.stringify(valoresMin)};
+            const valoresMax = ${JSON.stringify(valoresMax)};
+            const limites = ${JSON.stringify(limites)};
+            function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
+            function criarSeriePontos(label, data) { return { label, data, showLine: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0 }; }
+            function criarLinhaReferencia(label, valor, tamanho) { return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false }; }
+            function opcoes(titulo) { return { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Amostra" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: titulo + " (grau(s))" }, ticks: { font: { size: 8 } } } } }; }
+            const total = Math.max(labels.length, 1);
+            new Chart(document.getElementById("graficoAnguloMinRel"), { type: "line", data: { labels, datasets: [criarSeriePontos("Ângulo mínimo", valoresMin), criarLinhaReferencia("Nominal", ${parseNumero(el("anguloMinBase") ? el("anguloMinBase").value : "0")}, total), criarLinhaReferencia("Limite mínimo", limites.minInf, total), criarLinhaReferencia("Limite máximo", limites.minSup, total)] }, options: opcoes("Ângulo mínimo") });
+            new Chart(document.getElementById("graficoAnguloMaxRel"), { type: "line", data: { labels, datasets: [criarSeriePontos("Ângulo máximo", valoresMax), criarLinhaReferencia("Nominal", ${parseNumero(el("anguloMaxBase") ? el("anguloMaxBase").value : "0")}, total), criarLinhaReferencia("Limite mínimo", limites.maxInf, total), criarLinhaReferencia("Limite máximo", limites.maxSup, total)] }, options: opcoes("Ângulo máximo") });
+            function formatarNumeroRel(valor) { return Number(valor).toFixed(2).replace(".", ","); }
+            function histograma(valores) {
+              const numeros = (valores || []).filter(v => Number.isFinite(v));
+              if (!numeros.length) return { labels: [], frequencias: [] };
+              const minimo = Math.min(...numeros), maximo = Math.max(...numeros);
+              if (minimo === maximo) return { labels: [formatarNumeroRel(minimo)], frequencias: [numeros.length] };
+              const bins = Math.min(Math.max(8, 14), 18), largura = (maximo - minimo) / bins;
+              const labels = [], frequencias = new Array(bins).fill(0);
+              for (let i = 0; i < bins; i++) { const ini = minimo + largura * i, fim = i === bins - 1 ? maximo : ini + largura; labels.push(formatarNumeroRel(ini) + " até " + formatarNumeroRel(fim)); }
+              numeros.forEach(valor => { let idx = Math.floor((valor - minimo) / largura); if (idx < 0) idx = 0; if (idx >= bins) idx = bins - 1; frequencias[idx]++; });
+              return { labels, frequencias };
+            }
+            function criarHist(canvasId, valores, titulo) {
+              const h = histograma(valores);
+              new Chart(document.getElementById(canvasId), { data: { labels: h.labels, datasets: [{ type: "bar", label: titulo, data: h.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 }, { type: "line", label: "Linha de tendência", data: h.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } }, scales: { x: { title: { display: true, text: "Faixas de ângulo" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } }, y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0, font: { size: 8 } } } } } });
+            }
+            criarHist("histAnguloMinRel", valoresMin, "Ângulo mínimo");
+            criarHist("histAnguloMaxRel", valoresMax, "Ângulo máximo");
+          <\/script>
+        </body>
+        </html>
+      `);
+      relatorio.document.close();
+    }
+
     function obterValoresInputsTabela(tbodyId) {
       return [...document.querySelectorAll(`#${tbodyId} input`)].map(input => input.value || "");
     }
@@ -4126,7 +4707,9 @@
           minFlexivel: obterValoresInputsTabela("tbody-min-flexivel"),
           maxRigida: obterValoresInputsTabela("tbody-max-rigida"),
           maxFlexivel: obterValoresInputsTabela("tbody-max-flexivel"),
-          torqueUnico: obterValoresInputsTabela("tbody-torque-unico")
+          torqueUnico: obterValoresInputsTabela("tbody-torque-unico"),
+          anguloMin: obterValoresInputsTabela("tbody-angulo-min"),
+          anguloMax: obterValoresInputsTabela("tbody-angulo-max")
         }
       };
     }
@@ -4175,6 +4758,12 @@
           preencherValoresInputsTabela("tbody-max-flexivel", estado.tabelas?.maxFlexivel || []);
           preencherValoresInputsTabela("tbody-torque-unico", estado.tabelas?.torqueUnico || []);
 
+          const totalAngulo = parseInt(estado.campos.anguloAmostras, 10) || estado.tabelas?.anguloMin?.length || estado.tabelas?.anguloMax?.length || 25;
+          if (el("anguloAmostras")) el("anguloAmostras").value = totalAngulo;
+          criarLinhasAngulo(totalAngulo, false, true);
+          preencherValoresInputsTabela("tbody-angulo-min", estado.tabelas?.anguloMin || []);
+          preencherValoresInputsTabela("tbody-angulo-max", estado.tabelas?.anguloMax || []);
+
           if (el("unidadeTorque") && el("tuUnidadeTorque")) {
             const unidadeCarregada = estado.campos.unidadeTorque || estado.campos.tuUnidadeTorque || "N.m";
             el("unidadeTorque").value = unidadeCarregada;
@@ -4184,11 +4773,13 @@
           atualizarUnidadesNaTela();
           calcularLimitesAutomaticos();
           calcularLimitesTorqueUnico();
+          calcularLimitesAngulo();
           atualizarResumoDados();
           aplicarVisualObrigatorios();
 
           try { calcularTudoSemValidacao(); } catch {}
           try { calcularTorqueUnico(false); } catch {}
+          try { calcularAngulo(false); } catch {}
 
           mostrarPopup("Ensaio carregado com sucesso.<br><br>Você já pode continuar editando.", "Ensaio carregado");
         } catch (erro) {
@@ -4225,14 +4816,14 @@
         }
 
         if (campo.hasAttribute("readonly")) {
-          if (["tuLimiteMin", "tuLimiteMax", "maxExpMaior", "minExpMaior", "maxExpMenor", "minExpMenor"].includes(campo.id)) {
+          if (["tuLimiteMin", "tuLimiteMax", "maxExpMaior", "minExpMaior", "maxExpMenor", "minExpMenor", "anguloMinLimiteInferior", "anguloMinLimiteSuperior", "anguloMaxLimiteInferior", "anguloMaxLimiteSuperior"].includes(campo.id)) {
             campo.value = "";
           }
           return;
         }
 
         if (campo.type === "number") {
-          if (campo.id === "amostrasManual" || campo.id === "tuAmostras") campo.value = "25";
+          if (campo.id === "amostrasManual" || campo.id === "tuAmostras" || campo.id === "anguloAmostras") campo.value = "25";
           else campo.value = "";
           return;
         }
@@ -4243,12 +4834,15 @@
       atualizarCampoCrowfoot();
       calcularLimitesAutomaticos();
       calcularLimitesTorqueUnico();
+      calcularLimitesAngulo();
 
       criarLinhas(obterTotalAmostras() || 25, false, true);
       criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25, false, true);
+      criarLinhasAngulo(obterTotalAmostrasAngulo() || 25, false, true);
 
       limparResultados();
       limparResultadosTorqueUnico();
+      limparResultadosAngulo();
       atualizarResumoDados();
       aplicarVisualObrigatorios();
 
@@ -4320,6 +4914,29 @@
         if (total > 0) criarLinhasTorqueUnico(total, true, true);
         else el("tbody-torque-unico").innerHTML = "";
         aplicarVisualObrigatorios();
+      });
+    }
+
+
+    ["anguloMinBase", "anguloMaxBase", "anguloTolerancia"].forEach(id => {
+      const campo = el(id);
+      if (campo) {
+        campo.addEventListener("input", calcularLimitesAngulo);
+        campo.addEventListener("input", () => { try { calcularAngulo(false); } catch (e) {} });
+      }
+    });
+
+    const anguloAmostrasEl = el("anguloAmostras");
+    if (anguloAmostrasEl) {
+      anguloAmostrasEl.addEventListener("input", () => {
+        const total = obterTotalAmostrasAngulo();
+        if (total > 0) criarLinhasAngulo(total, true, true);
+        else {
+          if (el("tbody-angulo-min")) el("tbody-angulo-min").innerHTML = "";
+          if (el("tbody-angulo-max")) el("tbody-angulo-max").innerHTML = "";
+          limparResultadosAngulo();
+        }
+        calcularLimitesAngulo();
       });
     }
 
