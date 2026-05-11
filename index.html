@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="${relLangHtml()}">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -725,7 +725,7 @@
         <section class="content-card">
           <div class="card-header">
             <div class="card-header-title">
-              <h2>Dados do ensaio</h2>
+              <h2>${relT("Dados do ensaio")}</h2>
               <span class="aviso-obrigatorio">⚠ <strong>Campos em laranja</strong> têm preenchimento obrigatório</span>
             </div>
             <p>Cadastro da ferramenta, condição de ensaio e parâmetros antes de abrir as tabelas.</p>
@@ -1818,7 +1818,7 @@
       }
     }
 
-    function validarCamposObrigatoriosDados() {
+    function validarCamposObrigatoriosDados(destinoMensagem = "as tabelas") {
       limparErrosObrigatorios();
       aplicarVisualObrigatorios();
 
@@ -1859,7 +1859,7 @@
       if (faltando.length) {
         mostrarPagina("pagina-dados");
         mostrarPopup(
-          "Não foi possível ir para as tabelas.<br><br>Falta preencher campos obrigatórios:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+          "Não foi possível ir para " + destinoMensagem + ".<br><br>Falta preencher campos obrigatórios:<br><br><strong>" + faltando.join("<br>") + "</strong>",
           "Campos obrigatórios"
         );
         return false;
@@ -2859,13 +2859,285 @@
       }
     };
 
+
+
+    const traducoesSemExcecao = {
+      en: {
+        "HELP": "HELP",
+        "English": "English",
+        "Español": "Spanish",
+        "Salvar ensaio": "Save test",
+        "Ângulo": "Angle",
+        "Folha de ângulo": "Angle sheet",
+        "Cálculo separado para ângulo mínimo e ângulo máximo, com duas tabelas de amostras.": "Separate calculation for minimum angle and maximum angle, with two sample tables.",
+        "Parâmetros do ensaio de ângulo": "Angle test parameters",
+        "Informe o ângulo mínimo, ângulo máximo, tolerância e quantidade de amostras.": "Enter the minimum angle, maximum angle, tolerance and number of samples.",
+        "Configuração do ângulo": "Angle setup",
+        "Ângulo mínimo nominal": "Minimum nominal angle",
+        "Ângulo máximo nominal": "Maximum nominal angle",
+        "Ângulo mínimo nominal (grau(s))": "Minimum nominal angle (degree(s))",
+        "Ângulo máximo nominal (grau(s))": "Maximum nominal angle (degree(s))",
+        "Limite inferior do ângulo mínimo": "Lower limit of minimum angle",
+        "Limite superior do ângulo mínimo": "Upper limit of minimum angle",
+        "Limite inferior do ângulo máximo": "Lower limit of maximum angle",
+        "Limite superior do ângulo máximo": "Upper limit of maximum angle",
+        "Resultado Ângulo Mínimo": "Minimum Angle Result",
+        "Resultado Ângulo Máximo": "Maximum Angle Result",
+        "Resultado final do ângulo": "Final angle result",
+        "Tabelas de amostras de ângulo": "Angle sample tables",
+        "Ângulo mínimo": "Minimum angle",
+        "Ângulo máximo": "Maximum angle",
+        "Gráficos de ângulo": "Angle charts",
+        "Visual simplificado: linhas das medições, ângulo nominal e limites mínimo/máximo.": "Simplified view: measurement lines, nominal angle and minimum/maximum limits.",
+        "Histogramas de ângulo": "Angle histograms",
+        "Distribuição das leituras de ângulo mínimo e ângulo máximo.": "Distribution of minimum angle and maximum angle readings.",
+        "Histograma — Ângulo mínimo": "Histogram — Minimum angle",
+        "Histograma — Ângulo máximo": "Histogram — Maximum angle",
+        "Relatório de Ângulo - Capabilidade WS": "Angle Report - WS Capability",
+        "Imprimir relatório / salvar PDF": "Print report / save PDF",
+        "Dados do ensaio": "Test data",
+        "Data": "Date",
+        "Técnico": "Technician",
+        "Serial": "Serial",
+        "Parâmetros do ângulo": "Angle parameters",
+        "Limites ângulo mínimo": "Minimum angle limits",
+        "Limites ângulo máximo": "Maximum angle limits",
+        "Status": "Status",
+        "Motivo": "Reason",
+        "Resultados estatísticos": "Statistical results",
+        "Item": "Item",
+        "Gráficos": "Charts",
+        "Tabelas de amostras": "Sample tables",
+        "Faixas de ângulo": "Angle ranges",
+        "grau(s)": "degree(s)",
+        "Graus": "Degrees",
+        "30 Graus": "30 Degrees",
+        "720 Graus": "720 Degrees",
+        "Unidade de medição": "Measurement unit",
+        "Valor (grau(s))": "Value (degree(s))",
+        "Valor ( N.m )": "Value (N.m)",
+        "Valor (N.m)": "Value (N.m)",
+        "Torque de teste superior ( N.m )": "Upper test torque (N.m)",
+        "Torque de teste inferior ( N.m )": "Lower test torque (N.m)",
+        "Torque nominal ( N.m )": "Nominal torque (N.m)",
+        "Limite mínimo automático ( N.m )": "Automatic minimum limit (N.m)",
+        "Limite máximo automático ( N.m )": "Automatic maximum limit (N.m)",
+        "Média": "Average",
+        "DP": "SD",
+        "Desvio padrão": "Standard deviation",
+        "Mínimo": "Minimum",
+        "Máximo": "Maximum",
+        "Amplitude": "Range",
+        "Copiar valores": "Copy values",
+        "Colar valores do Excel": "Paste Excel values",
+        "Copia ou cola em coluna para uso no Excel.": "Copy or paste as a column for use in Excel.",
+        "Use uma coluna com os valores medidos do torque.": "Use one column with the measured torque values.",
+        "A ISO 5393 foca no método de ensaio, rastreabilidade, condições de teste e repetibilidade/scatter. Os índices Cm e Cmk abaixo permanecem como critério interno WS.": "ISO 5393 focuses on the test method, traceability, test conditions and repeatability/scatter. The Cm and Cmk indexes below remain an internal WS criterion.",
+        "Visual simplificado: linhas das medições, torque nominal e limites mínimo/máximo.": "Simplified view: measurement lines, nominal torque and minimum/maximum limits.",
+        "Histogramas por tipo de junta": "Histograms by joint type",
+        "Distribuição das leituras por torque e tipo de junta.": "Distribution of readings by torque and joint type.",
+        "Central de ajuda do app Nova Capabilidade / ISO 5393.": "Nova Capability / ISO 5393 app help center.",
+        "Ajuda do app": "App help",
+        "Mensagem": "Message",
+        "Aviso do sistema": "System notice",
+        "Campos em laranja são obrigatórios. Eles possuem * no título e ícone de atenção dentro do campo.": "Orange fields are mandatory. They have * in the title and a warning icon inside the field.",
+        "HELP - Ajuda do Sistema Nova Capabilidade": "HELP - Nova Capability System Help",
+        "Se não abrir tabelas, verifique campos obrigatórios. Se não calcular, verifique se as tabelas estão completas.": "If tables do not open, check mandatory fields. If it does not calculate, check whether the tables are complete.",
+        "EX.": "E.g.",
+        "EX:": "E.g.:",
+        "EX.:": "E.g.:",
+        "EX.: MARCOS TADEU SILVA": "E.g.: MARCOS TADEU SILVA",
+        "EX.: ISO5393-2026-001": "E.g.: ISO5393-2026-001",
+        "EX.: LABORATÓRIO WS / LINHA A": "E.g.: WS LABORATORY / LINE A",
+        "EX.: PROJETO STA / LINHA MONTAGEM FINAL": "E.g.: STA PROJECT / FINAL ASSEMBLY LINE",
+        "EX.: CROWFOOT 32MM / CF-01": "E.g.: CROWFOOT 32MM / CF-01",
+        "EX.: ETP STB33 12 I06 B": "E.g.: ETP STB33 12 I06 B",
+        "EX.: A200045": "E.g.: A200045",
+        "EX.: PF6000 / MTF6000": "E.g.: PF6000 / MTF6000",
+        "EX.: CTRL123456": "E.g.: CTRL123456",
+        "EX.: STA 6000 / RTT": "E.g.: STA 6000 / RTT",
+        "EX.: STA 6000 / PAINEL 01": "E.g.: STA 6000 / PANEL 01",
+        "EX.: CERT-STA-2026-001 / RBC-STA": "E.g.: CERT-STA-2026-001 / RBC-STA",
+        "EX.: CERT-TRANS-2026-001 / RBC-12345": "E.g.: CERT-TRANS-2026-001 / RBC-12345",
+        "EX.: 22": "E.g.: 22",
+        "EX.: 55": "E.g.: 55",
+        "EX.: 15": "E.g.: 15",
+        "EX.: 100": "E.g.: 100",
+        "EX.: 20": "E.g.: 20",
+        "EX.: 30": "E.g.: 30",
+        "EX.: 720": "E.g.: 720",
+        "EX.: Torque 35 Nm / Ponto A": "E.g.: Torque 35 Nm / Point A",
+        "EX.: FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO.": "E.g.: TOOL TESTED UNDER NORMAL USE CONDITION.",
+        "Digite o total": "Enter the total",
+        "Certificado de calibração": "Calibration certificate",
+        "Ponto A": "Point A",
+        "Painel": "Panel",
+        "PAINEL": "PANEL",
+        "Laboratório": "Laboratory",
+        "LABORATÓRIO": "LABORATORY",
+        "Linha": "Line",
+        "LINHA": "LINE",
+        "Projeto": "Project",
+        "PROJETO": "PROJECT",
+        "Montagem final": "Final assembly",
+        "MONTAGEM FINAL": "FINAL ASSEMBLY",
+        "Ferramenta ensaiada conforme condição normal de uso.": "Tool tested under normal use condition.",
+        "ISO 5393 / Critério interno WS": "ISO 5393 / Internal WS criterion",
+        "FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO.": "TOOL TESTED UNDER NORMAL USE CONDITION."
+      },
+      es: {
+        "HELP": "AYUDA",
+        "English": "Inglés",
+        "Español": "Español",
+        "Salvar ensaio": "Guardar ensayo",
+        "Ângulo": "Ángulo",
+        "Folha de ângulo": "Hoja de ángulo",
+        "Cálculo separado para ângulo mínimo e ângulo máximo, com duas tabelas de amostras.": "Cálculo separado para ángulo mínimo y ángulo máximo, con dos tablas de muestras.",
+        "Parâmetros do ensaio de ângulo": "Parámetros del ensayo de ángulo",
+        "Informe o ângulo mínimo, ângulo máximo, tolerância e quantidade de amostras.": "Informe el ángulo mínimo, el ángulo máximo, la tolerancia y la cantidad de muestras.",
+        "Configuração do ângulo": "Configuración del ángulo",
+        "Ângulo mínimo nominal": "Ángulo mínimo nominal",
+        "Ângulo máximo nominal": "Ángulo máximo nominal",
+        "Ângulo mínimo nominal (grau(s))": "Ángulo mínimo nominal (grado(s))",
+        "Ângulo máximo nominal (grau(s))": "Ángulo máximo nominal (grado(s))",
+        "Limite inferior do ângulo mínimo": "Límite inferior del ángulo mínimo",
+        "Limite superior do ângulo mínimo": "Límite superior del ángulo mínimo",
+        "Limite inferior do ângulo máximo": "Límite inferior del ángulo máximo",
+        "Limite superior do ângulo máximo": "Límite superior del ángulo máximo",
+        "Resultado Ângulo Mínimo": "Resultado Ángulo Mínimo",
+        "Resultado Ângulo Máximo": "Resultado Ángulo Máximo",
+        "Resultado final do ângulo": "Resultado final del ángulo",
+        "Tabelas de amostras de ângulo": "Tablas de muestras de ángulo",
+        "Ângulo mínimo": "Ángulo mínimo",
+        "Ângulo máximo": "Ángulo máximo",
+        "Gráficos de ângulo": "Gráficos de ángulo",
+        "Visual simplificado: linhas das medições, ângulo nominal e limites mínimo/máximo.": "Visual simplificado: líneas de medición, ángulo nominal y límites mínimo/máximo.",
+        "Histogramas de ângulo": "Histogramas de ángulo",
+        "Distribuição das leituras de ângulo mínimo e ângulo máximo.": "Distribución de las lecturas de ángulo mínimo y ángulo máximo.",
+        "Histograma — Ângulo mínimo": "Histograma — Ángulo mínimo",
+        "Histograma — Ângulo máximo": "Histograma — Ángulo máximo",
+        "Relatório de Ângulo - Capabilidade WS": "Informe de Ángulo - Capabilidad WS",
+        "Imprimir relatório / salvar PDF": "Imprimir informe / guardar PDF",
+        "Dados do ensaio": "Datos del ensayo",
+        "Data": "Fecha",
+        "Técnico": "Técnico",
+        "Serial": "Serial",
+        "Parâmetros do ângulo": "Parámetros del ángulo",
+        "Limites ângulo mínimo": "Límites del ángulo mínimo",
+        "Limites ângulo máximo": "Límites del ángulo máximo",
+        "Status": "Estado",
+        "Motivo": "Motivo",
+        "Resultados estatísticos": "Resultados estadísticos",
+        "Item": "Ítem",
+        "Gráficos": "Gráficos",
+        "Tabelas de amostras": "Tablas de muestras",
+        "Faixas de ângulo": "Rangos de ángulo",
+        "grau(s)": "grado(s)",
+        "Graus": "Grados",
+        "30 Graus": "30 Grados",
+        "720 Graus": "720 Grados",
+        "Unidade de medição": "Unidad de medición",
+        "Valor (grau(s))": "Valor (grado(s))",
+        "Valor ( N.m )": "Valor (N.m)",
+        "Valor (N.m)": "Valor (N.m)",
+        "Torque de teste superior ( N.m )": "Torque de prueba superior (N.m)",
+        "Torque de teste inferior ( N.m )": "Torque de prueba inferior (N.m)",
+        "Torque nominal ( N.m )": "Torque nominal (N.m)",
+        "Limite mínimo automático ( N.m )": "Límite mínimo automático (N.m)",
+        "Limite máximo automático ( N.m )": "Límite máximo automático (N.m)",
+        "Média": "Promedio",
+        "DP": "DE",
+        "Desvio padrão": "Desviación estándar",
+        "Mínimo": "Mínimo",
+        "Máximo": "Máximo",
+        "Amplitude": "Amplitud",
+        "Copiar valores": "Copiar valores",
+        "Colar valores do Excel": "Pegar valores de Excel",
+        "Copia ou cola em coluna para uso no Excel.": "Copie o pegue en columna para usar en Excel.",
+        "Use uma coluna com os valores medidos do torque.": "Use una columna con los valores medidos del torque.",
+        "A ISO 5393 foca no método de ensaio, rastreabilidade, condições de teste e repetibilidade/scatter. Os índices Cm e Cmk abaixo permanecem como critério interno WS.": "La ISO 5393 se enfoca en el método de ensayo, trazabilidad, condiciones de prueba y repetibilidad/scatter. Los índices Cm y Cmk a continuación permanecen como criterio interno WS.",
+        "Visual simplificado: linhas das medições, torque nominal e limites mínimo/máximo.": "Visual simplificado: líneas de medición, torque nominal y límites mínimo/máximo.",
+        "Histogramas por tipo de junta": "Histogramas por tipo de junta",
+        "Distribuição das leituras por torque e tipo de junta.": "Distribución de las lecturas por torque y tipo de junta.",
+        "Central de ajuda do app Nova Capabilidade / ISO 5393.": "Centro de ayuda de la app Nova Capabilidade / ISO 5393.",
+        "Ajuda do app": "Ayuda de la app",
+        "Mensagem": "Mensaje",
+        "Aviso do sistema": "Aviso del sistema",
+        "Campos em laranja são obrigatórios. Eles possuem * no título e ícone de atenção dentro do campo.": "Los campos en naranja son obligatorios. Tienen * en el título e ícono de atención dentro del campo.",
+        "HELP - Ajuda do Sistema Nova Capabilidade": "AYUDA - Sistema Nova Capabilidade",
+        "Se não abrir tabelas, verifique campos obrigatórios. Se não calcular, verifique se as tabelas estão completas.": "Si no se abren las tablas, verifique los campos obligatorios. Si no calcula, verifique si las tablas están completas.",
+        "EX.": "EJ.",
+        "EX:": "EJ.:",
+        "EX.:": "EJ.:",
+        "EX.: MARCOS TADEU SILVA": "EJ.: MARCOS TADEU SILVA",
+        "EX.: ISO5393-2026-001": "EJ.: ISO5393-2026-001",
+        "EX.: LABORATÓRIO WS / LINHA A": "EJ.: LABORATORIO WS / LÍNEA A",
+        "EX.: PROJETO STA / LINHA MONTAGEM FINAL": "EJ.: PROYECTO STA / LÍNEA DE MONTAJE FINAL",
+        "EX.: CROWFOOT 32MM / CF-01": "EJ.: CROWFOOT 32MM / CF-01",
+        "EX.: ETP STB33 12 I06 B": "EJ.: ETP STB33 12 I06 B",
+        "EX.: A200045": "EJ.: A200045",
+        "EX.: PF6000 / MTF6000": "EJ.: PF6000 / MTF6000",
+        "EX.: CTRL123456": "EJ.: CTRL123456",
+        "EX.: STA 6000 / RTT": "EJ.: STA 6000 / RTT",
+        "EX.: STA 6000 / PAINEL 01": "EJ.: STA 6000 / PANEL 01",
+        "EX.: CERT-STA-2026-001 / RBC-STA": "EJ.: CERT-STA-2026-001 / RBC-STA",
+        "EX.: CERT-TRANS-2026-001 / RBC-12345": "EJ.: CERT-TRANS-2026-001 / RBC-12345",
+        "EX.: 22": "EJ.: 22",
+        "EX.: 55": "EJ.: 55",
+        "EX.: 15": "EJ.: 15",
+        "EX.: 100": "EJ.: 100",
+        "EX.: 20": "EJ.: 20",
+        "EX.: 30": "EJ.: 30",
+        "EX.: 720": "EJ.: 720",
+        "EX.: Torque 35 Nm / Ponto A": "EJ.: Torque 35 Nm / Punto A",
+        "EX.: FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO.": "EJ.: HERRAMIENTA ENSAYADA SEGÚN CONDICIÓN NORMAL DE USO.",
+        "Digite o total": "Ingrese el total",
+        "Certificado de calibração": "Certificado de calibración",
+        "Ponto A": "Punto A",
+        "Painel": "Panel",
+        "PAINEL": "PANEL",
+        "Laboratório": "Laboratorio",
+        "LABORATÓRIO": "LABORATORIO",
+        "Linha": "Línea",
+        "LINHA": "LÍNEA",
+        "Projeto": "Proyecto",
+        "PROJETO": "PROYECTO",
+        "Montagem final": "Montaje final",
+        "MONTAGEM FINAL": "MONTAJE FINAL",
+        "Ferramenta ensaiada conforme condição normal de uso.": "Herramienta ensayada según condición normal de uso.",
+        "ISO 5393 / Critério interno WS": "ISO 5393 / Criterio interno WS",
+        "FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO.": "HERRAMIENTA ENSAYADA SEGÚN CONDICIÓN NORMAL DE USO."
+      }
+    };
+
+    function mapaTraducaoCompleto(idioma) {
+      return {
+        ...((typeof traducoesSistema !== "undefined" && traducoesSistema[idioma]) ? traducoesSistema[idioma] : {}),
+        ...((typeof traducoesRelatorioExtra !== "undefined" && traducoesRelatorioExtra[idioma]) ? traducoesRelatorioExtra[idioma] : {}),
+        ...((typeof traducoesFrontExtra !== "undefined" && traducoesFrontExtra[idioma]) ? traducoesFrontExtra[idioma] : {}),
+        ...((typeof traducoesSemExcecao !== "undefined" && traducoesSemExcecao[idioma]) ? traducoesSemExcecao[idioma] : {})
+      };
+    }
+
+    function traduzirTextoParcial(texto, idioma = relIdiomaAtual()) {
+      if (!texto || idioma === "pt") return texto;
+      const mapa = mapaTraducaoCompleto(idioma);
+      let saida = String(texto);
+      const aplicar = (valor) => {
+        Object.keys(mapa).filter(Boolean).sort((a,b) => b.length - a.length).forEach(chave => {
+          saida = saida.split(chave).join(mapa[chave]);
+        });
+      };
+      aplicar();
+      return saida;
+    }
+
     function relT(texto) {
       const idioma = relIdiomaAtual();
       if (!texto || idioma === "pt") return texto;
-      const mapaSistema = (typeof traducoesSistema !== "undefined" && traducoesSistema[idioma]) ? traducoesSistema[idioma] : {};
-      const mapaRelatorio = (typeof traducoesRelatorioExtra !== "undefined" && traducoesRelatorioExtra[idioma]) ? traducoesRelatorioExtra[idioma] : {};
-      const mapaFront = (typeof traducoesFrontExtra !== "undefined" && traducoesFrontExtra[idioma]) ? traducoesFrontExtra[idioma] : {};
-      return mapaFront[texto] || mapaRelatorio[texto] || mapaSistema[texto] || texto;
+      const mapa = mapaTraducaoCompleto(idioma);
+      const chave = String(texto).trim();
+      return mapa[chave] || traduzirTextoParcial(String(texto), idioma);
     }
 
     function relTraduzirTexto(texto) {
@@ -3154,7 +3426,7 @@
               for (let i = 0; i < bins; i++) {
                 const inicio = minimo + (largura * i);
                 const fim = i === bins - 1 ? maximo : inicio + largura;
-                labels.push(formatarNumeroRel(inicio) + " até " + formatarNumeroRel(fim));
+                labels.push(formatarNumeroRel(inicio) + " ${relT("até")} " + formatarNumeroRel(fim));
               }
               numeros.forEach(valor => {
                 let indice = Math.floor((valor - minimo) / largura);
@@ -3534,49 +3806,41 @@
     function traduzirMensagemHtml(html) {
       const idioma = relIdiomaAtual();
       if (idioma === "pt" || !html) return html;
-      let saida = html;
-      const mapa = {
-        ...((typeof traducoesSistema !== "undefined" && traducoesSistema[idioma]) ? traducoesSistema[idioma] : {}),
-        ...((typeof traducoesRelatorioExtra !== "undefined" && traducoesRelatorioExtra[idioma]) ? traducoesRelatorioExtra[idioma] : {}),
-        ...((typeof traducoesFrontExtra !== "undefined" && traducoesFrontExtra[idioma]) ? traducoesFrontExtra[idioma] : {})
-      };
-      Object.keys(mapa).sort((a,b) => b.length - a.length).forEach(chave => {
-        if (!chave) return;
-        saida = saida.split(chave).join(mapa[chave]);
-      });
-      return saida;
+      return traduzirTextoParcial(html, idioma);
     }
 
     function traduzirElementos(idioma) {
-      const elementos = document.querySelectorAll("button, label, h1, h2, h3, h4, p, li, span, strong, option, th, td, .assinatura-linha, .assinatura-nome, .destino-badge, .small-note");
-      elementos.forEach(item => {
-        const original = item.dataset.ptOriginal;
-        if (!original) return;
-        if (item.children && item.children.length > 0) return;
-        item.textContent = idioma === "pt" ? original : relT(original);
+      const ignorar = new Set(["SCRIPT", "STYLE", "CANVAS"]);
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+          let pai = node.parentElement;
+          while (pai) {
+            if (ignorar.has(pai.tagName)) return NodeFilter.FILTER_REJECT;
+            pai = pai.parentElement;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+
+      const textos = [];
+      while (walker.nextNode()) textos.push(walker.currentNode);
+      textos.forEach(node => {
+        if (!node._ptOriginal) node._ptOriginal = node.nodeValue;
+        const original = node._ptOriginal;
+        node.nodeValue = idioma === "pt" ? original : traduzirTextoParcial(original, idioma);
       });
 
       document.querySelectorAll("input[placeholder], textarea[placeholder]").forEach(item => {
+        if (!item.dataset.ptPlaceholderOriginal) item.dataset.ptPlaceholderOriginal = item.getAttribute("placeholder") || "";
         const original = item.dataset.ptPlaceholderOriginal;
-        if (original !== undefined) item.setAttribute("placeholder", idioma === "pt" ? original : relT(original));
+        item.setAttribute("placeholder", idioma === "pt" ? original : traduzirTextoParcial(original, idioma));
       });
 
       document.querySelectorAll("input[readonly]").forEach(item => {
+        if (!item.dataset.ptValueOriginal) item.dataset.ptValueOriginal = item.value || "";
         const original = item.dataset.ptValueOriginal;
-        if (original !== undefined && original) item.value = idioma === "pt" ? original : relT(original);
-      });
-
-      document.querySelectorAll("p, li, span").forEach(item => {
-        if (!item.children || item.children.length === 0) return;
-        item.childNodes.forEach(node => {
-          if (node.nodeType !== Node.TEXT_NODE) return;
-          if (!node._ptOriginal) node._ptOriginal = node.nodeValue;
-          const originalNode = node._ptOriginal;
-          const trimmed = originalNode.trim();
-          if (!trimmed) return;
-          const traduzido = idioma === "pt" ? trimmed : relT(trimmed);
-          node.nodeValue = originalNode.replace(trimmed, traduzido);
-        });
+        if (original) item.value = idioma === "pt" ? original : traduzirTextoParcial(original, idioma);
       });
     }
 
@@ -3603,13 +3867,15 @@
       atualizarChart(graficoMaior, "Torque superior");
       atualizarChart(graficoMenor, "Torque inferior");
       atualizarChart(graficoTorqueUnico, "Torque único");
-      [histMaxRigida, histMaxFlexivel, histMinRigida, histMinFlexivel, histTorqueUnico].forEach(chart => {
+      atualizarChart(graficoAnguloMin, "Ângulo mínimo");
+      atualizarChart(graficoAnguloMax, "Ângulo máximo");
+      [histMaxRigida, histMaxFlexivel, histMinRigida, histMinFlexivel, histTorqueUnico, histAnguloMin, histAnguloMax].forEach(chart => {
         if (!chart) return;
         chart.data.datasets.forEach(ds => {
           if (!ds._labelPt) ds._labelPt = ds.label;
           ds.label = relT(ds._labelPt);
         });
-        if (chart.options?.scales?.x?.title) chart.options.scales.x.title.text = relT("Faixas de torque");
+        if (chart.options?.scales?.x?.title) chart.options.scales.x.title.text = traduzirTextoParcial(chart.options.scales.x.title.text || "Faixas de torque");
         if (chart.options?.scales?.y?.title) chart.options.scales.y.title.text = relT("Frequência");
         chart.update("none");
       });
@@ -3649,7 +3915,7 @@
     }
 
     function abrirTorqueUnico() {
-      if (!validarCamposObrigatoriosDados()) return;
+      if (!validarCamposObrigatoriosDados("a página de torque único")) return;
 
       mostrarPagina("pagina-torque-unico");
       calcularLimitesTorqueUnico();
@@ -4203,7 +4469,7 @@
               for (let i = 0; i < bins; i++) {
                 const inicio = minimo + (largura * i);
                 const fim = i === bins - 1 ? maximo : inicio + largura;
-                labels.push(formatarNumeroRel(inicio) + " até " + formatarNumeroRel(fim));
+                labels.push(formatarNumeroRel(inicio) + " ${relT("até")} " + formatarNumeroRel(fim));
               }
 
               numeros.forEach(valor => {
@@ -4271,6 +4537,8 @@
 
 
     function abrirAngulo() {
+      if (!validarCamposObrigatoriosDados("a página de ângulo")) return;
+
       const total = obterTotalAmostrasAngulo();
       if (total > 0 && el("tbody-angulo-min") && el("tbody-angulo-min").querySelectorAll("tr").length !== total) {
         criarLinhasAngulo(total, true, false);
@@ -4296,10 +4564,10 @@
       const maxInf = angMax ? angMax * (1 - fator) : 0;
       const maxSup = angMax ? angMax * (1 + fator) : 0;
 
-      if (el("anguloMinLimiteInferior")) el("anguloMinLimiteInferior").value = minInf ? `${formatarNumero(minInf)} grau(s)` : "";
-      if (el("anguloMinLimiteSuperior")) el("anguloMinLimiteSuperior").value = minSup ? `${formatarNumero(minSup)} grau(s)` : "";
-      if (el("anguloMaxLimiteInferior")) el("anguloMaxLimiteInferior").value = maxInf ? `${formatarNumero(maxInf)} grau(s)` : "";
-      if (el("anguloMaxLimiteSuperior")) el("anguloMaxLimiteSuperior").value = maxSup ? `${formatarNumero(maxSup)} grau(s)` : "";
+      if (el("anguloMinLimiteInferior")) el("anguloMinLimiteInferior").value = minInf ? `${formatarNumero(minInf)} ${relT("grau(s)")}` : "";
+      if (el("anguloMinLimiteSuperior")) el("anguloMinLimiteSuperior").value = minSup ? `${formatarNumero(minSup)} ${relT("grau(s)")}` : "";
+      if (el("anguloMaxLimiteInferior")) el("anguloMaxLimiteInferior").value = maxInf ? `${formatarNumero(maxInf)} ${relT("grau(s)")}` : "";
+      if (el("anguloMaxLimiteSuperior")) el("anguloMaxLimiteSuperior").value = maxSup ? `${formatarNumero(maxSup)} ${relT("grau(s)")}` : "";
 
       return { minInf, minSup, maxInf, maxSup };
     }
@@ -4324,7 +4592,7 @@
       if (limparResultado) limparResultadosAngulo();
     }
 
-    function definirTextoAngulo(id, valor, casas = 2, sufixo = " grau(s)") {
+    function definirTextoAngulo(id, valor, casas = 2, sufixo = " ${relT("grau(s)")}") {
       const campo = el(id);
       if (!campo) return;
       if (!Number.isFinite(valor)) {
@@ -4452,12 +4720,12 @@
           tooltip: { callbacks: { label: function(context) {
             const valor = context.parsed.y;
             const textoValor = Number.isFinite(valor) ? valor.toFixed(2).replace(".", ",") : "-";
-            return `${context.dataset.label}: ${textoValor} grau(s)`;
+            return `${context.dataset.label}: ${textoValor} ${relT("grau(s)")}`;
           } } }
         },
         scales: {
-          x: { title: { display: true, text: "Amostra" }, grid: { display: false } },
-          y: { title: { display: true, text: `${tituloEixo} (grau(s))` }, grid: { color: "rgba(36,68,83,0.10)" } }
+          x: { title: { display: true, text: relT("Amostra") }, grid: { display: false } },
+          y: { title: { display: true, text: `${relT(tituloEixo)} (${relT("grau(s)")})` }, grid: { color: "rgba(36,68,83,0.10)" } }
         }
       };
     }
@@ -4471,7 +4739,7 @@
           labels: hist.labels,
           datasets: [
             { type: "bar", label: tituloDataset, data: hist.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 },
-            { type: "line", label: "Linha de tendência", data: hist.frequencias, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: false, tension: 0.35 }
+            { type: "line", label: relT("Linha de tendência"), data: hist.frequencias, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: false, tension: 0.35 }
           ]
         },
         options: {
@@ -4479,8 +4747,8 @@
           maintainAspectRatio: false,
           plugins: { legend: { display: true, position: "bottom", labels: { boxWidth: 10, boxHeight: 10, font: { size: 10, weight: "600" } } } },
           scales: {
-            x: { title: { display: true, text: "Faixas de ângulo" }, ticks: { maxRotation: 45, minRotation: 0, font: { size: 10 } }, grid: { display: false } },
-            y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0 } }
+            x: { title: { display: true, text: relT("Faixas de ângulo") }, ticks: { maxRotation: 45, minRotation: 0, font: { size: 10 } }, grid: { display: false } },
+            y: { beginAtZero: true, title: { display: true, text: relT("Frequência") }, ticks: { precision: 0 } }
           }
         }
       });
@@ -4497,10 +4765,10 @@
         graficoAnguloMin = new Chart(el("graficoAnguloMin"), {
           type: "line",
           data: { labels, datasets: [
-            criarSeriePontos("Ângulo mínimo", dados.valoresMin),
-            criarLinhaReferencia("Nominal", angMinNominal, total),
-            criarLinhaReferencia("Limite mínimo", dados.limites.minInf, total),
-            criarLinhaReferencia("Limite máximo", dados.limites.minSup, total)
+            criarSeriePontos(relT("Ângulo mínimo"), dados.valoresMin),
+            criarLinhaReferencia(relT("Nominal"), angMinNominal, total),
+            criarLinhaReferencia(relT("Limite mínimo"), dados.limites.minInf, total),
+            criarLinhaReferencia(relT("Limite máximo"), dados.limites.minSup, total)
           ] },
           options: obterOpcoesGraficoAngulo("Ângulo mínimo")
         });
@@ -4510,17 +4778,17 @@
         graficoAnguloMax = new Chart(el("graficoAnguloMax"), {
           type: "line",
           data: { labels, datasets: [
-            criarSeriePontos("Ângulo máximo", dados.valoresMax),
-            criarLinhaReferencia("Nominal", angMaxNominal, total),
-            criarLinhaReferencia("Limite mínimo", dados.limites.maxInf, total),
-            criarLinhaReferencia("Limite máximo", dados.limites.maxSup, total)
+            criarSeriePontos(relT("Ângulo máximo"), dados.valoresMax),
+            criarLinhaReferencia(relT("Nominal"), angMaxNominal, total),
+            criarLinhaReferencia(relT("Limite mínimo"), dados.limites.maxInf, total),
+            criarLinhaReferencia(relT("Limite máximo"), dados.limites.maxSup, total)
           ] },
           options: obterOpcoesGraficoAngulo("Ângulo máximo")
         });
       }
 
-      histAnguloMin = criarHistogramaAngulo("histAnguloMin", dados.valoresMin, "Ângulo mínimo");
-      histAnguloMax = criarHistogramaAngulo("histAnguloMax", dados.valoresMax, "Ângulo máximo");
+      histAnguloMin = criarHistogramaAngulo("histAnguloMin", dados.valoresMin, relT("Ângulo mínimo"));
+      histAnguloMax = criarHistogramaAngulo("histAnguloMax", dados.valoresMax, relT("Ângulo máximo"));
     }
 
     function limparTabelasAngulo() {
@@ -4532,7 +4800,7 @@
     }
 
     function montarLinhasRelatorioAngulo(valores) {
-      return (valores || []).map((valor, i) => `<tr><td>${i + 1}</td><td>${formatarNumero(valor)} grau(s)</td></tr>`).join("");
+      return (valores || []).map((valor, i) => `<tr><td>${i + 1}</td><td>${formatarNumero(valor)} ${relT("grau(s)")}</td></tr>`).join("");
     }
 
     function gerarRelatorioAngulo() {
@@ -4552,10 +4820,10 @@
 
       relatorio.document.write(`
         <!DOCTYPE html>
-        <html lang="pt-BR">
+        <html lang="${relLangHtml()}">
         <head>
           <meta charset="UTF-8">
-          <title>Relatório de Ângulo - Capabilidade WS</title>
+          <title>${relT("Relatório de Ângulo - Capabilidade WS")}</title>
           <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
           <style>
             body { font-family: Arial, sans-serif; color: #1f3f4d; margin: 18px; }
@@ -4574,60 +4842,60 @@
           </style>
         </head>
         <body>
-          <button class="btn" onclick="window.print()">Imprimir relatório / salvar PDF</button>
+          <button class="btn" onclick="window.print()">${relT("Imprimir relatório / salvar PDF")}</button>
           <div class="header">
-            <h1>Relatório de Ângulo - Capabilidade WS</h1>
-            <div>ISO 5393 / Critério interno WS</div>
+            <h1>${relT("Relatório de Ângulo - Capabilidade WS")}</h1>
+            <div>${relT("ISO 5393 / Critério interno WS")}</div>
           </div>
 
           <div class="box">
-            <h2>Dados do ensaio</h2>
+            <h2>${relT("Dados do ensaio")}</h2>
             <div class="grid">
-              <div><strong>Relatório:</strong> ${d.numeroRelatorio}</div>
-              <div><strong>Data:</strong> ${d.dataEnsaio}</div>
-              <div><strong>Técnico:</strong> ${d.tecnicoResponsavel}</div>
-              <div><strong>Cliente / projeto:</strong> ${d.clienteProjeto}</div>
-              <div><strong>Apertadeira:</strong> ${d.apertadeiraModelo}</div>
-              <div><strong>Serial:</strong> ${d.serialApertadeira}</div>
-              <div><strong>Transdutor:</strong> ${d.transdutor}</div>
-              <div><strong>Certificado transdutor:</strong> ${d.certificadoCalibracao}</div>
+              <div><strong>${relT("Relatório")}:</strong> ${d.numeroRelatorio}</div>
+              <div><strong>${relT("Data")}:</strong> ${d.dataEnsaio}</div>
+              <div><strong>${relT("Técnico")}:</strong> ${d.tecnicoResponsavel}</div>
+              <div><strong>${relT("Cliente / projeto")}:</strong> ${d.clienteProjeto}</div>
+              <div><strong>${relT("Apertadeira")}:</strong> ${d.apertadeiraModelo}</div>
+              <div><strong>${relT("Serial")}:</strong> ${d.serialApertadeira}</div>
+              <div><strong>${relT("Transdutor")}:</strong> ${d.transdutor}</div>
+              <div><strong>${relT("Certificado transdutor")}:</strong> ${d.certificadoCalibracao}</div>
             </div>
           </div>
 
           <div class="box">
-            <h2>Parâmetros do ângulo</h2>
+            <h2>${relT("Parâmetros do ângulo")}</h2>
             <div class="grid">
-              <div><strong>Ângulo mínimo nominal:</strong> ${valorOuTraco("anguloMinBase")} grau(s)</div>
-              <div><strong>Ângulo máximo nominal:</strong> ${valorOuTraco("anguloMaxBase")} grau(s)</div>
-              <div><strong>Tolerância:</strong> ${valorOuTraco("anguloTolerancia")}%</div>
-              <div><strong>Total de amostras:</strong> ${obterTotalAmostrasAngulo()}</div>
-              <div><strong>Limites ângulo mínimo:</strong> ${formatarNumero(limites.minInf)} até ${formatarNumero(limites.minSup)} grau(s)</div>
-              <div><strong>Limites ângulo máximo:</strong> ${formatarNumero(limites.maxInf)} até ${formatarNumero(limites.maxSup)} grau(s)</div>
+              <div><strong>${relT("Ângulo mínimo nominal")}:</strong> ${valorOuTraco("anguloMinBase")} ${relT("grau(s)")}</div>
+              <div><strong>${relT("Ângulo máximo nominal")}:</strong> ${valorOuTraco("anguloMaxBase")} ${relT("grau(s)")}</div>
+              <div><strong>${relT("Tolerância")}:</strong> ${valorOuTraco("anguloTolerancia")}%</div>
+              <div><strong>${relT("Total de amostras")}:</strong> ${obterTotalAmostrasAngulo()}</div>
+              <div><strong>${relT("Limites ângulo mínimo")}:</strong> ${formatarNumero(limites.minInf)} ${relT("até")} ${formatarNumero(limites.minSup)} ${relT("grau(s)")}</div>
+              <div><strong>${relT("Limites ângulo máximo")}:</strong> ${formatarNumero(limites.maxInf)} ${relT("até")} ${formatarNumero(limites.maxSup)} ${relT("grau(s)")}</div>
             </div>
           </div>
 
           <div class="box">
-            <h2>Resultado final</h2>
+            <h2>${relT("Resultado final")}</h2>
             <div class="grid">
-              <div><strong>Status:</strong> ${el("angStatus").textContent}</div>
-              <div><strong>% final encontrada:</strong> ${el("angPctFinal").textContent}</div>
-              <div style="grid-column:1/-1"><strong>Motivo:</strong> ${el("angMotivo").textContent}</div>
+              <div><strong>${relT("Status")}:</strong> ${el("angStatus").textContent}</div>
+              <div><strong>${relT("% final encontrada")}:</strong> ${el("angPctFinal").textContent}</div>
+              <div style="grid-column:1/-1"><strong>${relT("Motivo")}:</strong> ${el("angMotivo").textContent}</div>
             </div>
           </div>
 
           <div class="box">
-            <h2>Resultados estatísticos</h2>
+            <h2>${relT("Resultados estatísticos")}</h2>
             <table>
-              <thead><tr><th>Item</th><th>Média</th><th>DP</th><th>Mínimo</th><th>Máximo</th><th>Amplitude</th><th>Scatter</th><th>Cm</th><th>Cmk</th></tr></thead>
+              <thead><tr><th>${relT("Item")}</th><th>${relT("Média")}</th><th>${relT("DP")}</th><th>${relT("Mínimo")}</th><th>${relT("Máximo")}</th><th>${relT("Amplitude")}</th><th>${relT("Scatter")}</th><th>${relT("Cm")}</th><th>${relT("Cmk")}</th></tr></thead>
               <tbody>
-                <tr><td>Ângulo mínimo</td><td>${el("angMinMedia").textContent}</td><td>${el("angMinDp").textContent}</td><td>${el("angMinMin").textContent}</td><td>${el("angMinMax").textContent}</td><td>${el("angMinAmplitude").textContent}</td><td>${el("angMinScatter").textContent}</td><td>${el("angMinCm").textContent}</td><td>${el("angMinCmk").textContent}</td></tr>
-                <tr><td>Ângulo máximo</td><td>${el("angMaxMedia").textContent}</td><td>${el("angMaxDp").textContent}</td><td>${el("angMaxMin").textContent}</td><td>${el("angMaxMax").textContent}</td><td>${el("angMaxAmplitude").textContent}</td><td>${el("angMaxScatter").textContent}</td><td>${el("angMaxCm").textContent}</td><td>${el("angMaxCmk").textContent}</td></tr>
+                <tr><td>${relT("Ângulo mínimo")}</td><td>${el("angMinMedia").textContent}</td><td>${el("angMinDp").textContent}</td><td>${el("angMinMin").textContent}</td><td>${el("angMinMax").textContent}</td><td>${el("angMinAmplitude").textContent}</td><td>${el("angMinScatter").textContent}</td><td>${el("angMinCm").textContent}</td><td>${el("angMinCmk").textContent}</td></tr>
+                <tr><td>${relT("Ângulo máximo")}</td><td>${el("angMaxMedia").textContent}</td><td>${el("angMaxDp").textContent}</td><td>${el("angMaxMin").textContent}</td><td>${el("angMaxMax").textContent}</td><td>${el("angMaxAmplitude").textContent}</td><td>${el("angMaxScatter").textContent}</td><td>${el("angMaxCm").textContent}</td><td>${el("angMaxCmk").textContent}</td></tr>
               </tbody>
             </table>
           </div>
 
           <div class="box">
-            <h2>Gráficos</h2>
+            <h2>${relT("Gráficos")}</h2>
             <div class="charts">
               <div class="chart-box"><canvas id="graficoAnguloMinRel"></canvas></div>
               <div class="chart-box"><canvas id="graficoAnguloMaxRel"></canvas></div>
@@ -4637,10 +4905,10 @@
           </div>
 
           <div class="box">
-            <h2>Tabelas de amostras</h2>
+            <h2>${relT("Tabelas de amostras")}</h2>
             <div class="charts">
-              <div><h2>Ângulo mínimo</h2><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody>${montarLinhasRelatorioAngulo(valoresMin)}</tbody></table></div>
-              <div><h2>Ângulo máximo</h2><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody>${montarLinhasRelatorioAngulo(valoresMax)}</tbody></table></div>
+              <div><h2>${relT("Ângulo mínimo")}</h2><table><thead><tr><th>${relT("Amostra")}</th><th>${relT("Valor")}</th></tr></thead><tbody>${montarLinhasRelatorioAngulo(valoresMin)}</tbody></table></div>
+              <div><h2>${relT("Ângulo máximo")}</h2><table><thead><tr><th>${relT("Amostra")}</th><th>${relT("Valor")}</th></tr></thead><tbody>${montarLinhasRelatorioAngulo(valoresMax)}</tbody></table></div>
             </div>
           </div>
 
@@ -4652,10 +4920,10 @@
             function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
             function criarSeriePontos(label, data) { return { label, data, showLine: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0 }; }
             function criarLinhaReferencia(label, valor, tamanho) { return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false }; }
-            function opcoes(titulo) { return { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "Amostra" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: titulo + " (grau(s))" }, ticks: { font: { size: 8 } } } } }; }
+            function opcoes(titulo) { return { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "${relT("Amostra")}" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: titulo + " (grau(s))" }, ticks: { font: { size: 8 } } } } }; }
             const total = Math.max(labels.length, 1);
-            new Chart(document.getElementById("graficoAnguloMinRel"), { type: "line", data: { labels, datasets: [criarSeriePontos("Ângulo mínimo", valoresMin), criarLinhaReferencia("Nominal", ${parseNumero(el("anguloMinBase") ? el("anguloMinBase").value : "0")}, total), criarLinhaReferencia("Limite mínimo", limites.minInf, total), criarLinhaReferencia("Limite máximo", limites.minSup, total)] }, options: opcoes("Ângulo mínimo") });
-            new Chart(document.getElementById("graficoAnguloMaxRel"), { type: "line", data: { labels, datasets: [criarSeriePontos("Ângulo máximo", valoresMax), criarLinhaReferencia("Nominal", ${parseNumero(el("anguloMaxBase") ? el("anguloMaxBase").value : "0")}, total), criarLinhaReferencia("Limite mínimo", limites.maxInf, total), criarLinhaReferencia("Limite máximo", limites.maxSup, total)] }, options: opcoes("Ângulo máximo") });
+            new Chart(document.getElementById("graficoAnguloMinRel"), { type: "line", data: { labels, datasets: [criarSeriePontos(relT("Ângulo mínimo"), valoresMin), criarLinhaReferencia(relT("Nominal"), ${parseNumero(el("anguloMinBase") ? el("anguloMinBase").value : "0")}, total), criarLinhaReferencia(relT("Limite mínimo"), limites.minInf, total), criarLinhaReferencia(relT("Limite máximo"), limites.minSup, total)] }, options: opcoes("Ângulo mínimo") });
+            new Chart(document.getElementById("graficoAnguloMaxRel"), { type: "line", data: { labels, datasets: [criarSeriePontos(relT("Ângulo máximo"), valoresMax), criarLinhaReferencia(relT("Nominal"), ${parseNumero(el("anguloMaxBase") ? el("anguloMaxBase").value : "0")}, total), criarLinhaReferencia(relT("Limite mínimo"), limites.maxInf, total), criarLinhaReferencia(relT("Limite máximo"), limites.maxSup, total)] }, options: opcoes("Ângulo máximo") });
             function formatarNumeroRel(valor) { return Number(valor).toFixed(2).replace(".", ","); }
             function histograma(valores) {
               const numeros = (valores || []).filter(v => Number.isFinite(v));
@@ -4664,16 +4932,16 @@
               if (minimo === maximo) return { labels: [formatarNumeroRel(minimo)], frequencias: [numeros.length] };
               const bins = Math.min(Math.max(8, 14), 18), largura = (maximo - minimo) / bins;
               const labels = [], frequencias = new Array(bins).fill(0);
-              for (let i = 0; i < bins; i++) { const ini = minimo + largura * i, fim = i === bins - 1 ? maximo : ini + largura; labels.push(formatarNumeroRel(ini) + " até " + formatarNumeroRel(fim)); }
+              for (let i = 0; i < bins; i++) { const ini = minimo + largura * i, fim = i === bins - 1 ? maximo : ini + largura; labels.push(formatarNumeroRel(ini) + " ${relT("até")} " + formatarNumeroRel(fim)); }
               numeros.forEach(valor => { let idx = Math.floor((valor - minimo) / largura); if (idx < 0) idx = 0; if (idx >= bins) idx = bins - 1; frequencias[idx]++; });
               return { labels, frequencias };
             }
             function criarHist(canvasId, valores, titulo) {
               const h = histograma(valores);
-              new Chart(document.getElementById(canvasId), { data: { labels: h.labels, datasets: [{ type: "bar", label: titulo, data: h.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 }, { type: "line", label: "Linha de tendência", data: h.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } }, scales: { x: { title: { display: true, text: "Faixas de ângulo" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } }, y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0, font: { size: 8 } } } } } });
+              new Chart(document.getElementById(canvasId), { data: { labels: h.labels, datasets: [{ type: "bar", label: titulo, data: h.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 }, { type: "line", label: relT("Linha de tendência"), data: h.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } }, scales: { x: { title: { display: true, text: relT("Faixas de ângulo") }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } }, y: { beginAtZero: true, title: { display: true, text: relT("Frequência") }, ticks: { precision: 0, font: { size: 8 } } } } } });
             }
-            criarHist("histAnguloMinRel", valoresMin, "Ângulo mínimo");
-            criarHist("histAnguloMaxRel", valoresMax, "Ângulo máximo");
+            criarHist("histAnguloMinRel", valoresMin, "${relT("Ângulo mínimo")}");
+            criarHist("histAnguloMaxRel", valoresMax, "${relT("Ângulo máximo")}");
           <\/script>
         </body>
         </html>
@@ -4781,6 +5049,7 @@
           try { calcularTorqueUnico(false); } catch {}
           try { calcularAngulo(false); } catch {}
 
+          reaplicarIdiomaAtual();
           mostrarPopup("Ensaio carregado com sucesso.<br><br>Você já pode continuar editando.", "Ensaio carregado");
         } catch (erro) {
           mostrarPopup("Não foi possível carregar este ensaio.<br><br>Verifique se o arquivo é um JSON salvo por este app.", "Falha ao carregar ensaio");
