@@ -840,11 +840,22 @@
                     <input type="text" id="porcentagem" placeholder="EX.: 15">
                   </div>
                   <div class="field">
-                    <label for="torqueMaiorBase">Torque de teste superior</label>
+                    <label for="unidadeTorque">Unidade de medição</label>
+                    <select id="unidadeTorque" onchange="sincronizarUnidadeTorque('unidadeTorque')">
+                      <option value="N.m">N.m</option>
+                      <option value="lb.in">lb.in</option>
+                      <option value="lb.ft">lb.ft</option>
+                      <option value="grau(s)">grau(s)</option>
+                      <option value="kgf.cm">kgf.cm</option>
+                      <option value="kgf.m">kgf.m</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="torqueMaiorBase">Torque de teste superior (<span class="unidade-torque-label">N.m</span>)</label>
                     <input type="text" id="torqueMaiorBase" placeholder="EX.: 100">
                   </div>
                   <div class="field">
-                    <label for="torqueMenorBase">Torque de teste inferior</label>
+                    <label for="torqueMenorBase">Torque de teste inferior (<span class="unidade-torque-label">N.m</span>)</label>
                     <input type="text" id="torqueMenorBase" placeholder="EX.: 20">
                   </div>
                   <div class="field">
@@ -962,7 +973,7 @@
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-min-rigida')">Colar valores do Excel</button>
                     <div class="small-note">Copia ou cola em coluna para uso no Excel.</div>
                   </div>
-                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-min-rigida"></tbody></table></div>
+                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor (<span class="unidade-torque-label">N.m</span>)</th></tr></thead><tbody id="tbody-min-rigida"></tbody></table></div>
                 </div>
 
                 <div class="table-card">
@@ -972,7 +983,7 @@
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-min-flexivel')">Colar valores do Excel</button>
                     <div class="small-note">Copia ou cola em coluna para uso no Excel.</div>
                   </div>
-                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-min-flexivel"></tbody></table></div>
+                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor (<span class="unidade-torque-label">N.m</span>)</th></tr></thead><tbody id="tbody-min-flexivel"></tbody></table></div>
                 </div>
 
                 <div class="table-card">
@@ -982,7 +993,7 @@
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-max-rigida')">Colar valores do Excel</button>
                     <div class="small-note">Copia ou cola em coluna para uso no Excel.</div>
                   </div>
-                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-max-rigida"></tbody></table></div>
+                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor (<span class="unidade-torque-label">N.m</span>)</th></tr></thead><tbody id="tbody-max-rigida"></tbody></table></div>
                 </div>
 
                 <div class="table-card">
@@ -992,7 +1003,7 @@
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-max-flexivel')">Colar valores do Excel</button>
                     <div class="small-note">Copia ou cola em coluna para uso no Excel.</div>
                   </div>
-                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-max-flexivel"></tbody></table></div>
+                  <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor (<span class="unidade-torque-label">N.m</span>)</th></tr></thead><tbody id="tbody-max-flexivel"></tbody></table></div>
                 </div>
               </div>
             </div>
@@ -1070,7 +1081,18 @@
                 </select>
               </div>
               <div class="field">
-                <label for="tuTorqueNominal">Torque nominal</label>
+                <label for="tuUnidadeTorque">Unidade de medição</label>
+                <select id="tuUnidadeTorque" onchange="sincronizarUnidadeTorque('tuUnidadeTorque')">
+                  <option value="N.m">N.m</option>
+                  <option value="lb.in">lb.in</option>
+                  <option value="lb.ft">lb.ft</option>
+                  <option value="grau(s)">grau(s)</option>
+                  <option value="kgf.cm">kgf.cm</option>
+                  <option value="kgf.m">kgf.m</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="tuTorqueNominal">Torque nominal (<span class="unidade-torque-label">N.m</span>)</label>
                 <input type="text" id="tuTorqueNominal" placeholder="EX.: 35">
               </div>
               <div class="field">
@@ -1082,11 +1104,11 @@
                 <input type="number" id="tuAmostras" min="1" step="1" value="25">
               </div>
               <div class="field">
-                <label for="tuLimiteMin">Limite mínimo automático</label>
+                <label for="tuLimiteMin">Limite mínimo automático (<span class="unidade-torque-label">N.m</span>)</label>
                 <input type="text" id="tuLimiteMin" readonly>
               </div>
               <div class="field">
-                <label for="tuLimiteMax">Limite máximo automático</label>
+                <label for="tuLimiteMax">Limite máximo automático (<span class="unidade-torque-label">N.m</span>)</label>
                 <input type="text" id="tuLimiteMax" readonly>
               </div>
             </div>
@@ -1124,7 +1146,7 @@
                   <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-torque-unico')">Colar valores do Excel</button>
                   <div class="small-note">Use uma coluna com os valores medidos do torque.</div>
                 </div>
-                <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor</th></tr></thead><tbody id="tbody-torque-unico"></tbody></table></div>
+                <div class="table-scroll"><table><thead><tr><th>Amostra</th><th>Valor (<span class="unidade-torque-label">N.m</span>)</th></tr></thead><tbody id="tbody-torque-unico"></tbody></table></div>
               </div>
             </div>
 
@@ -1401,6 +1423,39 @@
     function valorOuTraco(id) {
       const campo = el(id);
       return campo && String(campo.value || "").trim() ? campo.value : "-";
+    }
+
+    function unidadeTorqueTexto() {
+      const principal = el("unidadeTorque");
+      const torqueUnico = el("tuUnidadeTorque");
+      return (principal && principal.value) || (torqueUnico && torqueUnico.value) || "N.m";
+    }
+
+    function idResultadoUsaUnidade(id) {
+      return /^(media|dp|min|max|amp)-/.test(id) || ["tuMedia", "tuDp", "tuMin", "tuMax", "tuAmplitude"].includes(id);
+    }
+
+    function formatarValorComUnidade(valor, casas = 2) {
+      if (!Number.isFinite(valor)) return "-";
+      return `${formatarNumero(valor, casas)} ${unidadeTorqueTexto()}`;
+    }
+
+    function sincronizarUnidadeTorque(origemId) {
+      const origem = el(origemId);
+      if (!origem) return;
+      ["unidadeTorque", "tuUnidadeTorque"].forEach(id => {
+        const campo = el(id);
+        if (campo && campo !== origem) campo.value = origem.value;
+      });
+      atualizarUnidadesNaTela();
+      atualizarResumoDados();
+      try { calcularTudoSemValidacao(); } catch (e) {}
+      try { calcularTorqueUnico(false); } catch (e) {}
+    }
+
+    function atualizarUnidadesNaTela() {
+      const unidade = unidadeTorqueTexto();
+      document.querySelectorAll(".unidade-torque-label").forEach(span => { span.textContent = unidade; });
     }
 
     function obterTotalAmostras() {
@@ -1758,6 +1813,7 @@
         umidadeRelativa: valorOuTraco("umidadeRelativa"),
         sentidoAperto: valorOuTraco("sentidoAperto"),
         porcentagem: valorOuTraco("porcentagem"),
+        unidadeTorque: unidadeTorqueTexto(),
         torqueMaiorBase: valorOuTraco("torqueMaiorBase"),
         torqueMenorBase: valorOuTraco("torqueMenorBase"),
         observacoesEnsaio: valorOuTraco("observacoesEnsaio"),
@@ -1784,8 +1840,9 @@
         <div><strong>${relT("Certificado STA 6000")}:</strong> ${d.certificadoSta}</div>
         <div><strong>${relT("Junta rígida")}:</strong> ${relT("Junta rígida - 30 Graus")}</div>
         <div><strong>${relT("Junta flexível")}:</strong> ${relT("Junta flexível - 720 Graus")}</div>
-        <div><strong>${relT("Torque superior")}:</strong> ${d.torqueMaiorBase}</div>
-        <div><strong>${relT("Torque inferior")}:</strong> ${d.torqueMenorBase}</div>
+        <div><strong>${relT("Unidade")}:</strong> ${d.unidadeTorque}</div>
+        <div><strong>${relT("Torque superior")}:</strong> ${d.torqueMaiorBase} ${d.unidadeTorque}</div>
+        <div><strong>${relT("Torque inferior")}:</strong> ${d.torqueMenorBase} ${d.unidadeTorque}</div>
         <div><strong>${relT("Tolerância")}:</strong> ${d.porcentagem}%</div>
         <div><strong>${relT("Total de amostras")}:</strong> ${d.amostras}</div>
       `;
@@ -1831,7 +1888,13 @@
 
     function definirTexto(id, valor, casas = 2, sufixo = "") {
       const campo = el(id);
-      if (campo) campo.textContent = Number.isFinite(valor) ? `${formatarNumero(valor, casas)}${sufixo}` : "-";
+      if (!campo) return;
+      if (!Number.isFinite(valor)) {
+        campo.textContent = "-";
+        return;
+      }
+      const sufixoFinal = sufixo || (idResultadoUsaUnidade(id) ? ` ${unidadeTorqueTexto()}` : "");
+      campo.textContent = `${formatarNumero(valor, casas)}${sufixoFinal}`;
     }
 
     function limparResultados() {
@@ -2037,14 +2100,14 @@
               label: function(context) {
                 const valor = context.parsed.y;
                 const textoValor = Number.isFinite(valor) ? valor.toFixed(2).replace(".", ",") : "-";
-                return `${context.dataset.label}: ${textoValor}`;
+                return `${context.dataset.label}: ${textoValor} ${unidadeTorqueTexto()}`;
               }
             }
           }
         },
         scales: {
           x: { title: { display: true, text: relT("Amostra") }, grid: { display: false } },
-          y: { title: { display: true, text: tituloEixo }, grid: { color: "rgba(36,68,83,0.10)" } }
+          y: { title: { display: true, text: `${tituloEixo} (${unidadeTorqueTexto()})` }, grid: { color: "rgba(36,68,83,0.10)" } }
         }
       };
     }
@@ -2681,7 +2744,7 @@
       const porLinha = 8;
       const grupos = [];
       for (let i = 0; i < valores.length; i += porLinha) grupos.push(valores.slice(i, i + porLinha));
-      const cabecalho = Array.from({ length: porLinha }, () => `<th>${relT("Amostra")}</th><th>${relT("Valor")}</th>`).join("");
+      const cabecalho = Array.from({ length: porLinha }, () => `<th>${relT("Amostra")}</th><th>${relT("Valor")} (${unidadeTorqueTexto()})</th>`).join("");
       const linhas = grupos.map((grupo, bloco) => {
         let tds = "";
         for (let j = 0; j < porLinha; j++) {
@@ -2814,10 +2877,10 @@
                   <div><strong>${relT("Torque de teste superior")}:</strong> ${d.torqueMaiorBase}</div>
                   <div><strong>${relT("Torque de teste inferior")}:</strong> ${d.torqueMenorBase}</div>
                   <div><strong>${relT("Tolerância")}:</strong> ${d.porcentagem}%</div>
-                  <div><strong>${relT("Máx. esperado torque superior")}:</strong> ${d.maxExpMaior}</div>
-                  <div><strong>${relT("Mín. esperado torque superior")}:</strong> ${d.minExpMaior}</div>
-                  <div><strong>${relT("Máx. esperado torque inferior")}:</strong> ${d.maxExpMenor}</div>
-                  <div><strong>${relT("Mín. esperado torque inferior")}:</strong> ${d.minExpMenor}</div>
+                  <div><strong>${relT("Máx. esperado torque superior")}:</strong> ${d.maxExpMaior} ${d.unidadeTorque}</div>
+                  <div><strong>${relT("Mín. esperado torque superior")}:</strong> ${d.minExpMaior} ${d.unidadeTorque}</div>
+                  <div><strong>${relT("Máx. esperado torque inferior")}:</strong> ${d.maxExpMenor} ${d.unidadeTorque}</div>
+                  <div><strong>${relT("Mín. esperado torque inferior")}:</strong> ${d.minExpMenor} ${d.unidadeTorque}</div>
                 </div>
               </div>
 
@@ -3367,7 +3430,7 @@
           ds.label = relT(ds._labelPt);
         });
         if (chart.options?.scales?.x?.title) chart.options.scales.x.title.text = relT("Amostra");
-        if (chart.options?.scales?.y?.title && tituloY) chart.options.scales.y.title.text = relT(tituloY);
+        if (chart.options?.scales?.y?.title && tituloY) chart.options.scales.y.title.text = `${relT(tituloY)} (${unidadeTorqueTexto()})`;
         chart.update("none");
       };
       atualizarChart(graficoMaior, "Torque superior");
@@ -3584,11 +3647,11 @@
       const tolerancia = parseNumero(el("tuTolerancia").value);
       const est = estatisticas(valores, limiteMin, limiteMax);
 
-      el("tuMedia").textContent = formatarNumero(est.media);
-      el("tuDp").textContent = formatarNumero(est.dp);
-      el("tuMin").textContent = formatarNumero(est.min);
-      el("tuMax").textContent = formatarNumero(est.max);
-      el("tuAmplitude").textContent = formatarNumero(est.amplitude);
+      el("tuMedia").textContent = formatarValorComUnidade(est.media);
+      el("tuDp").textContent = formatarValorComUnidade(est.dp);
+      el("tuMin").textContent = formatarValorComUnidade(est.min);
+      el("tuMax").textContent = formatarValorComUnidade(est.max);
+      el("tuAmplitude").textContent = formatarValorComUnidade(est.amplitude);
       el("tuScatter").textContent = `${formatarNumero(est.scatter)}%`;
       el("tuCm").textContent = formatarNumero(est.cm);
       el("tuCmk").textContent = formatarNumero(est.cmk);
@@ -3644,6 +3707,7 @@
       const descricao = el("tuDescricao").value || "Torque único";
       const tipoJunta = el("tuTipoJunta").value || "-";
       const torque = el("tuTorqueNominal").value || "-";
+      const unidadeTU = unidadeTorqueTexto();
       const d = obterDadosFerramenta();
       const motivoResultado = avaliarMotivosTorqueUnico(valores, est, tolerancia, limiteMin, limiteMax);
       const status = valores.length > 0 && est.scatter <= tolerancia && est.cm >= 1.67 && est.cmk >= 1.67 && motivoResultado.startsWith("Aprovado") ? "APROVADO" : "REPROVADO";
@@ -4111,7 +4175,13 @@
           preencherValoresInputsTabela("tbody-max-flexivel", estado.tabelas?.maxFlexivel || []);
           preencherValoresInputsTabela("tbody-torque-unico", estado.tabelas?.torqueUnico || []);
 
+          if (el("unidadeTorque") && el("tuUnidadeTorque")) {
+            const unidadeCarregada = estado.campos.unidadeTorque || estado.campos.tuUnidadeTorque || "N.m";
+            el("unidadeTorque").value = unidadeCarregada;
+            el("tuUnidadeTorque").value = unidadeCarregada;
+          }
           atualizarCampoCrowfoot();
+          atualizarUnidadesNaTela();
           calcularLimitesAutomaticos();
           calcularLimitesTorqueUnico();
           atualizarResumoDados();
@@ -4218,7 +4288,7 @@
       "apertadeiraModelo", "serialApertadeira", "controladorModelo", "serialControlador",
       "transdutor", "certificadoCalibracao", "certificadoSta", "painel",
       "tecnicoResponsavel", "temperaturaAmbiente", "umidadeRelativa", "sentidoAperto",
-      "observacoesEnsaio", "porcentagem", "torqueMaiorBase", "torqueMenorBase"
+      "observacoesEnsaio", "porcentagem", "unidadeTorque", "torqueMaiorBase", "torqueMenorBase"
     ].forEach(id => {
       const campo = el(id);
       if (campo) campo.addEventListener("input", atualizarResumoDados);
@@ -4260,6 +4330,7 @@
       el("dataEnsaio").value = new Date().toISOString().split("T")[0];
 
       atualizarCampoCrowfoot();
+      atualizarUnidadesNaTela();
       criarLinhas(obterTotalAmostras() || 25, true, true);
       atualizarResumoDados();
       limparResultados();
