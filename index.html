@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="${relLangHtml()}">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -725,7 +725,7 @@
         <section class="content-card">
           <div class="card-header">
             <div class="card-header-title">
-              <h2>${relT("Dados do ensaio")}</h2>
+              <h2>Dados do ensaio</h2>
               <span class="aviso-obrigatorio">⚠ <strong>Campos em laranja</strong> têm preenchimento obrigatório</span>
             </div>
             <p>Cadastro da ferramenta, condição de ensaio e parâmetros antes de abrir as tabelas.</p>
@@ -4593,7 +4593,8 @@
       if (limparResultado) limparResultadosAngulo();
     }
 
-    function definirTextoAngulo(id, valor, casas = 2, sufixo = " ${relT("grau(s)")}") {
+    function definirTextoAngulo(id, valor, casas = 2, sufixo = null) {
+      if (sufixo === null) sufixo = " " + relT("grau(s)");
       const campo = el(id);
       if (!campo) return;
       if (!Number.isFinite(valor)) {
