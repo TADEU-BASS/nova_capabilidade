@@ -746,7 +746,7 @@
         <section class="top-card">
           <div>
             <h1>Ensaio de ferramentas - ISO 5393</h1>
-            <p>Preencha os dados do ensaio e da ferramenta. As tabelas ficam em outra folha.</p>
+            <p>Preencha os dados do ensaio e da ferramenta. Os parâmetros ficam nas tabelas.</p>
           </div>
           <button class="destino-badge">Destino: Capabilidade_WS</button>
         </section>
@@ -757,7 +757,7 @@
               <h2>Dados do ensaio</h2>
               <span class="aviso-obrigatorio">⚠ <strong>Campos em laranja</strong> têm preenchimento obrigatório</span>
             </div>
-            <p>Cadastro da ferramenta, condição de ensaio e parâmetros antes de abrir as tabelas.</p>
+            <p>Cadastro da ferramenta, rastreabilidade e condições gerais do ensaio.</p>
           </div>
 
           <div class="card-body">
@@ -861,6 +861,48 @@
                   </div>
                 </div>
               </div>
+                </div>
+              </div>
+            </div>
+
+            <input type="hidden" id="maxExpMaior">
+            <input type="hidden" id="minExpMaior">
+            <input type="hidden" id="maxExpMenor">
+            <input type="hidden" id="minExpMenor">
+          </div>
+        </section>
+      </div>
+
+      <div id="pagina-tabelas" class="page">
+        <section class="top-card">
+          <div>
+            <h1>Tabelas de amostras do ensaio</h1>
+            <p>Coleta dos valores e cálculo final por torque superior e inferior.</p>
+          </div>
+          <button class="destino-badge">Folha de amostras</button>
+        </section>
+
+        <section class="content-card">
+          <div class="card-header">
+            <h2>Resumo do ensaio</h2>
+            <p>Dados principais da ferramenta, da junta e das condições do ensaio.</p>
+          </div>
+
+          <div class="card-body">
+            <div class="amostras-config" id="campo-amostras-manual">
+              <h3 class="section-title">Configuração das amostras</h3>
+              <div class="section-grid">
+                <div class="field">
+                  <label for="amostrasManual">Quantidade de amostras</label>
+                  <input type="number" id="amostrasManual" min="1" step="1" placeholder="Digite o total" value="25">
+                </div>
+                <div class="field">
+                  <label>Orientação</label>
+                  <input type="text" value="Informe o total antes de preencher as tabelas" readonly>
+                </div>
+              </div>
+            </div>
+
 
               <div class="form-section">
                 <h3 class="section-title">Parâmetros do ensaio</h3>
@@ -906,47 +948,6 @@
                     <label for="observacoesEnsaio">Observações do ensaio</label>
                     <textarea id="observacoesEnsaio" rows="3" placeholder="EX.: FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO."></textarea>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            <input type="hidden" id="maxExpMaior">
-            <input type="hidden" id="minExpMaior">
-            <input type="hidden" id="maxExpMenor">
-            <input type="hidden" id="minExpMenor">
-          </div>
-        </section>
-      </div>
-
-      <div id="pagina-tabelas" class="page">
-        <section class="top-card">
-          <div>
-            <h1>Tabelas de amostras do ensaio</h1>
-            <p>Coleta dos valores e cálculo final por torque superior e inferior.</p>
-          </div>
-          <button class="destino-badge">Folha de amostras</button>
-        </section>
-
-        <section class="content-card">
-          <div class="card-header">
-            <h2>Resumo do ensaio</h2>
-            <p>Dados principais da ferramenta, da junta e das condições do ensaio.</p>
-          </div>
-
-          <div class="card-body">
-            <div class="amostras-config" id="campo-amostras-manual">
-              <h3 class="section-title">Configuração das amostras</h3>
-              <div class="section-grid">
-                <div class="field">
-                  <label for="amostrasManual">Quantidade de amostras</label>
-                  <input type="number" id="amostrasManual" min="1" step="1" placeholder="Digite o total" value="25">
-                </div>
-                <div class="field">
-                  <label>Orientação</label>
-                  <input type="text" value="Informe o total antes de preencher as tabelas" readonly>
-                </div>
-              </div>
-            </div>
 
             <div class="resumo-dados" id="resumoDados"></div>
 
@@ -1748,11 +1749,7 @@
         "transdutor",
         "painel",
         "certificadoSta",
-        "certificadoCalibracao",
-        "torqueMaiorBase",
-        "torqueMenorBase",
-        "porcentagem",
-        "amostrasManual"
+        "certificadoCalibracao"
       ];
 
       if (tipoAplicacao && tipoAplicacao.value === "Apertadeira + Crowfoot") {
@@ -1760,6 +1757,15 @@
       }
 
       return ids;
+    }
+
+    function idsCamposObrigatoriosParametrosTabelas() {
+      return [
+        "torqueMaiorBase",
+        "torqueMenorBase",
+        "porcentagem",
+        "amostrasManual"
+      ];
     }
 
     function idsCamposObrigatoriosTorqueUnico() {
@@ -1808,6 +1814,7 @@
 
       const todosObrigatorios = [
         ...idsCamposObrigatoriosDados(),
+        ...idsCamposObrigatoriosParametrosTabelas(),
         ...idsCamposObrigatoriosTorqueUnico()
       ];
 
@@ -1867,31 +1874,6 @@
         }
       });
 
-      const torqueSuperior = parseNumero(valorCampoObrigatorio("torqueMaiorBase"));
-      const torqueInferior = parseNumero(valorCampoObrigatorio("torqueMenorBase"));
-      const tolerancia = parseNumero(valorCampoObrigatorio("porcentagem"));
-      const amostras = parseInt(valorCampoObrigatorio("amostrasManual"), 10);
-
-      if (valorCampoObrigatorio("torqueMaiorBase") && torqueSuperior <= 0) {
-        marcarErroCampo("torqueMaiorBase");
-        faltando.push("Torque superior deve ser maior que zero");
-      }
-
-      if (valorCampoObrigatorio("torqueMenorBase") && torqueInferior <= 0) {
-        marcarErroCampo("torqueMenorBase");
-        faltando.push("Torque inferior deve ser maior que zero");
-      }
-
-      if (valorCampoObrigatorio("porcentagem") && tolerancia <= 0) {
-        marcarErroCampo("porcentagem");
-        faltando.push("Tolerância deve ser maior que zero");
-      }
-
-      if (valorCampoObrigatorio("amostrasManual") && (!Number.isInteger(amostras) || amostras <= 0)) {
-        marcarErroCampo("amostrasManual");
-        faltando.push("Quantidade de amostras deve ser maior que zero");
-      }
-
       if (faltando.length) {
         mostrarPagina("pagina-dados");
         mostrarPopup(
@@ -1924,8 +1906,59 @@
       reaplicarIdiomaAtual();
     }
 
+    function validarParametrosTabelas() {
+      limparErrosObrigatorios();
+      aplicarVisualObrigatorios();
+
+      const faltando = [];
+
+      idsCamposObrigatoriosParametrosTabelas().forEach(id => {
+        if (!valorCampoObrigatorio(id)) {
+          marcarErroCampo(id);
+          faltando.push(nomeCampoObrigatorio(id));
+        }
+      });
+
+      const torqueSuperior = parseNumero(valorCampoObrigatorio("torqueMaiorBase"));
+      const torqueInferior = parseNumero(valorCampoObrigatorio("torqueMenorBase"));
+      const tolerancia = parseNumero(valorCampoObrigatorio("porcentagem"));
+      const amostras = parseInt(valorCampoObrigatorio("amostrasManual"), 10);
+
+      if (valorCampoObrigatorio("torqueMaiorBase") && torqueSuperior <= 0) {
+        marcarErroCampo("torqueMaiorBase");
+        faltando.push("Torque superior deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("torqueMenorBase") && torqueInferior <= 0) {
+        marcarErroCampo("torqueMenorBase");
+        faltando.push("Torque inferior deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("porcentagem") && tolerancia <= 0) {
+        marcarErroCampo("porcentagem");
+        faltando.push("Tolerância deve ser maior que zero");
+      }
+
+      if (valorCampoObrigatorio("amostrasManual") && (!Number.isInteger(amostras) || amostras <= 0)) {
+        marcarErroCampo("amostrasManual");
+        faltando.push("Quantidade de amostras deve ser maior que zero");
+      }
+
+      if (faltando.length) {
+        mostrarPagina("pagina-tabelas");
+        mostrarPopup(
+          "Não foi possível calcular ou gerar o relatório.<br><br>Falta preencher os parâmetros do ensaio:<br><br><strong>" + faltando.join("<br>") + "</strong>",
+          "Parâmetros obrigatórios"
+        );
+        return false;
+      }
+
+      return true;
+    }
+
     function validarTabelasObrigatorias() {
       if (!validarCamposObrigatoriosDados()) return false;
+      if (!validarParametrosTabelas()) return false;
 
       const total = obterTotalAmostras();
       const faltando = [];
@@ -3633,12 +3666,12 @@
         "": "Default destination: Capabilidade_WS",
         "Interface corporativa Atlas Copco.": "Atlas Copco corporate interface.",
         "Ensaio de ferramentas - ISO 5393": "Tool test - ISO 5393",
-        "Preencha os dados do ensaio e da ferramenta. As tabelas ficam em outra folha.": "Fill in the test and tool data. Tables are on another page.",
+        "Preencha os dados do ensaio e da ferramenta. Os parâmetros ficam nas tabelas.": "Fill in the test and tool data. Tables are on another page.",
         "Destino: Capabilidade_WS": "Destination: Capabilidade_WS",
         "Dados do ensaio": "Test data",
         "Campos em laranja": "Orange fields",
         "têm preenchimento obrigatório": "are mandatory",
-        "Cadastro da ferramenta, condição de ensaio e parâmetros antes de abrir as tabelas.": "Tool registration, test condition and parameters before opening the tables.",
+        "Cadastro da ferramenta, rastreabilidade e condições gerais do ensaio.": "Tool registration, test condition and parameters before opening the tables.",
         "Identificação do ensaio": "Test identification",
         "Norma de referência": "Reference standard",
         "Técnico responsável": "Responsible technician",
@@ -3776,12 +3809,12 @@
         "": "Destino estándar: Capabilidade_WS",
         "Interface corporativa Atlas Copco.": "Interfaz corporativa Atlas Copco.",
         "Ensaio de ferramentas - ISO 5393": "Ensayo de herramientas - ISO 5393",
-        "Preencha os dados do ensaio e da ferramenta. As tabelas ficam em outra folha.": "Complete los datos del ensayo y de la herramienta. Las tablas están en otra página.",
+        "Preencha os dados do ensaio e da ferramenta. Os parâmetros ficam nas tabelas.": "Complete los datos del ensayo y de la herramienta. Las tablas están en otra página.",
         "Destino: Capabilidade_WS": "Destino: Capabilidade_WS",
         "Dados do ensaio": "Datos del ensayo",
         "Campos em laranja": "Campos en naranja",
         "têm preenchimento obrigatório": "son obligatorios",
-        "Cadastro da ferramenta, condição de ensaio e parâmetros antes de abrir as tabelas.": "Registro de la herramienta, condición de ensayo y parámetros antes de abrir las tablas.",
+        "Cadastro da ferramenta, rastreabilidade e condições gerais do ensaio.": "Registro de la herramienta, condición de ensayo y parámetros antes de abrir las tablas.",
         "Identificação do ensaio": "Identificación del ensayo",
         "Norma de referência": "Norma de referencia",
         "Técnico responsável": "Técnico responsable",
