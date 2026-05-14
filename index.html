@@ -2832,7 +2832,7 @@
             },
             {
               type: "line",
-              label: relT("Linha de tendência"),
+              label: ${JSON.stringify(relT("Linha de tendência"))},
               data: hist.frequencias,
               borderWidth: 2,
               pointRadius: 3,
@@ -2870,9 +2870,9 @@
             datasets: [
               criarSeriePontos(relT("Rígida"), dados.maxRigida),
               criarSeriePontos(relT("Flexível"), dados.maxFlexivel),
-              criarLinhaReferencia(relT("Nominal"), torqueSuperior, total),
-              criarLinhaReferencia(relT("Limite mínimo"), dados.limites.minExpMaior, total),
-              criarLinhaReferencia(relT("Limite máximo"), dados.limites.maxExpMaior, total)
+              criarLinhaReferencia(${JSON.stringify(relT("Nominal"))}, torqueSuperior, total),
+              criarLinhaReferencia(${JSON.stringify(relT("Limite mínimo"))}, dados.limites.minExpMaior, total),
+              criarLinhaReferencia(${JSON.stringify(relT("Limite máximo"))}, dados.limites.maxExpMaior, total)
             ]
           },
           options: obterOpcoesGraficoLimpo(relT("Torque superior"))
@@ -2887,9 +2887,9 @@
             datasets: [
               criarSeriePontos(relT("Rígida"), dados.minRigida),
               criarSeriePontos(relT("Flexível"), dados.minFlexivel),
-              criarLinhaReferencia(relT("Nominal"), torqueInferior, total),
-              criarLinhaReferencia(relT("Limite mínimo"), dados.limites.minExpMenor, total),
-              criarLinhaReferencia(relT("Limite máximo"), dados.limites.maxExpMenor, total)
+              criarLinhaReferencia(${JSON.stringify(relT("Nominal"))}, torqueInferior, total),
+              criarLinhaReferencia(${JSON.stringify(relT("Limite mínimo"))}, dados.limites.minExpMenor, total),
+              criarLinhaReferencia(${JSON.stringify(relT("Limite máximo"))}, dados.limites.maxExpMenor, total)
             ]
           },
           options: obterOpcoesGraficoLimpo(relT("Torque inferior"))
@@ -5342,9 +5342,9 @@
           labels,
           datasets: [
             criarSeriePontos("Medições", valores),
-            criarLinhaReferencia(relT("Nominal"), torqueNominal, total),
-            criarLinhaReferencia(relT("Limite mínimo"), limiteMin, total),
-            criarLinhaReferencia(relT("Limite máximo"), limiteMax, total)
+            criarLinhaReferencia(${JSON.stringify(relT("Nominal"))}, torqueNominal, total),
+            criarLinhaReferencia(${JSON.stringify(relT("Limite mínimo"))}, limiteMin, total),
+            criarLinhaReferencia(${JSON.stringify(relT("Limite máximo"))}, limiteMax, total)
           ]
         },
         options: obterOpcoesGraficoLimpo("Torque")
@@ -5964,7 +5964,7 @@
           labels: hist.labels,
           datasets: [
             { type: "bar", label: tituloDataset, data: hist.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 },
-            { type: "line", label: relT("Linha de tendência"), data: hist.frequencias, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: false, tension: 0.35 }
+            { type: "line", label: ${JSON.stringify(relT("Linha de tendência"))}, data: hist.frequencias, borderWidth: 2, pointRadius: 3, pointHoverRadius: 5, fill: false, tension: 0.35 }
           ]
         },
         options: {
@@ -5972,8 +5972,8 @@
           maintainAspectRatio: false,
           plugins: { legend: { display: true, position: "bottom", labels: { boxWidth: 10, boxHeight: 10, font: { size: 10, weight: "600" } } } },
           scales: {
-            x: { title: { display: true, text: relT("Faixas de ângulo") }, ticks: { maxRotation: 45, minRotation: 0, font: { size: 10 } }, grid: { display: false } },
-            y: { beginAtZero: true, title: { display: true, text: relT("Frequência") }, ticks: { precision: 0 } }
+            x: { title: { display: true, text: ${JSON.stringify(relT("Faixas de ângulo"))} }, ticks: { maxRotation: 45, minRotation: 0, font: { size: 10 } }, grid: { display: false } },
+            y: { beginAtZero: true, title: { display: true, text: ${JSON.stringify(relT("Frequência"))} }, ticks: { precision: 0 } }
           }
         }
       });
@@ -5991,9 +5991,9 @@
           type: "line",
           data: { labels, datasets: [
             criarSeriePontos(relT("Ângulo mínimo"), dados.valoresMin),
-            criarLinhaReferencia(relT("Nominal"), angMinNominal, total),
-            criarLinhaReferencia(relT("Limite mínimo"), dados.limites.minInf, total),
-            criarLinhaReferencia(relT("Limite máximo"), dados.limites.minSup, total)
+            criarLinhaReferencia(${JSON.stringify(relT("Nominal"))}, angMinNominal, total),
+            criarLinhaReferencia(${JSON.stringify(relT("Limite mínimo"))}, dados.limites.minInf, total),
+            criarLinhaReferencia(${JSON.stringify(relT("Limite máximo"))}, dados.limites.minSup, total)
           ] },
           options: obterOpcoesGraficoAngulo("Ângulo mínimo")
         });
@@ -6004,9 +6004,9 @@
           type: "line",
           data: { labels, datasets: [
             criarSeriePontos(relT("Ângulo máximo"), dados.valoresMax),
-            criarLinhaReferencia(relT("Nominal"), angMaxNominal, total),
-            criarLinhaReferencia(relT("Limite mínimo"), dados.limites.maxInf, total),
-            criarLinhaReferencia(relT("Limite máximo"), dados.limites.maxSup, total)
+            criarLinhaReferencia(${JSON.stringify(relT("Nominal"))}, angMaxNominal, total),
+            criarLinhaReferencia(${JSON.stringify(relT("Limite mínimo"))}, dados.limites.maxInf, total),
+            criarLinhaReferencia(${JSON.stringify(relT("Limite máximo"))}, dados.limites.maxSup, total)
           ] },
           options: obterOpcoesGraficoAngulo("Ângulo máximo")
         });
@@ -6147,8 +6147,8 @@
             function criarLinhaReferencia(label, valor, tamanho) { return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false }; }
             function opcoes(titulo) { return { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "${relT("Amostra")}" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: titulo + " (grau(s))" }, ticks: { font: { size: 8 } } } } }; }
             const total = Math.max(labels.length, 1);
-            new Chart(document.getElementById("graficoAnguloMinRel"), { type: "line", data: { labels, datasets: [criarSeriePontos(relT("Ângulo mínimo"), valoresMin), criarLinhaReferencia(relT("Nominal"), ${parseNumero(el("anguloMinBase") ? el("anguloMinBase").value : "0")}, total), criarLinhaReferencia(relT("Limite mínimo"), limites.minInf, total), criarLinhaReferencia(relT("Limite máximo"), limites.minSup, total)] }, options: opcoes("Ângulo mínimo") });
-            new Chart(document.getElementById("graficoAnguloMaxRel"), { type: "line", data: { labels, datasets: [criarSeriePontos(relT("Ângulo máximo"), valoresMax), criarLinhaReferencia(relT("Nominal"), ${parseNumero(el("anguloMaxBase") ? el("anguloMaxBase").value : "0")}, total), criarLinhaReferencia(relT("Limite mínimo"), limites.maxInf, total), criarLinhaReferencia(relT("Limite máximo"), limites.maxSup, total)] }, options: opcoes("Ângulo máximo") });
+            new Chart(document.getElementById("graficoAnguloMinRel"), { type: "line", data: { labels, datasets: [criarSeriePontos(${JSON.stringify(relT("Ângulo mínimo"))}, valoresMin), criarLinhaReferencia(${JSON.stringify(relT("Nominal"))}, ${parseNumero(el("anguloMinBase") ? el("anguloMinBase").value : "0")}, total), criarLinhaReferencia(${JSON.stringify(relT("Limite mínimo"))}, limites.minInf, total), criarLinhaReferencia(${JSON.stringify(relT("Limite máximo"))}, limites.minSup, total)] }, options: opcoes(${JSON.stringify(relT("Ângulo mínimo"))}) });
+            new Chart(document.getElementById("graficoAnguloMaxRel"), { type: "line", data: { labels, datasets: [criarSeriePontos(${JSON.stringify(relT("Ângulo máximo"))}, valoresMax), criarLinhaReferencia(${JSON.stringify(relT("Nominal"))}, ${parseNumero(el("anguloMaxBase") ? el("anguloMaxBase").value : "0")}, total), criarLinhaReferencia(${JSON.stringify(relT("Limite mínimo"))}, limites.maxInf, total), criarLinhaReferencia(${JSON.stringify(relT("Limite máximo"))}, limites.maxSup, total)] }, options: opcoes(${JSON.stringify(relT("Ângulo máximo"))}) });
             function formatarNumeroRel(valor) { return Number(valor).toFixed(2).replace(".", ","); }
             function histograma(valores) {
               const numeros = (valores || []).filter(v => Number.isFinite(v));
@@ -6163,10 +6163,10 @@
             }
             function criarHist(canvasId, valores, titulo) {
               const h = histograma(valores);
-              new Chart(document.getElementById(canvasId), { data: { labels: h.labels, datasets: [{ type: "bar", label: titulo, data: h.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 }, { type: "line", label: relT("Linha de tendência"), data: h.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } }, scales: { x: { title: { display: true, text: relT("Faixas de ângulo") }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } }, y: { beginAtZero: true, title: { display: true, text: relT("Frequência") }, ticks: { precision: 0, font: { size: 8 } } } } } });
+              new Chart(document.getElementById(canvasId), { data: { labels: h.labels, datasets: [{ type: "bar", label: titulo, data: h.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 }, { type: "line", label: ${JSON.stringify(relT("Linha de tendência"))}, data: h.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } }, scales: { x: { title: { display: true, text: ${JSON.stringify(relT("Faixas de ângulo"))} }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } }, y: { beginAtZero: true, title: { display: true, text: ${JSON.stringify(relT("Frequência"))} }, ticks: { precision: 0, font: { size: 8 } } } } } });
             }
-            criarHist("histAnguloMinRel", valoresMin, "${relT("Ângulo mínimo")}");
-            criarHist("histAnguloMaxRel", valoresMax, "${relT("Ângulo máximo")}");
+            criarHist("histAnguloMinRel", valoresMin, ${JSON.stringify(relT("Ângulo mínimo"))});
+            criarHist("histAnguloMaxRel", valoresMax, ${JSON.stringify(relT("Ângulo máximo"))});
           <\/script>
         </body>
         </html>
