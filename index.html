@@ -320,6 +320,35 @@
       font-size: 15px;
       font-weight: 700;
     }
+    .parametros-tabela {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #dce8ee;
+      background: #eef8fc;
+    }
+    .parametros-tabela .param-item {
+      background: #ffffff;
+      border: 1px solid #cfe0e7;
+      border-radius: 10px;
+      padding: 8px 10px;
+      min-height: 52px;
+    }
+    .parametros-tabela .param-item strong {
+      display: block;
+      font-size: 11px;
+      color: #4f6976;
+      margin-bottom: 3px;
+      font-weight: 800;
+    }
+    .parametros-tabela .param-item span {
+      display: block;
+      font-size: 13px;
+      color: #0f5f7d;
+      font-weight: 900;
+      line-height: 1.25;
+    }
     .table-actions {
       padding: 10px 12px;
       border-bottom: 1px solid #dce8ee;
@@ -969,6 +998,7 @@
               <div class="tables-grid">
                 <div class="table-card">
                   <h4>Torque inferior — Junta rígida - 30 Graus</h4>
+                  <div class="parametros-tabela" id="parametros-min-rigida"></div>
                   <div class="table-actions">
                     <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-min-rigida')">Copiar valores</button>
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-min-rigida')">Colar valores do Excel</button>
@@ -979,6 +1009,7 @@
 
                 <div class="table-card">
                   <h4>Torque inferior — Junta flexível - 720 Graus</h4>
+                  <div class="parametros-tabela" id="parametros-min-flexivel"></div>
                   <div class="table-actions">
                     <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-min-flexivel')">Copiar valores</button>
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-min-flexivel')">Colar valores do Excel</button>
@@ -989,6 +1020,7 @@
 
                 <div class="table-card">
                   <h4>Torque superior — Junta rígida - 30 Graus</h4>
+                  <div class="parametros-tabela" id="parametros-max-rigida"></div>
                   <div class="table-actions">
                     <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-max-rigida')">Copiar valores</button>
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-max-rigida')">Colar valores do Excel</button>
@@ -999,6 +1031,7 @@
 
                 <div class="table-card">
                   <h4>Torque superior — Junta flexível - 720 Graus</h4>
+                  <div class="parametros-tabela" id="parametros-max-flexivel"></div>
                   <div class="table-actions">
                     <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-max-flexivel')">Copiar valores</button>
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-max-flexivel')">Colar valores do Excel</button>
@@ -1142,6 +1175,7 @@
 
               <div class="table-card">
                 <h4>Amostras do torque único</h4>
+                <div class="parametros-tabela" id="parametros-torque-unico"></div>
                 <div class="table-actions">
                   <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-torque-unico')">Copiar valores</button>
                   <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-torque-unico')">Colar valores do Excel</button>
@@ -1277,6 +1311,7 @@
               <div class="tables-grid">
                 <div class="table-card">
                   <h4>Ângulo mínimo</h4>
+                  <div class="parametros-tabela" id="parametros-angulo-min"></div>
                   <div class="table-actions">
                     <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-angulo-min')">Copiar valores</button>
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-angulo-min')">Colar valores do Excel</button>
@@ -1287,6 +1322,7 @@
 
                 <div class="table-card">
                   <h4>Ângulo máximo</h4>
+                  <div class="parametros-tabela" id="parametros-angulo-max"></div>
                   <div class="table-actions">
                     <button class="action-btn secondary full" type="button" onclick="copiarTabela('tbody-angulo-max')">Copiar valores</button>
                     <button class="action-btn primary full" type="button" onclick="colarTabela('tbody-angulo-max')">Colar valores do Excel</button>
@@ -2015,6 +2051,91 @@
       `;
 
       el("pct-inicial-view").textContent = d.porcentagem !== "-" ? `${d.porcentagem}%` : "-";
+      atualizarParametrosNasTabelas();
+    }
+
+    function montarParametrosTabela(id, itens) {
+      const box = el(id);
+      if (!box) return;
+      box.innerHTML = itens.map(item => `
+        <div class="param-item">
+          <strong>${relT(item.label)}</strong>
+          <span>${item.valor || "-"}</span>
+        </div>
+      `).join("");
+    }
+
+    function atualizarParametrosNasTabelas() {
+      const d = obterDadosFerramenta();
+      const unidade = d.unidadeTorque || unidadeTorqueTexto();
+      const tolerancia = d.porcentagem !== "-" ? `${d.porcentagem}%` : "-";
+      const total = d.amostras || "-";
+
+      const torqueSuperior = d.torqueMaiorBase !== "-" ? `${d.torqueMaiorBase} ${unidade}` : "-";
+      const torqueInferior = d.torqueMenorBase !== "-" ? `${d.torqueMenorBase} ${unidade}` : "-";
+      const limSupMin = valorOuTraco("minExpMaior") !== "-" ? `${valorOuTraco("minExpMaior")} ${unidade}` : "-";
+      const limSupMax = valorOuTraco("maxExpMaior") !== "-" ? `${valorOuTraco("maxExpMaior")} ${unidade}` : "-";
+      const limInfMin = valorOuTraco("minExpMenor") !== "-" ? `${valorOuTraco("minExpMenor")} ${unidade}` : "-";
+      const limInfMax = valorOuTraco("maxExpMenor") !== "-" ? `${valorOuTraco("maxExpMenor")} ${unidade}` : "-";
+
+      const paramsSuperior = [
+        { label: "Torque nominal", valor: torqueSuperior },
+        { label: "Tolerância", valor: tolerancia },
+        { label: "Limite mínimo", valor: limSupMin },
+        { label: "Limite máximo", valor: limSupMax },
+        { label: "Total de amostras", valor: total }
+      ];
+      const paramsInferior = [
+        { label: "Torque nominal", valor: torqueInferior },
+        { label: "Tolerância", valor: tolerancia },
+        { label: "Limite mínimo", valor: limInfMin },
+        { label: "Limite máximo", valor: limInfMax },
+        { label: "Total de amostras", valor: total }
+      ];
+
+      montarParametrosTabela("parametros-min-rigida", [
+        { label: "Tipo de junta", valor: relT("Junta rígida - 30 Graus") },
+        ...paramsInferior
+      ]);
+      montarParametrosTabela("parametros-min-flexivel", [
+        { label: "Tipo de junta", valor: relT("Junta flexível - 720 Graus") },
+        ...paramsInferior
+      ]);
+      montarParametrosTabela("parametros-max-rigida", [
+        { label: "Tipo de junta", valor: relT("Junta rígida - 30 Graus") },
+        ...paramsSuperior
+      ]);
+      montarParametrosTabela("parametros-max-flexivel", [
+        { label: "Tipo de junta", valor: relT("Junta flexível - 720 Graus") },
+        ...paramsSuperior
+      ]);
+
+      const tuUnidade = unidadeTorqueTexto();
+      montarParametrosTabela("parametros-torque-unico", [
+        { label: "Descrição", valor: valorOuTraco("tuDescricao") },
+        { label: "Tipo de junta", valor: relT(valorOuTraco("tuTipoJunta")) },
+        { label: "Torque nominal", valor: valorOuTraco("tuTorqueNominal") !== "-" ? `${valorOuTraco("tuTorqueNominal")} ${tuUnidade}` : "-" },
+        { label: "Tolerância", valor: valorOuTraco("tuTolerancia") !== "-" ? `${valorOuTraco("tuTolerancia")}%` : "-" },
+        { label: "Limite mínimo", valor: valorOuTraco("tuLimiteMin") !== "-" ? `${valorOuTraco("tuLimiteMin")} ${tuUnidade}` : "-" },
+        { label: "Limite máximo", valor: valorOuTraco("tuLimiteMax") !== "-" ? `${valorOuTraco("tuLimiteMax")} ${tuUnidade}` : "-" },
+        { label: "Total de amostras", valor: valorOuTraco("tuAmostras") }
+      ]);
+
+      const angTol = valorOuTraco("anguloTolerancia") !== "-" ? `${valorOuTraco("anguloTolerancia")}%` : "-";
+      montarParametrosTabela("parametros-angulo-min", [
+        { label: "Ângulo nominal", valor: valorOuTraco("anguloMinBase") !== "-" ? `${valorOuTraco("anguloMinBase")} ${relT("grau(s)")}` : "-" },
+        { label: "Tolerância", valor: angTol },
+        { label: "Limite mínimo", valor: valorOuTraco("anguloMinLimiteInferior") },
+        { label: "Limite máximo", valor: valorOuTraco("anguloMinLimiteSuperior") },
+        { label: "Total de amostras", valor: valorOuTraco("anguloAmostras") }
+      ]);
+      montarParametrosTabela("parametros-angulo-max", [
+        { label: "Ângulo nominal", valor: valorOuTraco("anguloMaxBase") !== "-" ? `${valorOuTraco("anguloMaxBase")} ${relT("grau(s)")}` : "-" },
+        { label: "Tolerância", valor: angTol },
+        { label: "Limite mínimo", valor: valorOuTraco("anguloMaxLimiteInferior") },
+        { label: "Limite máximo", valor: valorOuTraco("anguloMaxLimiteSuperior") },
+        { label: "Total de amostras", valor: valorOuTraco("anguloAmostras") }
+      ]);
     }
 
     function lerValoresTabela(tbodyId) {
@@ -3959,6 +4080,7 @@
       const limiteMax = torque ? torque * (1 + fator) : 0;
       el("tuLimiteMin").value = limiteMin ? formatarNumero(limiteMin) : "";
       el("tuLimiteMax").value = limiteMax ? formatarNumero(limiteMax) : "";
+      atualizarParametrosNasTabelas();
     }
 
     function limparResultadosTorqueUnico() {
@@ -4570,6 +4692,7 @@
       if (el("anguloMaxLimiteInferior")) el("anguloMaxLimiteInferior").value = maxInf ? `${formatarNumero(maxInf)} ${relT("grau(s)")}` : "";
       if (el("anguloMaxLimiteSuperior")) el("anguloMaxLimiteSuperior").value = maxSup ? `${formatarNumero(maxSup)} ${relT("grau(s)")}` : "";
 
+      atualizarParametrosNasTabelas();
       return { minInf, minSup, maxInf, maxSup };
     }
 
@@ -5165,6 +5288,14 @@
       if (campo) campo.addEventListener("input", calcularLimitesAutomaticos);
     });
 
+    ["tuDescricao", "tuTipoJunta", "tuTorqueNominal", "tuTolerancia", "tuUnidadeTorque"].forEach(id => {
+      const campo = el(id);
+      if (campo) {
+        campo.addEventListener("input", atualizarParametrosNasTabelas);
+        campo.addEventListener("change", atualizarParametrosNasTabelas);
+      }
+    });
+
     ["tuTorqueNominal", "tuTolerancia"].forEach(id => {
       const campo = el(id);
       if (campo) {
@@ -5184,6 +5315,7 @@
         const total = obterTotalAmostrasTorqueUnico();
         if (total > 0) criarLinhasTorqueUnico(total, true, true);
         else el("tbody-torque-unico").innerHTML = "";
+        atualizarParametrosNasTabelas();
         aplicarVisualObrigatorios();
       });
     }
@@ -5208,6 +5340,7 @@
           limparResultadosAngulo();
         }
         calcularLimitesAngulo();
+        atualizarParametrosNasTabelas();
       });
     }
 
@@ -5225,6 +5358,8 @@
       calcularLimitesAutomaticos();
       criarLinhasTorqueUnico(obterTotalAmostrasTorqueUnico() || 25, false, true);
       calcularLimitesTorqueUnico();
+      calcularLimitesAngulo();
+      atualizarParametrosNasTabelas();
       aplicarVisualObrigatorios();
 
       prepararTextosOriginais();
