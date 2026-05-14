@@ -793,6 +793,27 @@
     }
 
 
+
+
+    /* Ajuste final do HELP: textos sobre cabeçalho azul sempre em branco e legíveis */
+    .help-hero,
+    .help-hero * {
+      color: #ffffff !important;
+    }
+    .help-hero h3 {
+      color: #ffffff !important;
+      font-size: 26px !important;
+      font-weight: 950 !important;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.28) !important;
+    }
+    .help-hero p {
+      color: #ffffff !important;
+      font-size: 15px !important;
+      font-weight: 700 !important;
+      line-height: 1.6 !important;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.26) !important;
+    }
+
     @media print {
       body.print-help .app { display: block; }
       body.print-help .sidebar,
@@ -4008,13 +4029,270 @@
       }
 };
 
+
+    const traducoesHelpComplemento = {
+      "en": {
+            "HELP - Ajuda do Sistema": "HELP - System Guide",
+            "Central de ajuda atualizada do app Nova Capabilidade / ISO 5393.": "Updated help center for the Nova Capability / ISO 5393 app.",
+            "Ajuda do app": "App help",
+            "Central de ajuda": "Help center",
+            "Guia atualizado com o fluxo atual: dados do ensaio, parâmetros nas tabelas, torque único, ângulo, cálculo, gráficos e relatório.": "Updated guide with the current flow: test data, parameters in the tables, single torque, angle, calculation, charts and report.",
+            "Voltar para tela principal": "Back to main screen",
+            "Imprimir HELP / salvar PDF": "Print HELP / save PDF",
+            "Guia rápido": "Quick guide",
+            "Clique em um tópico para abrir a explicação. O conteúdo foi atualizado conforme a tela atual do app.": "Click a topic to open the explanation. The content was updated according to the current app screen.",
+            "🏠 1. Visão geral": "🏠 1. Overview",
+            "🧾 2. Dados do ensaio": "🧾 2. Test data",
+            "➡️ 3. Fluxo recomendado": "➡️ 3. Recommended flow",
+            "⚙️ 4. Parâmetros nas tabelas": "⚙️ 4. Parameters in the tables",
+            "📊 5. Tabelas de amostras": "📊 5. Sample tables",
+            "📘 6. Conceito de capabilidade": "📘 6. Capability concept",
+            "🧮 7. Cálculo e critérios": "🧮 7. Calculation and criteria",
+            "∑ 8. Fórmulas usadas": "∑ 8. Formulas used",
+            "📈 9. Gráficos e histogramas": "📈 9. Charts and histograms",
+            "🎯 10. Torque único": "🎯 10. Single torque",
+            "📐 11. Ângulo": "📐 11. Angle",
+            "💾 12. Salvar / carregar": "💾 12. Save / load",
+            "🖨️ 13. Relatórios": "🖨️ 13. Reports",
+            "🛠️ 14. Problemas comuns": "🛠️ 14. Common issues",
+            "Visão geral do sistema": "System overview",
+            "O app Nova Capabilidade / ISO 5393 organiza o ensaio em etapas separadas para evitar erro de preenchimento e facilitar a análise técnica.": "The Nova Capability / ISO 5393 app organizes the test into separate steps to avoid filling errors and make technical analysis easier.",
+            "Dados do ensaio": "Test data",
+            "Cadastro da ferramenta, controlador, transdutor, certificados, técnico, cliente e local.": "Registration of tool, controller, transducer, certificates, technician, customer and location.",
+            "Tabelas": "Tables",
+            "Parâmetros do ensaio, quantidade de amostras, quatro tabelas principais, cálculos e gráficos.": "Test parameters, number of samples, four main tables, calculations and charts.",
+            "Torque único": "Single torque",
+            "Uma tabela para avaliar apenas um ponto de torque nominal.": "One table to evaluate only one nominal torque point.",
+            "Ângulo": "Angle",
+            "Duas tabelas separadas para ângulo mínimo e ângulo máximo.": "Two separate tables for minimum angle and maximum angle.",
+            "Fluxo principal: preencher os campos obrigatórios, abrir tabelas, informar parâmetros, preencher amostras, calcular e gerar relatório.": "Main flow: fill mandatory fields, open tables, enter parameters, fill samples, calculate and generate the report.",
+            "Esta página ficou mais limpa: agora ela guarda apenas identificação, equipamento, medição e rastreabilidade.": "This page is cleaner now: it only stores identification, equipment, measurement and traceability.",
+            "O que preencher nesta tela": "What to fill in on this screen",
+            "Identificação": "Identification",
+            "Norma, técnico responsável, número do relatório, data, local e cliente/projeto/linha.": "Standard, responsible technician, report number, date, location and customer/project/line.",
+            "Equipamento": "Equipment",
+            "Aplicação, crowfoot quando existir, modelo e serial da apertadeira e controlador.": "Application, crowfoot when used, model and serial number of the nutrunner and controller.",
+            "Rastreabilidade": "Traceability",
+            "Transdutor, STA 6000, certificados, sentido de aperto, temperatura e umidade.": "Transducer, STA 6000, certificates, tightening direction, temperature and humidity.",
+            "Validação": "Validation",
+            "Campos obrigatórios aparecem em laranja e precisam ser preenchidos antes de avançar.": "Mandatory fields appear in orange and must be filled before moving forward.",
+            "Os parâmetros do ensaio e observações não ficam mais nesta tela. Eles foram movidos para a página Tabelas.": "Test parameters and notes are no longer on this screen. They were moved to the Tables page.",
+            "Fluxo recomendado de uso": "Recommended usage flow",
+            "Siga esta sequência para evitar tabelas vazias, cálculo incompleto ou relatório sem informações.": "Follow this sequence to avoid empty tables, incomplete calculations or reports without information.",
+            "Preencha todos os campos obrigatórios da página Dados do ensaio.": "Fill all mandatory fields on the Test data page.",
+            "Clique em Abrir tabelas para montar a página de amostras.": "Click Open tables to build the sample page.",
+            "Na página Tabelas, informe tolerância, unidade, torque superior, torque inferior, quantidade de amostras e observações.": "On the Tables page, enter tolerance, unit, upper torque, lower torque, number of samples and notes.",
+            "Preencha ou cole os valores nas quatro tabelas de amostras.": "Fill or paste the values into the four sample tables.",
+            "Clique em Calcular resultados e confira status, motivo, gráficos e histogramas.": "Click Calculate results and check status, reason, charts and histograms.",
+            "Gere o relatório ou salve o ensaio em JSON para continuar depois.": "Generate the report or save the test as JSON to continue later.",
+            "Parâmetros do ensaio nas tabelas": "Test parameters in the tables",
+            "Os parâmetros foram colocados junto das tabelas para facilitar a conferência antes de preencher as amostras.": "The parameters were placed together with the tables to make checking easier before filling the samples.",
+            "Tolerância (%)": "Tolerance (%)",
+            "Define os limites mínimo e máximo para avaliação do ensaio.": "Defines the minimum and maximum limits for test evaluation.",
+            "Unidade de medição": "Measurement unit",
+            "Atualiza automaticamente os textos das tabelas, gráficos e relatórios.": "Automatically updates table, chart and report texts.",
+            "Torque superior": "Upper torque",
+            "Valor nominal usado nas tabelas de torque superior, rígida e flexível.": "Nominal value used in the upper torque tables, hard and soft joint.",
+            "Torque inferior": "Lower torque",
+            "Valor nominal usado nas tabelas de torque inferior, rígida e flexível.": "Nominal value used in the lower torque tables, hard and soft joint.",
+            "Quantidade de amostras": "Number of samples",
+            "Define quantas linhas serão criadas nas tabelas de medição.": "Defines how many rows will be created in the measurement tables.",
+            "Observações": "Notes",
+            "Campo para registrar condição do teste, comentários técnicos ou informações importantes.": "Field to record test conditions, technical comments or important information.",
+            "Ao mudar a quantidade de amostras, o sistema recria as linhas das tabelas conforme o total informado.": "When the number of samples changes, the system recreates table rows according to the total entered.",
+            "Tabelas de amostras": "Sample tables",
+            "O ensaio principal trabalha com quatro tabelas: torque inferior/superior em junta rígida e junta flexível.": "The main test works with four tables: lower/upper torque in hard joint and soft joint.",
+            "Torque inferior — rígida": "Lower torque — hard joint",
+            "Junta rígida - 30 Graus.": "Hard joint - 30 degrees.",
+            "Torque inferior — flexível": "Lower torque — soft joint",
+            "Junta flexível - 720 Graus.": "Soft joint - 720 degrees.",
+            "Torque superior — rígida": "Upper torque — hard joint",
+            "Torque superior — flexível": "Upper torque — soft joint",
+            "Você pode digitar os valores manualmente ou colar uma coluna copiada do Excel usando o botão": "You can type the values manually or paste a column copied from Excel using the button",
+            "Colar valores do Excel": "Paste Excel values",
+            "Conceito de capabilidade": "Capability concept",
+            "Capabilidade é a capacidade do processo entregar resultados repetitivos, estáveis e dentro dos limites definidos para o ensaio.": "Capability is the process ability to deliver repeatable, stable results within the limits defined for the test.",
+            "Explicação simples": "Simple explanation",
+            "Em um ensaio de ferramenta, não basta uma leitura ficar próxima do valor nominal. O mais importante é verificar se várias leituras se mantêm concentradas, com pouca variação e dentro dos limites de tolerância.": "In a tool test, one reading close to the nominal value is not enough. The most important point is checking whether several readings remain grouped, with little variation and within tolerance limits.",
+            "Valor nominal": "Nominal value",
+            "É o alvo do ensaio. Exemplo: torque esperado de 50 N.m.": "It is the test target. Example: expected torque of 50 N.m.",
+            "Limites de tolerância": "Tolerance limits",
+            "São os valores mínimo e máximo permitidos para o resultado.": "They are the minimum and maximum values allowed for the result.",
+            "Dispersão": "Dispersion",
+            "Mostra o quanto as medições variam entre si. Quanto menor, mais estável é o processo.": "Shows how much the measurements vary from each other. The lower it is, the more stable the process is.",
+            "Centralização": "Centering",
+            "Mostra se a média das leituras está próxima do nominal e distante dos limites.": "Shows whether the average readings are close to the nominal value and away from the limits.",
+            "Como interpretar": "How to interpret",
+            "Leituras dentro dos limites indicam conformidade básica do ensaio.": "Readings within the limits indicate basic test compliance.",
+            "Leituras bem agrupadas indicam boa repetibilidade.": "Well-grouped readings indicate good repeatability.",
+            "Média centralizada entre os limites indica melhor estabilidade.": "An average centered between the limits indicates better stability.",
+            "Cm e Cmk ajudam a transformar essa análise em números para decisão técnica.": "Cm and Cmk help turn this analysis into numbers for technical decision-making.",
+            "Resumo prático: um ensaio bom precisa estar dentro da tolerância, ter baixa dispersão e boa centralização.": "Practical summary: a good test must be within tolerance, have low dispersion and good centering.",
+            "Cálculo e critérios": "Calculation and criteria",
+            "O sistema calcula automaticamente os principais indicadores estatísticos e o status interno WS.": "The system automatically calculates the main statistical indicators and the internal WS status.",
+            "Média": "Average",
+            "Valor médio das leituras preenchidas.": "Average value of the filled readings.",
+            "Desvio padrão": "Standard deviation",
+            "Indica a dispersão das amostras.": "Indicates sample dispersion.",
+            "Amplitude": "Range",
+            "Diferença entre maior e menor valor medido.": "Difference between the highest and lowest measured value.",
+            "Scatter (%)": "Scatter (%)",
+            "Percentual de dispersão usado na análise do ensaio.": "Dispersion percentage used in test analysis.",
+            "Cm": "Cm",
+            "Índice interno de capabilidade do processo.": "Internal process capability index.",
+            "Cmk": "Cmk",
+            "Índice interno que considera centralização e limites.": "Internal index that considers centering and limits.",
+            "Se alguma tabela obrigatória estiver incompleta, o cálculo pode ser bloqueado para evitar resultado incorreto.": "If any mandatory table is incomplete, calculation may be blocked to avoid an incorrect result.",
+            "Fórmulas usadas nos cálculos gerais": "Formulas used in general calculations",
+            "Este tópico mostra as fórmulas conceituais usadas para média, dispersão, limites, scatter, Cm e Cmk.": "This topic shows the conceptual formulas used for average, dispersion, limits, scatter, Cm and Cmk.",
+            "Fórmulas estatísticas básicas": "Basic statistical formulas",
+            "x̄ = soma das leituras / quantidade de leituras.": "x̄ = sum of readings / number of readings.",
+            "Mínimo": "Minimum",
+            "Menor valor encontrado entre as amostras preenchidas.": "Lowest value found among the filled samples.",
+            "Máximo": "Maximum",
+            "Maior valor encontrado entre as amostras preenchidas.": "Highest value found among the filled samples.",
+            "Amplitude = valor máximo - valor mínimo.": "Range = maximum value - minimum value.",
+            "Indica a variação das leituras em relação à média.": "Indicates the variation of the readings in relation to the average.",
+            "Quantidade": "Quantity",
+            "n = total de amostras válidas usadas no cálculo.": "n = total valid samples used in the calculation.",
+            "Limites por tolerância": "Limits by tolerance",
+            "Limite inferior": "Lower limit",
+            "LI = nominal × (1 - tolerância / 100).": "LL = nominal × (1 - tolerance / 100).",
+            "Limite superior": "Upper limit",
+            "LS = nominal × (1 + tolerância / 100).": "UL = nominal × (1 + tolerance / 100).",
+            "Faixa de tolerância": "Tolerance range",
+            "Faixa = LS - LI.": "Range = UL - LL.",
+            "Nominal": "Nominal",
+            "Valor de referência informado: torque ou ângulo esperado.": "Reference value entered: expected torque or angle.",
+            "Indicadores de capabilidade": "Capability indicators",
+            "Scatter = ((máximo - mínimo) / média) × 100.": "Scatter = ((maximum - minimum) / average) × 100.",
+            "Cm = (LS - LI) / (6 × desvio padrão).": "Cm = (UL - LL) / (6 × standard deviation).",
+            "Cmk superior": "Upper Cmk",
+            "CmkS = (LS - média) / (3 × desvio padrão).": "CmkU = (UL - average) / (3 × standard deviation).",
+            "Cmk inferior": "Lower Cmk",
+            "CmkI = (média - LI) / (3 × desvio padrão).": "CmkL = (average - LL) / (3 × standard deviation).",
+            "Cmk final": "Final Cmk",
+            "Cmk = menor valor entre CmkS e CmkI.": "Cmk = the lower value between CmkU and CmkL.",
+            "Status interno": "Internal status",
+            "Considera limites, scatter, Cm e Cmk conforme o critério interno WS.": "Considers limits, scatter, Cm and Cmk according to the internal WS criterion.",
+            "Observação: quando o desvio padrão é zero ou não existe amostra suficiente, Cm e Cmk podem não ser calculados de forma confiável.": "Note: when the standard deviation is zero or there are not enough samples, Cm and Cmk may not be calculated reliably.",
+            "Gráficos e histogramas": "Charts and histograms",
+            "Os gráficos ajudam a enxergar estabilidade, tendência, dispersão e pontos fora dos limites.": "Charts help show stability, trend, dispersion and points outside the limits.",
+            "Gráfico limpo": "Clean chart",
+            "Mostra medições, valor nominal e limites mínimo/máximo.": "Shows measurements, nominal value and minimum/maximum limits.",
+            "Histograma": "Histogram",
+            "Mostra a distribuição das leituras por tabela ou tipo de junta.": "Shows the distribution of readings by table or joint type.",
+            "Interpretação rápida": "Quick interpretation",
+            "Leituras concentradas indicam menor dispersão.": "Concentrated readings indicate lower dispersion.",
+            "Pontos fora": "Out-of-limit points",
+            "Valores fora dos limites ajudam a identificar reprovação.": "Values outside the limits help identify failure.",
+            "Use esta tela quando o ensaio precisa avaliar somente um ponto de torque.": "Use this screen when the test needs to evaluate only one torque point.",
+            "Preencha descrição ou ponto de torque.": "Fill in the description or torque point.",
+            "Escolha o tipo de junta.": "Choose the joint type.",
+            "Informe unidade, torque nominal, tolerância e quantidade de amostras.": "Enter unit, nominal torque, tolerance and number of samples.",
+            "Preencha a tabela única e clique em Calcular torque único.": "Fill in the single table and click Calculate single torque.",
+            "Confira status, motivo, gráfico e histograma antes de gerar o relatório.": "Check status, reason, chart and histogram before generating the report.",
+            "A página Ângulo separa a análise em ângulo mínimo e ângulo máximo, cada um com sua tabela e resultado.": "The Angle page separates the analysis into minimum angle and maximum angle, each with its own table and result.",
+            "Ângulo mínimo nominal": "Nominal minimum angle",
+            "Valor base esperado para o ângulo mínimo.": "Expected base value for the minimum angle.",
+            "Ângulo máximo nominal": "Nominal maximum angle",
+            "Valor base esperado para o ângulo máximo.": "Expected base value for the maximum angle.",
+            "Usada para calcular limites inferiores e superiores.": "Used to calculate lower and upper limits.",
+            "Duas tabelas": "Two tables",
+            "Uma para ângulo mínimo e outra para ângulo máximo.": "One for minimum angle and one for maximum angle.",
+            "Após preencher as duas tabelas, clique em": "After filling both tables, click",
+            "Calcular resultados": "Calculate results",
+            "para gerar os indicadores e o status final do ângulo.": "to generate the indicators and the final angle status.",
+            "Salvar e carregar ensaio": "Save and load test",
+            "O arquivo JSON permite guardar o ensaio preenchido e abrir novamente depois.": "The JSON file allows you to save the filled test and open it again later.",
+            "Salvar ensaio": "Save test",
+            "Baixa um arquivo JSON com dados, parâmetros e tabelas preenchidas.": "Downloads a JSON file with filled data, parameters and tables.",
+            "Carregar ensaio": "Load test",
+            "Abre um JSON salvo anteriormente e restaura as informações na tela.": "Opens a previously saved JSON and restores the information on the screen.",
+            "Guarde o arquivo JSON junto da documentação do ensaio para rastreabilidade interna.": "Keep the JSON file together with the test documentation for internal traceability.",
+            "Relatórios": "Reports",
+            "Os relatórios reúnem identificação, parâmetros, resultados, gráficos e observações do ensaio.": "Reports include identification, parameters, results, charts and test notes.",
+            "Calcule o ensaio antes de gerar o relatório.": "Calculate the test before generating the report.",
+            "Clique em Gerar relatório na página correspondente.": "Click Generate report on the corresponding page.",
+            "Na janela do relatório, use Imprimir relatório.": "In the report window, use Print report.",
+            "Selecione Salvar como PDF no navegador.": "Select Save as PDF in the browser.",
+            "Existem relatórios separados para ensaio principal, torque único e ângulo.": "There are separate reports for main test, single torque and angle.",
+            "Problemas comuns": "Common issues",
+            "Confira as causas mais comuns antes de alterar o código.": "Check the most common causes before changing the code.",
+            "Não abre tabelas": "Tables do not open",
+            "Verifique se os campos obrigatórios da página Dados do ensaio foram preenchidos.": "Check whether the mandatory fields on the Test data page were filled.",
+            "Tabela abre em branco": "Table opens blank",
+            "Confirme a quantidade de amostras e clique novamente em Abrir tabelas.": "Confirm the number of samples and click Open tables again.",
+            "Não calcula": "Does not calculate",
+            "Confira se todas as amostras obrigatórias foram preenchidas com números válidos.": "Check whether all mandatory samples were filled with valid numbers.",
+            "Relatório não abre": "Report does not open",
+            "Verifique se o navegador bloqueou popup ou nova janela.": "Check whether the browser blocked the popup or new window.",
+            "Gráfico não aparece": "Chart does not appear",
+            "Confirme a conexão com internet para carregar a biblioteca Chart.js.": "Confirm the internet connection to load the Chart.js library.",
+            "Idioma incompleto": "Incomplete language",
+            "Alguns textos novos do HELP podem precisar de tradução no dicionário do app.": "Some new HELP texts may need translation in the app dictionary.",
+            "HELP - Ajuda do Sistema Nova Capabilidade / ISO 5393": "HELP - System Guide Nova Capability / ISO 5393",
+            "1. Visão geral": "1. Overview",
+            "O app organiza o ensaio em Dados do ensaio, Tabelas, Torque único, Ângulo, cálculo, gráficos e relatório.": "The app organizes the test into Test data, Tables, Single torque, Angle, calculation, charts and report.",
+            "2. Dados do ensaio": "2. Test data",
+            "A página Dados do ensaio contém identificação, equipamento, medição e rastreabilidade. Parâmetros e observações foram movidos para Tabelas.": "The Test data page contains identification, equipment, measurement and traceability. Parameters and notes were moved to Tables.",
+            "3. Fluxo recomendado": "3. Recommended flow",
+            "Preencha campos obrigatórios, abra tabelas, informe parâmetros, preencha amostras, calcule e gere relatório.": "Fill mandatory fields, open tables, enter parameters, fill samples, calculate and generate the report.",
+            "4. Parâmetros nas tabelas": "4. Parameters in the tables",
+            "Tolerância, unidade, torque superior, torque inferior, quantidade de amostras e observações ficam na página Tabelas.": "Tolerance, unit, upper torque, lower torque, number of samples and notes are on the Tables page.",
+            "5. Tabelas de amostras": "5. Sample tables",
+            "O ensaio principal usa quatro tabelas: torque inferior rígida, torque inferior flexível, torque superior rígida e torque superior flexível.": "The main test uses four tables: lower torque hard joint, lower torque soft joint, upper torque hard joint and upper torque soft joint.",
+            "6. Conceito de capabilidade": "6. Capability concept",
+            "Capabilidade é a capacidade do processo entregar leituras repetitivas, estáveis e dentro dos limites definidos. Um bom ensaio deve ter baixa dispersão, média centralizada e valores dentro da tolerância.": "Capability is the process ability to deliver repeatable, stable readings within the defined limits. A good test must have low dispersion, centered average and values within tolerance.",
+            "7. Cálculo": "7. Calculation",
+            "O app calcula média, desvio padrão, mínimo, máximo, amplitude, scatter, Cm, Cmk, status e motivo.": "The app calculates average, standard deviation, minimum, maximum, range, scatter, Cm, Cmk, status and reason.",
+            "8. Fórmulas usadas": "8. Formulas used",
+            "Média = soma das leituras / quantidade de leituras.": "Average = sum of readings / number of readings.",
+            "Amplitude = máximo - mínimo.": "Range = maximum - minimum.",
+            "Limite inferior = nominal × (1 - tolerância / 100).": "Lower limit = nominal × (1 - tolerance / 100).",
+            "Limite superior = nominal × (1 + tolerância / 100).": "Upper limit = nominal × (1 + tolerance / 100).",
+            "Scatter (%) = ((máximo - mínimo) / média) × 100.": "Scatter (%) = ((maximum - minimum) / average) × 100.",
+            "Cmk = menor valor entre (LS - média) / (3 × desvio padrão) e (média - LI) / (3 × desvio padrão).": "Cmk = the lower value between (UL - average) / (3 × standard deviation) and (average - LL) / (3 × standard deviation).",
+            "9. Gráficos": "9. Charts",
+            "Os gráficos mostram medições, nominal e limites. Os histogramas mostram a distribuição das leituras.": "Charts show measurements, nominal value and limits. Histograms show the distribution of readings.",
+            "10. Torque único": "10. Single torque",
+            "Use para avaliar apenas um ponto de torque com uma tabela única.": "Use it to evaluate only one torque point with a single table.",
+            "11. Ângulo": "11. Angle",
+            "Use para avaliar ângulo mínimo e ângulo máximo em duas tabelas separadas.": "Use it to evaluate minimum angle and maximum angle in two separate tables.",
+            "12. Salvar e carregar": "12. Save and load",
+            "Salvar ensaio gera JSON. Carregar ensaio restaura um JSON salvo anteriormente.": "Save test generates JSON. Load test restores a previously saved JSON.",
+            "13. Relatórios": "13. Reports",
+            "Após calcular, gere o relatório e use Imprimir relatório para salvar em PDF.": "After calculating, generate the report and use Print report to save as PDF.",
+            "14. Problemas comuns": "14. Common issues",
+            "Não abre tabelas: verifique campos obrigatórios.": "Tables do not open: check mandatory fields.",
+            "Não calcula: verifique amostras incompletas.": "Does not calculate: check incomplete samples.",
+            "Relatório não abre: verifique bloqueio de popup.": "Report does not open: check popup blocking.",
+            "Gráfico não aparece: verifique a internet para carregar Chart.js.": "Chart does not appear: check the internet connection to load Chart.js."
+      },
+      "es": {
+            "Central de ajuda": "Centro de ayuda",
+            "Guia rápido": "Guía rápida",
+            "Visão geral do sistema": "Vista general del sistema",
+            "Dados do ensaio": "Datos del ensayo",
+            "Tabelas": "Tablas",
+            "Torque único": "Torque único",
+            "Ângulo": "Ángulo",
+            "Conceito de capabilidade": "Concepto de capabilidad",
+            "Fórmulas usadas nos cálculos gerais": "Fórmulas usadas en los cálculos generales",
+            "Problemas comuns": "Problemas comunes",
+            "Relatórios": "Informes",
+            "Gráficos e histogramas": "Gráficos e histogramas"
+      }
+};
+
     function mapaTraducaoCompleto(idioma) {
       return {
         ...((typeof traducoesSistema !== "undefined" && traducoesSistema[idioma]) ? traducoesSistema[idioma] : {}),
         ...((typeof traducoesRelatorioExtra !== "undefined" && traducoesRelatorioExtra[idioma]) ? traducoesRelatorioExtra[idioma] : {}),
         ...((typeof traducoesFrontExtra !== "undefined" && traducoesFrontExtra[idioma]) ? traducoesFrontExtra[idioma] : {}),
         ...((typeof traducoesSemExcecao !== "undefined" && traducoesSemExcecao[idioma]) ? traducoesSemExcecao[idioma] : {}),
-        ...((typeof traducoesHelpAtualizado !== "undefined" && traducoesHelpAtualizado[idioma]) ? traducoesHelpAtualizado[idioma] : {})
+        ...((typeof traducoesHelpAtualizado !== "undefined" && traducoesHelpAtualizado[idioma]) ? traducoesHelpAtualizado[idioma] : {}),
+        ...((typeof traducoesHelpComplemento !== "undefined" && traducoesHelpComplemento[idioma]) ? traducoesHelpComplemento[idioma] : {})
       };
     }
 
@@ -4787,7 +5065,43 @@
       traduzirGraficosAtivos();
     }
 
+
+
+    let helpHtmlOriginalWS = "";
+
+    function capturarHelpOriginalWS() {
+      const root = el("pagina-manual");
+      if (root && !helpHtmlOriginalWS) helpHtmlOriginalWS = root.innerHTML;
+    }
+
+    function idTopicoHelpAtivoWS() {
+      const ativo = document.querySelector("#pagina-manual .help-topico.active");
+      return ativo ? ativo.id : "help-visao";
+    }
+
+    function restaurarHelpOriginalWS(topicoAtivo = "help-visao") {
+      const root = el("pagina-manual");
+      if (!root || !helpHtmlOriginalWS) return;
+      root.innerHTML = helpHtmlOriginalWS;
+      requestAnimationFrame(() => {
+        const botao = root.querySelector(`.help-sumario button[onclick*="${topicoAtivo}"]`) || root.querySelector(".help-sumario button");
+        abrirTopicoHelp(topicoAtivo, botao);
+      });
+    }
+
+    function aplicarVisualHelpLegivelWS() {
+      document.querySelectorAll("#pagina-manual .help-hero, #pagina-manual .help-hero h3, #pagina-manual .help-hero p").forEach(item => {
+        item.style.color = "#ffffff";
+      });
+      document.querySelectorAll("#pagina-manual .help-hero p").forEach(item => {
+        item.style.fontWeight = "700";
+      });
+    }
+
     function alterarIdioma(idioma) {
+      capturarHelpOriginalWS();
+      const topicoHelpAtivo = idTopicoHelpAtivoWS();
+      restaurarHelpOriginalWS(topicoHelpAtivo);
       localStorage.setItem("idiomaCapabilidadeWS", idioma);
       atualizarDocumentosPorIdioma(idioma);
       prepararTextosOriginais();
@@ -4795,6 +5109,12 @@
       traduzirElementos(idioma);
       traduzirGraficosAtivos();
       aplicarVisualObrigatorios();
+      aplicarVisualHelpLegivelWS();
+      const rootHelp = el("pagina-manual");
+      if (rootHelp) {
+        const botao = rootHelp.querySelector(`.help-sumario button[onclick*="${topicoHelpAtivo}"]`) || rootHelp.querySelector(".help-sumario button");
+        abrirTopicoHelp(topicoHelpAtivo, botao);
+      }
     }
 
     function abrirTopicoHelp(id, botao) {
@@ -6040,6 +6360,7 @@
       aplicarVisualObrigatorios();
 
       prepararTextosOriginais();
+      capturarHelpOriginalWS();
       const idiomaSalvo = localStorage.getItem("idiomaCapabilidadeWS") || "pt";
       const seletorIdioma = el("seletorIdioma");
       if (seletorIdioma) seletorIdioma.value = idiomaSalvo;
