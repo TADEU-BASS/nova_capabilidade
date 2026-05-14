@@ -861,8 +861,6 @@
                   </div>
                 </div>
               </div>
-                </div>
-              </div>
             </div>
 
             <input type="hidden" id="maxExpMaior">
@@ -948,6 +946,8 @@
                     <label for="observacoesEnsaio">Observações do ensaio</label>
                     <textarea id="observacoesEnsaio" rows="3" placeholder="EX.: FERRAMENTA ENSAIADA CONFORME CONDIÇÃO NORMAL DE USO."></textarea>
                   </div>
+                </div>
+              </div>
 
             <div class="resumo-dados" id="resumoDados"></div>
 
@@ -1995,6 +1995,7 @@
 
     function abrirTabelas() {
       if (!validarCamposObrigatoriosDados()) return;
+      mostrarPagina("pagina-tabelas");
       calcularLimitesAutomaticos();
 
       const total = obterTotalAmostras();
@@ -2005,8 +2006,8 @@
       }
 
       atualizarResumoDados();
+      atualizarParametrosNasTabelas();
       reaplicarIdiomaAtual();
-      mostrarPagina("pagina-tabelas");
     }
 
     function calcularLimitesAutomaticos() {
