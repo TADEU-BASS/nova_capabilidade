@@ -6044,8 +6044,47 @@
       const valoresMin = lerValoresTabela("tbody-angulo-min");
       const valoresMax = lerValoresTabela("tbody-angulo-max");
       const limites = calcularLimitesAngulo();
-      const labels = Array.from({ length: Math.max(valoresMin.length, valoresMax.length, 1) }, (_, i) => i + 1);
+      const total = Math.max(obterTotalAmostrasAngulo(), valoresMin.length, valoresMax.length, 1);
+      const labels = Array.from({ length: total }, (_, i) => i + 1);
       const d = obterDadosFerramenta();
+
+      const angStatusEl = el("angStatus");
+      const angMotivoEl = el("angMotivo");
+      const statusAnguloPt = angStatusEl ? angStatusEl.textContent : "AGUARDANDO";
+      const motivoAnguloPt = angMotivoEl ? angMotivoEl.textContent : "-";
+      const statusAnguloRel = relT(statusAnguloPt);
+      const motivoAnguloRel = relTraduzirTexto(motivoAnguloPt);
+      const statusClasse = angStatusEl && angStatusEl.classList.contains("status-aprovado")
+        ? "aprovado"
+        : angStatusEl && angStatusEl.classList.contains("status-reprovado")
+          ? "reprovado"
+          : "aguardando";
+
+      function tabelaHtmlRelatorioAngulo(rotulo, valores) {
+        const porLinha = 8;
+        const grupos = [];
+        for (let i = 0; i < valores.length; i += porLinha) grupos.push(valores.slice(i, i + porLinha));
+        const cabecalho = Array.from({ length: porLinha }, () => `<th>${relT("Amostra")}</th><th>${relT("Valor")} (${relT("grau(s)")})</th>`).join("");
+        const linhas = grupos.map((grupo, bloco) => {
+          let tds = "";
+          for (let j = 0; j < porLinha; j++) {
+            const indice = bloco * porLinha + j;
+            const valor = grupo[j];
+            tds += Number.isFinite(valor) ? `<td>${indice + 1}</td><td>${formatarNumero(valor)}</td>` : "<td></td><td></td>";
+          }
+          return `<tr>${tds}</tr>`;
+        }).join("");
+
+        return `
+          <div class="bloco tabela-bloco">
+            <h3>${rotulo}</h3>
+            <table class="tabela-medicoes">
+              <thead><tr>${cabecalho}</tr></thead>
+              <tbody>${linhas || `<tr><td colspan="16">${relT("Sem dados")}</td></tr>`}</tbody>
+            </table>
+          </div>
+        `;
+      }
 
       const relatorio = window.open("", "_blank");
       if (!relatorio) {
@@ -6064,228 +6103,259 @@
             @page { size: A4 portrait; margin: 6mm; }
             body { font-family: Arial, sans-serif; margin: 8px; color: #1f3f4d; font-size: 9.5px; line-height: 1.18; }
             h1, h2, h3 { color: #0f5f7d; margin: 0 0 3px; line-height: 1.05; }
-            h1 { font-size: 17px; }
-            h2 { font-size: 12px; }
-            h3 { font-size: 10px; }
-            .header, .box {
-              border: 1px solid #c8dce5;
-              border-radius: 6px;
-              padding: 5px;
-              margin-bottom: 4px;
-              background: #fff;
-              break-inside: avoid;
-              page-break-inside: avoid;
-            }
-            .header {
-              background: #f5fbfe;
-              border-bottom: 2px solid #0f6b86;
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              gap: 8px;
-            }
-            .header::before {
-              content: "";
-              display: inline-block;
-              width: 30px;
-              height: 30px;
-              background: url("logo-atlas-copco.png") center/contain no-repeat;
-              flex: 0 0 30px;
-            }
-            .header > div { flex: 1; }
-            .grid {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 3px 10px;
-              font-size: 9px;
-            }
-            .box h2 {
-              margin-bottom: 5px;
-              padding-bottom: 3px;
-              border-bottom: 1px solid #dcebf1;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 3px;
-              table-layout: fixed;
-              font-size: 6.6px;
-            }
-            th, td {
-              border: 1px solid #d4e3ea;
-              padding: 1px 2px;
-              font-size: 6.6px;
-              line-height: 1.05;
-              text-align: center;
-              word-break: break-word;
-            }
-            th {
-              background: #eef7fb;
-              color: #315767;
-              font-weight: 700;
-            }
-            .charts {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 6px;
-              width: 100%;
-            }
-            .tables-report {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 6px;
-              width: 100%;
-            }
-            .chart-box {
-              width: 100%;
-              height: 170px;
-              border: 1px solid #d4e3ea;
-              border-radius: 6px;
-              padding: 4px;
-              background: #fff;
-              overflow: hidden;
-              break-inside: avoid;
-              page-break-inside: avoid;
-            }
-            .chart-box canvas {
-              width: 100% !important;
-              height: 160px !important;
-              max-height: 160px !important;
-              display: block;
-            }
-            .btn {
-              padding: 7px 10px;
-              border: none;
-              border-radius: 7px;
-              cursor: pointer;
-              font-weight: bold;
-              background: #1ea4d7;
-              color: white;
-              font-size: 9px;
-              margin-bottom: 5px;
-            }
-            @media (max-width: 900px) {
-              .grid, .charts, .tables-report { grid-template-columns: 1fr; }
-            }
-            @media print {
-              .btn { display: none; }
-              body { margin: 0; overflow: visible !important; }
-              .header, .box { break-inside: avoid; page-break-inside: avoid; }
-            }
+            h1 { font-size: 17px; } h2 { font-size: 12px; } h3 { font-size: 10px; }
+            .cabecalho, .bloco { border: 1px solid #c8dce5; border-radius: 6px; padding: 5px; margin-bottom: 4px; background: #fff; break-inside: avoid; page-break-inside: avoid; }
+            .cabecalho { background: #f5fbfe; }
+            .cabecalho-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+            .cabecalho-card { border: 1px solid #d6e6ec; border-radius: 8px; background: #ffffff; padding: 6px; }
+            .cabecalho-card h3 { margin-bottom: 5px; padding-bottom: 3px; border-bottom: 1px solid #dcebf1; }
+            .cabecalho-linhas { display: grid; grid-template-columns: 1fr; gap: 3px; font-size: 9px; }
+            .cabecalho-wide { grid-column: 1 / -1; }
+            .resumo { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px 10px; font-size: 9.5px; }
+            .topo { display: flex; justify-content: flex-start; gap: 8px; align-items: center; margin-bottom: 5px; }
+            .topo-esq { display: flex; align-items: center; gap: 8px; }
+            .topo-esq img { height: 30px; object-fit: contain; }
+            .print-btn { padding: 7px 10px; border: none; border-radius: 7px; cursor: pointer; font-weight: bold; background: #1ea4d7; color: white; }
+            .status-relatorio { display: inline-block; padding: 4px 8px; border-radius: 6px; font-weight: 800; color: white; font-size: 8.5px; }
+            .aprovado { background: #27ae60; } .reprovado { background: #d93b3b; } .aguardando { background: #90a4ae; }
+            .nota { padding: 5px 6px; border-radius: 6px; background: #eef8fc; border: 1px solid #b9dceb; font-size: 8px; line-height: 1.2; }
+            .tabela-medicoes { width: 100%; border-collapse: collapse; margin-top: 3px; table-layout: fixed; }
+            .tabela-medicoes th, .tabela-medicoes td { border: 1px solid #d4e3ea; padding: 1px 2px; font-size: 6.6px; line-height: 1.05; text-align: center; word-break: break-word; }
+            .tabela-medicoes th { background: #eef7fb; font-weight: 700; color: #315767; }
+            .graficos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+            .graficos-grid canvas { width: 100% !important; height: 170px !important; max-height: 170px !important; display: block; }
+            @media (max-width: 900px) { .cabecalho-grid, .graficos-grid { grid-template-columns: 1fr; } }
+            @media print { .print-btn { display: none; } body { margin: 0; } }
           </style>
         </head>
         <body>
-          <button class="btn" onclick="window.print()">${relT("Imprimir relatório / salvar PDF")}</button>
-          <div class="header">
-            <h1>${relT("Relatório de Ângulo - Capabilidade WS")}</h1>
-            <div>${relT("ISO 5393 / Critério interno WS")}</div>
+          <div class="topo">
+            <div class="topo-esq">
+              <img src="logo-atlas-copco.png" alt="Atlas Copco">
+              <div>
+                <h1>${relT("Relatório ISO 5393 / Capabilidade")} - ${relT("Ângulo")}</h1>
+                <div>${relT("Número do relatório")}: ${d.numeroRelatorio}</div>
+              </div>
+            </div>
+            <button class="print-btn" onclick="window.print()">${relT("Imprimir relatório")}</button>
           </div>
 
-          <div class="box">
-            <h2>${relT("Dados do ensaio")}</h2>
-            <div class="grid">
-              <div><strong>${relT("Relatório")}:</strong> ${d.numeroRelatorio}</div>
-              <div><strong>${relT("Data")}:</strong> ${d.dataEnsaio}</div>
-              <div><strong>${relT("Técnico")}:</strong> ${d.tecnicoResponsavel}</div>
-              <div><strong>${relT("Cliente / projeto")}:</strong> ${d.clienteProjeto}</div>
-              <div><strong>${relT("Apertadeira")}:</strong> ${d.apertadeiraModelo}</div>
-              <div><strong>${relT("Serial")}:</strong> ${d.serialApertadeira}</div>
-              <div><strong>${relT("Transdutor")}:</strong> ${d.transdutor}</div>
-              <div><strong>${relT("Certificado transdutor")}:</strong> ${d.certificadoCalibracao}</div>
+          <div class="cabecalho">
+            <div class="cabecalho-grid">
+              <div class="cabecalho-card">
+                <h3>${relT("Identificação do ensaio")}</h3>
+                <div class="cabecalho-linhas">
+                  <div><strong>${relT("Número do relatório")}:</strong> ${d.numeroRelatorio}</div>
+                  <div><strong>${relT("Norma de referência")}:</strong> ${d.normaReferencia}</div>
+                  <div><strong>${relT("Data do ensaio")}:</strong> ${d.dataEnsaio}</div>
+                  <div><strong>${relT("Local do ensaio")}:</strong> ${d.localEnsaio}</div>
+                  <div><strong>${relT("Cliente / projeto / linha")}:</strong> ${d.clienteProjeto}</div>
+                  <div><strong>${relT("Técnico responsável")}:</strong> ${d.tecnicoResponsavel}</div>
+                  <div><strong>${relT("Total de amostras")}:</strong> ${obterTotalAmostrasAngulo()}</div>
+                </div>
+              </div>
+
+              <div class="cabecalho-card">
+                <h3>${relT("Ferramenta / aplicação")}</h3>
+                <div class="cabecalho-linhas">
+                  <div><strong>${relT("Aplicação")}:</strong> ${relT(d.tipoAplicacao)}</div>
+                  <div><strong>${relT("Crowfoot")}:</strong> ${d.crowfoot}</div>
+                  <div><strong>${relT("Apertadeira modelo")}:</strong> ${d.apertadeiraModelo}</div>
+                  <div><strong>${relT("Serial apertadeira")}:</strong> ${d.serialApertadeira}</div>
+                  <div><strong>${relT("Controlador modelo")}:</strong> ${d.controladorModelo}</div>
+                  <div><strong>${relT("Serial controlador")}:</strong> ${d.serialControlador}</div>
+                </div>
+              </div>
+
+              <div class="cabecalho-card">
+                <h3>${relT("Medição / rastreabilidade")}</h3>
+                <div class="cabecalho-linhas">
+                  <div><strong>${relT("Transdutor")}:</strong> ${d.transdutor}</div>
+                  <div><strong>${relT("Certificado transdutor")}:</strong> ${d.certificadoCalibracao}</div>
+                  <div><strong>${relT("STA 6000")}:</strong> ${d.painel}</div>
+                  <div><strong>${relT("Certificado STA 6000")}:</strong> ${d.certificadoSta}</div>
+                  <div><strong>${relT("Sentido de aperto")}:</strong> ${relT(d.sentidoAperto)}</div>
+                  <div><strong>${relT("Temperatura ambiente")}:</strong> ${d.temperaturaAmbiente} °C</div>
+                  <div><strong>${relT("Umidade relativa")}:</strong> ${d.umidadeRelativa}%</div>
+                </div>
+              </div>
+
+              <div class="cabecalho-card">
+                <h3>${relT("Condições / parâmetros")}</h3>
+                <div class="cabecalho-linhas">
+                  <div><strong>${relT("Ângulo mínimo nominal")}:</strong> ${valorOuTraco("anguloMinBase")} ${relT("grau(s)")}</div>
+                  <div><strong>${relT("Ângulo máximo nominal")}:</strong> ${valorOuTraco("anguloMaxBase")} ${relT("grau(s)")}</div>
+                  <div><strong>${relT("Tolerância")}:</strong> ${valorOuTraco("anguloTolerancia")}%</div>
+                  <div><strong>${relT("Mín. esperado ângulo mínimo")}:</strong> ${formatarNumero(limites.minInf)} ${relT("grau(s)")}</div>
+                  <div><strong>${relT("Máx. esperado ângulo mínimo")}:</strong> ${formatarNumero(limites.minSup)} ${relT("grau(s)")}</div>
+                  <div><strong>${relT("Mín. esperado ângulo máximo")}:</strong> ${formatarNumero(limites.maxInf)} ${relT("grau(s)")}</div>
+                  <div><strong>${relT("Máx. esperado ângulo máximo")}:</strong> ${formatarNumero(limites.maxSup)} ${relT("grau(s)")}</div>
+                </div>
+              </div>
+
+              <div class="cabecalho-card cabecalho-wide">
+                <h3>${relT("Observações do ensaio")}</h3>
+                <div class="cabecalho-linhas"><div>${d.observacoesEnsaio}</div></div>
+              </div>
             </div>
           </div>
 
-          <div class="box">
-            <h2>${relT("Parâmetros do ângulo")}</h2>
-            <div class="grid">
-              <div><strong>${relT("Ângulo mínimo nominal")}:</strong> ${valorOuTraco("anguloMinBase")} ${relT("grau(s)")}</div>
-              <div><strong>${relT("Ângulo máximo nominal")}:</strong> ${valorOuTraco("anguloMaxBase")} ${relT("grau(s)")}</div>
-              <div><strong>${relT("Tolerância")}:</strong> ${valorOuTraco("anguloTolerancia")}%</div>
-              <div><strong>${relT("Total de amostras")}:</strong> ${obterTotalAmostrasAngulo()}</div>
-              <div><strong>${relT("Limites ângulo mínimo")}:</strong> ${formatarNumero(limites.minInf)} ${relT("até")} ${formatarNumero(limites.minSup)} ${relT("grau(s)")}</div>
-              <div><strong>${relT("Limites ângulo máximo")}:</strong> ${formatarNumero(limites.maxInf)} ${relT("até")} ${formatarNumero(limites.maxSup)} ${relT("grau(s)")}</div>
+          <div class="bloco">
+            <h2>${relT("Leitura ISO 5393")}</h2>
+            <div class="nota">
+              ${relT("Este relatório registra as condições do ensaio, a identificação da ferramenta, a junta utilizada e a repetibilidade/scatter dos resultados. Os índices Cm e Cmk permanecem como critério complementar interno WS.")}
             </div>
           </div>
 
-          <div class="box">
+          <div class="bloco">
+            <h2>${relT("Resultado Ângulo Mínimo")}</h2>
+            <div class="resumo">
+              <div><strong>${relT("Média")}:</strong> ${el("angMinMedia").textContent}</div>
+              <div><strong>${relT("Desvio padrão")}:</strong> ${el("angMinDp").textContent}</div>
+              <div><strong>${relT("Mínimo")}:</strong> ${el("angMinMin").textContent}</div>
+              <div><strong>${relT("Máximo")}:</strong> ${el("angMinMax").textContent}</div>
+              <div><strong>${relT("Amplitude")}:</strong> ${el("angMinAmplitude").textContent}</div>
+              <div><strong>${relT("Scatter")}:</strong> ${el("angMinScatter").textContent}</div>
+              <div><strong>${relT("Cm")}:</strong> ${el("angMinCm").textContent}</div>
+              <div><strong>${relT("Cmk")}:</strong> ${el("angMinCmk").textContent}</div>
+              <div style="grid-column:1 / -1;"><strong>${relT("Limites")}:</strong> ${formatarNumero(limites.minInf)} ${relT("até")} ${formatarNumero(limites.minSup)} ${relT("grau(s)")}</div>
+            </div>
+          </div>
+
+          <div class="bloco">
+            <h2>${relT("Resultado Ângulo Máximo")}</h2>
+            <div class="resumo">
+              <div><strong>${relT("Média")}:</strong> ${el("angMaxMedia").textContent}</div>
+              <div><strong>${relT("Desvio padrão")}:</strong> ${el("angMaxDp").textContent}</div>
+              <div><strong>${relT("Mínimo")}:</strong> ${el("angMaxMin").textContent}</div>
+              <div><strong>${relT("Máximo")}:</strong> ${el("angMaxMax").textContent}</div>
+              <div><strong>${relT("Amplitude")}:</strong> ${el("angMaxAmplitude").textContent}</div>
+              <div><strong>${relT("Scatter")}:</strong> ${el("angMaxScatter").textContent}</div>
+              <div><strong>${relT("Cm")}:</strong> ${el("angMaxCm").textContent}</div>
+              <div><strong>${relT("Cmk")}:</strong> ${el("angMaxCmk").textContent}</div>
+              <div style="grid-column:1 / -1;"><strong>${relT("Limites")}:</strong> ${formatarNumero(limites.maxInf)} ${relT("até")} ${formatarNumero(limites.maxSup)} ${relT("grau(s)")}</div>
+            </div>
+          </div>
+
+          <div class="bloco">
             <h2>${relT("Resultado final")}</h2>
-            <div class="grid">
-              <div><strong>${relT("Status")}:</strong> ${el("angStatus").textContent}</div>
+            <div class="resumo">
+              <div><strong>${relT("Tolerância")}:</strong> ${el("angPctView").textContent}</div>
               <div><strong>${relT("% final encontrada")}:</strong> ${el("angPctFinal").textContent}</div>
-              <div style="grid-column:1/-1"><strong>${relT("Motivo")}:</strong> ${el("angMotivo").textContent}</div>
+              <div><strong>${relT("Status interno WS")}:</strong> <span class="status-relatorio ${statusClasse}">${statusAnguloRel}</span></div>
+              <div style="grid-column:1 / -1;"><strong>${relT("Motivo do resultado")}:</strong> ${motivoAnguloRel}</div>
             </div>
           </div>
 
-          <div class="box">
-            <h2>${relT("Resultados estatísticos")}</h2>
-            <table>
-              <thead><tr><th>${relT("Item")}</th><th>${relT("Média")}</th><th>${relT("DP")}</th><th>${relT("Mínimo")}</th><th>${relT("Máximo")}</th><th>${relT("Amplitude")}</th><th>${relT("Scatter")}</th><th>${relT("Cm")}</th><th>${relT("Cmk")}</th></tr></thead>
-              <tbody>
-                <tr><td>${relT("Ângulo mínimo")}</td><td>${el("angMinMedia").textContent}</td><td>${el("angMinDp").textContent}</td><td>${el("angMinMin").textContent}</td><td>${el("angMinMax").textContent}</td><td>${el("angMinAmplitude").textContent}</td><td>${el("angMinScatter").textContent}</td><td>${el("angMinCm").textContent}</td><td>${el("angMinCmk").textContent}</td></tr>
-                <tr><td>${relT("Ângulo máximo")}</td><td>${el("angMaxMedia").textContent}</td><td>${el("angMaxDp").textContent}</td><td>${el("angMaxMin").textContent}</td><td>${el("angMaxMax").textContent}</td><td>${el("angMaxAmplitude").textContent}</td><td>${el("angMaxScatter").textContent}</td><td>${el("angMaxCm").textContent}</td><td>${el("angMaxCmk").textContent}</td></tr>
-              </tbody>
-            </table>
+          <div class="graficos-grid">
+            <div class="bloco"><h2>${relT("Gráfico limpo - Ângulo mínimo")}</h2><canvas id="graficoAnguloMinRel"></canvas></div>
+            <div class="bloco"><h2>${relT("Gráfico limpo - Ângulo máximo")}</h2><canvas id="graficoAnguloMaxRel"></canvas></div>
           </div>
 
-          <div class="box">
-            <h2>${relT("Gráficos")}</h2>
-            <div class="charts">
-              <div class="chart-box"><canvas id="graficoAnguloMinRel"></canvas></div>
-              <div class="chart-box"><canvas id="graficoAnguloMaxRel"></canvas></div>
-              <div class="chart-box"><canvas id="histAnguloMinRel"></canvas></div>
-              <div class="chart-box"><canvas id="histAnguloMaxRel"></canvas></div>
-            </div>
+          <div class="graficos-grid">
+            <div class="bloco"><h2>${relT("Histograma - Ângulo mínimo")}</h2><canvas id="histAnguloMinRel"></canvas></div>
+            <div class="bloco"><h2>${relT("Histograma - Ângulo máximo")}</h2><canvas id="histAnguloMaxRel"></canvas></div>
           </div>
 
-          <div class="box">
-            <h2>${relT("Tabelas de amostras")}</h2>
-            <div class="tables-report">
-              <div><h2>${relT("Ângulo mínimo")}</h2><table><thead><tr><th>${relT("Amostra")}</th><th>${relT("Valor")}</th></tr></thead><tbody>${montarLinhasRelatorioAngulo(valoresMin)}</tbody></table></div>
-              <div><h2>${relT("Ângulo máximo")}</h2><table><thead><tr><th>${relT("Amostra")}</th><th>${relT("Valor")}</th></tr></thead><tbody>${montarLinhasRelatorioAngulo(valoresMax)}</tbody></table></div>
-            </div>
+          ${tabelaHtmlRelatorioAngulo(relT("Ângulo mínimo"), valoresMin)}
+          ${tabelaHtmlRelatorioAngulo(relT("Ângulo máximo"), valoresMax)}
+
+          <div class="bloco">
+            <strong>${d.tecnicoResponsavel}</strong>
+            <div>${relT("Técnico responsável")}</div>
           </div>
 
           <script>
-            const labels = ${JSON.stringify(labels)};
-            const valoresMin = ${JSON.stringify(valoresMin)};
-            const valoresMax = ${JSON.stringify(valoresMax)};
-            const limites = ${JSON.stringify(limites)};
             function serieConstante(valor, tamanho) { return Array.from({ length: tamanho }, () => valor); }
-            function criarSeriePontos(label, data) { return { label, data, showLine: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, tension: 0 }; }
+            function criarSeriePontos(label, data) { return { label, data, showLine: true, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, fill: false, tension: 0 }; }
             function criarLinhaReferencia(label, valor, tamanho) { return { label, data: serieConstante(valor, tamanho), borderDash: [6, 4], borderWidth: 1.3, pointRadius: 0, pointHoverRadius: 0, fill: false }; }
-            function opcoes(titulo) { return { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "${relT("Amostra")}" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: titulo + " (grau(s))" }, ticks: { font: { size: 8 } } } } }; }
-            const total = Math.max(labels.length, 1);
-            new Chart(document.getElementById("graficoAnguloMinRel"), { type: "line", data: { labels, datasets: [criarSeriePontos(${JSON.stringify(relT("Ângulo mínimo"))}, valoresMin), criarLinhaReferencia(${JSON.stringify(relT("Nominal"))}, ${parseNumero(el("anguloMinBase") ? el("anguloMinBase").value : "0")}, total), criarLinhaReferencia(${JSON.stringify(relT("Limite mínimo"))}, limites.minInf, total), criarLinhaReferencia(${JSON.stringify(relT("Limite máximo"))}, limites.minSup, total)] }, options: opcoes(${JSON.stringify(relT("Ângulo mínimo"))}) });
-            new Chart(document.getElementById("graficoAnguloMaxRel"), { type: "line", data: { labels, datasets: [criarSeriePontos(${JSON.stringify(relT("Ângulo máximo"))}, valoresMax), criarLinhaReferencia(${JSON.stringify(relT("Nominal"))}, ${parseNumero(el("anguloMaxBase") ? el("anguloMaxBase").value : "0")}, total), criarLinhaReferencia(${JSON.stringify(relT("Limite mínimo"))}, limites.maxInf, total), criarLinhaReferencia(${JSON.stringify(relT("Limite máximo"))}, limites.maxSup, total)] }, options: opcoes(${JSON.stringify(relT("Ângulo máximo"))}) });
-            function formatarNumeroRel(valor) { return Number(valor).toFixed(2).replace(".", ","); }
-            function histograma(valores) {
+            function opcoes(titulo) {
+              return { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 9 } } } }, scales: { x: { title: { display: true, text: "${relT("Amostra")}" }, ticks: { font: { size: 8 } } }, y: { title: { display: true, text: titulo + " (${relT("grau(s)")})" }, ticks: { font: { size: 8 } } } } };
+            }
+            function formatarNumeroRel(valor) {
+              if (!Number.isFinite(valor)) return "-";
+              return valor.toFixed(2).replace(".", ",");
+            }
+            function calcularHistogramaRel(valores, quantidadeBins = 14) {
               const numeros = (valores || []).filter(v => Number.isFinite(v));
               if (!numeros.length) return { labels: [], frequencias: [] };
-              const minimo = Math.min(...numeros), maximo = Math.max(...numeros);
+              const minimo = Math.min(...numeros);
+              const maximo = Math.max(...numeros);
               if (minimo === maximo) return { labels: [formatarNumeroRel(minimo)], frequencias: [numeros.length] };
-              const bins = Math.min(Math.max(8, 14), 18), largura = (maximo - minimo) / bins;
-              const labels = [], frequencias = new Array(bins).fill(0);
-              for (let i = 0; i < bins; i++) { const ini = minimo + largura * i, fim = i === bins - 1 ? maximo : ini + largura; labels.push(formatarNumeroRel(ini) + " ${relT("até")} " + formatarNumeroRel(fim)); }
-              numeros.forEach(valor => { let idx = Math.floor((valor - minimo) / largura); if (idx < 0) idx = 0; if (idx >= bins) idx = bins - 1; frequencias[idx]++; });
+              const bins = Math.min(Math.max(8, quantidadeBins), 18);
+              const largura = (maximo - minimo) / bins;
+              const labels = [];
+              const frequencias = new Array(bins).fill(0);
+              for (let i = 0; i < bins; i++) {
+                const inicio = minimo + (largura * i);
+                const fim = i === bins - 1 ? maximo : inicio + largura;
+                labels.push(formatarNumeroRel(inicio) + " ${relT("até")} " + formatarNumeroRel(fim));
+              }
+              numeros.forEach(valor => {
+                let indice = Math.floor((valor - minimo) / largura);
+                if (indice < 0) indice = 0;
+                if (indice >= bins) indice = bins - 1;
+                frequencias[indice]++;
+              });
               return { labels, frequencias };
             }
-            function criarHist(canvasId, valores, titulo) {
-              const h = histograma(valores);
+            function criarHistogramaRel(canvasId, valores, titulo) {
+              const hist = calcularHistogramaRel(valores);
               new Chart(document.getElementById(canvasId), {
-                type: "bar",
-                data: { labels: h.labels, datasets: [
-                  { type: "bar", label: titulo, data: h.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 },
-                  { type: "line", label: "Linha de tendência", data: h.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }
-                ] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } }, scales: { x: { title: { display: true, text: "Faixas de ângulo" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } }, y: { beginAtZero: true, title: { display: true, text: "Frequência" }, ticks: { precision: 0, font: { size: 8 } } } } }
+                data: {
+                  labels: hist.labels,
+                  datasets: [
+                    { type: "bar", label: titulo, data: hist.frequencias, borderWidth: 1, categoryPercentage: 1.0, barPercentage: 1.0 },
+                    { type: "line", label: "${relT("Linha de tendência")}", data: hist.frequencias, borderWidth: 2, pointRadius: 2, fill: false, tension: 0.35 }
+                  ]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 } } } },
+                  scales: {
+                    x: { title: { display: true, text: "${relT("Faixas de ângulo")}" }, ticks: { font: { size: 7 }, maxRotation: 45 }, grid: { display: false } },
+                    y: { beginAtZero: true, title: { display: true, text: "${relT("Frequência")}" }, ticks: { precision: 0, font: { size: 8 } } }
+                  }
+                }
               });
             }
-            criarHist("histAnguloMinRel", valoresMin, ${JSON.stringify(relT("Ângulo mínimo"))});
-            criarHist("histAnguloMaxRel", valoresMax, ${JSON.stringify(relT("Ângulo máximo"))});
+
+            const labelsRel = ${JSON.stringify(labels)};
+            const valoresMin = ${JSON.stringify(valoresMin)};
+            const valoresMax = ${JSON.stringify(valoresMax)};
+            const limitesRel = ${JSON.stringify(limites)};
+            const totalRel = Math.max(labelsRel.length, 1);
+
+            new Chart(document.getElementById("graficoAnguloMinRel"), {
+              type: "line",
+              data: { labels: labelsRel, datasets: [
+                criarSeriePontos("${relT("Ângulo mínimo")}", valoresMin),
+                criarLinhaReferencia("${relT("Nominal")}", ${parseNumero(el("anguloMinBase") ? el("anguloMinBase").value : "0")}, totalRel),
+                criarLinhaReferencia("${relT("Limite mínimo")}", limitesRel.minInf, totalRel),
+                criarLinhaReferencia("${relT("Limite máximo")}", limitesRel.minSup, totalRel)
+              ] },
+              options: opcoes("${relT("Ângulo mínimo")}")
+            });
+
+            new Chart(document.getElementById("graficoAnguloMaxRel"), {
+              type: "line",
+              data: { labels: labelsRel, datasets: [
+                criarSeriePontos("${relT("Ângulo máximo")}", valoresMax),
+                criarLinhaReferencia("${relT("Nominal")}", ${parseNumero(el("anguloMaxBase") ? el("anguloMaxBase").value : "0")}, totalRel),
+                criarLinhaReferencia("${relT("Limite mínimo")}", limitesRel.maxInf, totalRel),
+                criarLinhaReferencia("${relT("Limite máximo")}", limitesRel.maxSup, totalRel)
+              ] },
+              options: opcoes("${relT("Ângulo máximo")}")
+            });
+
+            criarHistogramaRel("histAnguloMinRel", valoresMin, "${relT("Ângulo mínimo")}");
+            criarHistogramaRel("histAnguloMaxRel", valoresMax, "${relT("Ângulo máximo")}");
           <\/script>
         </body>
         </html>
       `);
+
       relatorio.document.close();
     }
 
